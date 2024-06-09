@@ -6,3 +6,10 @@ export interface IconProps {
   name: string
   focused: boolean
 }
+
+export interface CustomButtonProps {
+  actionText: string
+  textColor: string
+  bgColor: string
+  handlePress: () => void
+}

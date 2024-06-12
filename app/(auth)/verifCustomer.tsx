@@ -1,10 +1,11 @@
 import { ScrollView, StyleSheet, Text, View } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import NumberInput from '@/components/NumberInput'
 import { styles } from '../config/Fonts'
 import { router } from 'expo-router'
 import CustomButton from '@/components/CustomButton'
+import { signInWithPhoneNumber, onAuthStateChanged, Auth } from "firebase/auth";
 
 const VerifCustomer = () => {
 
@@ -14,6 +15,26 @@ const VerifCustomer = () => {
     setOTP(text);
   };
 
+   // FIREBASE OTP PHONE NUMBER SIGNIN
+  //  const [confirm, setConfirm] = useState(null);
+  //  const [code, setCode] = useState("");
+   
+  //  function onAuthStateChanged(user: any) {
+  //   if(user) {
+  //     <Text>{user} has logged in successfully</Text>
+  //   }
+  //  }
+
+  //  useEffect(() => {
+  //   const subscriber = Auth.onAuthStateChanged(onAuthStateChanged);
+  //   return subscriber; // unsubscribe on unmount
+  // }, []);
+
+  // // Handle the button press
+  // async function signInWithPhoneNumber(phoneNumber: string) {
+  //   const confirmation = await auth().signInWithPhoneNumber(phoneNumber);
+  //   setConfirm(confirmation);
+  // }
   return (
     <SafeAreaView className='bg-[#fff] h-full'>
       <ScrollView>

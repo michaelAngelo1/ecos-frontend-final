@@ -5,6 +5,9 @@ import { styles } from './../config/Fonts'
 import FormField from '@/components/FormField'
 import CustomButton from '@/components/CustomButton'
 import { Link, router } from 'expo-router'
+import { SignUpCustomerProps } from '../config/Interface'
+import { createUserWithEmailAndPassword } from 'firebase/auth'
+import { auth } from '@/firebase/firebaseConfig'
 
 const SignUpCustomer = () => {
 
@@ -16,7 +19,16 @@ const SignUpCustomer = () => {
     pickUpAddress: '',
     password: '',
     confirmPassword: ''
-  })
+  });
+
+  const handleSignUpCustomer = async ({firstName, lastName, email, phoneNumber, pickUpAddress, password, confirmPassword} : SignUpCustomerProps) => {
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      router.push('/verifCustomer');
+    } catch (error) {
+      console.log('error creating account', error);
+    }
+  };
 
   return (
     <SafeAreaView className='bg-[#fff] h-full'>
@@ -28,7 +40,7 @@ const SignUpCustomer = () => {
             <View className="w-[182px] space-y-2">
               <View className='h-14 bg-white rounded-lg'>
                 <TextInput
-                  className="flex-1 p-4 text-green text-sm opacity-60"
+                  className="flex-1 p-4 text-green text-base opacity-80"
                   style={styles.montserratRegular}
                   value={form.firstName}
                   placeholder="First name"
@@ -42,7 +54,7 @@ const SignUpCustomer = () => {
             <View className="w-1/2 space-y-2">
               <View className='h-14 bg-white px-4 rounded-lg'>
                 <TextInput
-                  className="flex-1 text-green text-sm opacity-60"
+                  className="flex-1 text-green text-base opacity-80"
                   style={styles.montserratRegular}
                   value={form.lastName}
                   placeholder="Last name"

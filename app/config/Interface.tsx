@@ -13,3 +13,13 @@ export interface CustomButtonProps {
   bgColor: string
   handlePress: () => void
 }
+
+export interface SignUpCustomerProps {
+  firstName: string
+  lastName: string
+  email: string
+  phoneNumber: string
+  pickUpAddress: string
+  password: string
+  confirmPassword: string
+}

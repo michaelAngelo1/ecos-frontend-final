@@ -3,7 +3,7 @@ import React from 'react'
 import { styles } from '../config/Fonts'
 import { Stack } from 'expo-router'
 
-const AuthLayout = () => {
+const OrderLayout = () => {
   return (
     <>
       <Stack>
@@ -18,4 +18,4 @@ const AuthLayout = () => {
   )
 }
 
-export default AuthLayout
+export default OrderLayout

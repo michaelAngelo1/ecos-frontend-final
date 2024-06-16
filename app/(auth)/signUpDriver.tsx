@@ -28,7 +28,7 @@ const SignUpDriver = () => {
             <View className="w-[182px] space-y-2">
               <View className='h-14 bg-white rounded-lg'>
                 <TextInput
-                  className="flex-1 p-4 text-green text-sm opacity-60"
+                  className="flex-1 p-4 text-green text-base opacity-80"
                   style={styles.montserratRegular}
                   value={form.firstName}
                   placeholder="First name"
@@ -42,7 +42,7 @@ const SignUpDriver = () => {
             <View className="w-1/2 space-y-2">
               <View className='h-14 bg-white px-4 rounded-lg'>
                 <TextInput
-                  className="flex-1 text-green text-sm opacity-60"
+                  className="flex-1 text-green text-base opacity-80"
                   style={styles.montserratRegular}
                   value={form.lastName}
                   placeholder="Last name"

@@ -19,7 +19,7 @@ const FormField = ({ title, value, handleChangeText, otherStyles, ...props } : F
 
       <View className='w-full h-14 bg-white px-4 rounded-lg'>
         <TextInput
-          className="flex-1 text-green text-sm opacity-60"
+          className="flex-1 text-green text-base opacity-80"
           style={styles.montserratRegular}
           value={value}
           placeholder={title}

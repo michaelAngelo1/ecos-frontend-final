@@ -15,26 +15,7 @@ const VerifCustomer = () => {
     setOTP(text);
   };
 
-   // FIREBASE OTP PHONE NUMBER SIGNIN
-  //  const [confirm, setConfirm] = useState(null);
-  //  const [code, setCode] = useState("");
-   
-  //  function onAuthStateChanged(user: any) {
-  //   if(user) {
-  //     <Text>{user} has logged in successfully</Text>
-  //   }
-  //  }
-
-  //  useEffect(() => {
-  //   const subscriber = Auth.onAuthStateChanged(onAuthStateChanged);
-  //   return subscriber; // unsubscribe on unmount
-  // }, []);
-
-  // // Handle the button press
-  // async function signInWithPhoneNumber(phoneNumber: string) {
-  //   const confirmation = await auth().signInWithPhoneNumber(phoneNumber);
-  //   setConfirm(confirmation);
-  // }
+  
   return (
     <SafeAreaView className='bg-[#fff] h-full'>
       <ScrollView>

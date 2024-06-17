@@ -5,7 +5,7 @@ import { styles } from './../config/Fonts'
 import FormField from '@/components/FormField'
 import CustomButton from '@/components/CustomButton'
 import { Link, router } from 'expo-router'
-import { signInWithEmailAndPassword } from 'firebase/auth'
+import { multiFactor, signInWithEmailAndPassword } from 'firebase/auth'
 import { auth } from '../../firebase/firebaseConfig.js'
 import Snackbar from '@/components/Snackbar'
 
@@ -29,8 +29,10 @@ const SignIn: React.FC<SignInProps> = () => {
   const handleSignIn = async (email: string, password: string) => {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      
       console.log("successful sign in");
-      router.push('/home');
+      console.log(userCredential.user);
+      router.push('/verifCustomer');
     } catch (error) {
       console.log('ERROR SIGN IN', error);
       // setShowSnackbar(true); // Show Snackbar on error

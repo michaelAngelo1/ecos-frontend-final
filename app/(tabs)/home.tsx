@@ -7,17 +7,17 @@ import { Link, router } from 'expo-router'
 
 const Home = () => {
   return (
-    <SafeAreaView className='bg-white h-full'>
+    <SafeAreaView className='bg-[#fff] h-full'>
+      <View className='flex-row gap-1 mt-4 ml-5'>
+        <Text className='text-2xl text-black' style={styles.montserratRegular}>Welcome, </Text>
+        <Text className='text-2xl text-black' style={styles.montserratBold}>Angelita</Text>
+      </View>
       <ScrollView>
         <View className='flex flex-col min-h-[100vh] justify-start items-start px-4'>
 
-          <View className='flex-row gap-1 mt-4'>
-            <Text className='text-2xl text-black' style={styles.montserratRegular}>Welcome, </Text>
-            <Text className='text-2xl text-black' style={styles.montserratSemiBold}>Angelita</Text>
-          </View>
           
 
-          <View className='relative mt-10 w-full h-32 bg-[#fff] rounded-2xl border-1 border-slate-600 shadow-sm'>
+          <View className='relative mt-10 w-full h-32 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm'>
             <View className='absolute top-4 left-4 w-14 h-14 bg-green rounded-full'></View>
             <Text className='absolute top-0 left-[70px] text-black text-lg p-4' style={styles.montserratSemiBold}>Pak Wahyudi</Text>
             <Text className='absolute top-7 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>+62 818 0313 3100</Text>

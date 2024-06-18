@@ -74,7 +74,7 @@ const SignUpDriver = () => {
             keyboardType='phoneNumber'
           />
           <FormField
-            title="Address"
+            title="Enter your address"
             value={form.pickUpAddress}
             handleChangeText={(e: string) => setForm({ ...form, 
               pickUpAddress: e
@@ -83,7 +83,7 @@ const SignUpDriver = () => {
             keyboardType="pickUpAddress"
           />
           <FormField
-            title="Password"
+            title="Enter your password"
             value={form.password}
             handleChangeText={(e: string) => setForm({ ...form, 
               password: e

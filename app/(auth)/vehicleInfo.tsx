@@ -83,7 +83,7 @@ const VehicleInfo = () => {
             keyboardType="vehicle-model"
           />
           <FormField
-            title="Seat Capacity"
+            title="Seat Capacity (excl. your own children)"
             value={form.seatCapacity}
             handleChangeText={(e: string) => setForm({ ...form, 
               seatCapacity: e

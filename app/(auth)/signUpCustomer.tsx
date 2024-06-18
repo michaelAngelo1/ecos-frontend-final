@@ -95,7 +95,7 @@ const SignUpCustomer = () => {
             keyboardType="pickUpAddress"
           />
           <FormField
-            title="Password"
+            title="Enter your password"
             value={form.password}
             handleChangeText={(e: string) => setForm({ ...form, 
               password: e

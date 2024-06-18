@@ -8,21 +8,75 @@ import { Link, router } from 'expo-router'
 const Home = () => {
   return (
     <SafeAreaView className='bg-[#fff] h-full'>
-      <View className='flex-row gap-1 mt-4 ml-5'>
+      <View className='flex-row gap-1 mt-4 ml-5 mb-4'>
         <Text className='text-2xl text-black' style={styles.montserratRegular}>Welcome, </Text>
         <Text className='text-2xl text-black' style={styles.montserratBold}>Angelita</Text>
       </View>
+      <View className='flex flex-col justify-start items-start px-4'>
+        <Text className='text-black text-sm ml-2' style={styles.montserratRegular}>Your current locations</Text>
+        <View className='flex-row gap-1 mb-2'>
+          <Text className='text-xl'>📍</Text>
+          <Text className='text-xl' style={styles.montserratBold}>Perum Aries Blok VI No. 7</Text>
+        </View>
+
+        <View className='w-96 h-52 bg-white rounded-xl'>
+
+        </View>
+        <View className='flex-row gap-1 mt-2 mb-2'>
+          <Text className='text-xl'>📍</Text>
+          <Text className='text-xl' style={styles.montserratBold}>Binus School Bekasi</Text>
+        </View>
+        <Text className='text-base ml-2 mb-1' style={styles.montserratSemiBold}>Available drivers to choose</Text>
+      </View>
       <ScrollView>
-        <View className='flex flex-col min-h-[100vh] justify-start items-start px-4'>
+        <View className='flex flex-col justify-start items-start px-4'>
 
-          
 
-          <View className='relative mt-10 w-full h-32 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm'>
+          <View className='relative w-full h-32 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm'>
             <View className='absolute top-4 left-4 w-14 h-14 bg-green rounded-full'></View>
             <Text className='absolute top-0 left-[70px] text-black text-lg p-4' style={styles.montserratSemiBold}>Pak Wahyudi</Text>
             <Text className='absolute top-7 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>+62 818 0313 3100</Text>
+            <Text className='absolute top-12 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>4 km away</Text>
+            <Text className='absolute top-[70px] left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>3 persons</Text>
+
 
             <Text className='absolute top-5 right-3 text-black text-base' style={styles.montserratRegular}>Rp 12.000</Text>
+            <TouchableOpacity 
+              className="absolute bottom-3 right-3 bg-green w-[104px] rounded-[20px] mt-3 p-2"
+              activeOpacity={0.7}
+              onPress={() => router.push('/paymentChoice')}
+            >
+              <Text className="text-white text-sm text-center" style={styles.montserratBold}>Order</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View className='relative w-full h-32 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm mt-3'>
+            <View className='absolute top-4 left-4 w-14 h-14 bg-green rounded-full'></View>
+            <Text className='absolute top-0 left-[70px] text-black text-lg p-4' style={styles.montserratSemiBold}>Pak Budi</Text>
+            <Text className='absolute top-7 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>+62 828 0316 2100</Text>
+            <Text className='absolute top-12 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>2 km away</Text>
+            <Text className='absolute top-[70px] left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>3 persons</Text>
+
+
+            <Text className='absolute top-5 right-3 text-black text-base' style={styles.montserratRegular}>Rp 12.000</Text>
+            <TouchableOpacity 
+              className="absolute bottom-3 right-3 bg-green w-[104px] rounded-[20px] mt-3 p-2"
+              activeOpacity={0.7}
+              onPress={() => router.push('/paymentChoice')}
+            >
+              <Text className="text-white text-sm text-center" style={styles.montserratBold}>Order</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View className='relative w-full h-32 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm mt-3'>
+            <View className='absolute top-4 left-4 w-14 h-14 bg-green rounded-full'></View>
+            <Text className='absolute top-0 left-[70px] text-black text-lg p-4' style={styles.montserratSemiBold}>Pak Setyono</Text>
+            <Text className='absolute top-7 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>+62 828 0316 2100</Text>
+            <Text className='absolute top-12 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>3 km away</Text>
+            <Text className='absolute top-[70px] left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>4 persons</Text>
+
+
+            <Text className='absolute top-5 right-3 text-black text-base' style={styles.montserratRegular}>Rp 22.000</Text>
             <TouchableOpacity 
               className="absolute bottom-3 right-3 bg-green w-[104px] rounded-[20px] mt-3 p-2"
               activeOpacity={0.7}

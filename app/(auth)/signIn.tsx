@@ -1,13 +1,13 @@
-import { ScrollView, StyleSheet, Text, View } from 'react-native'
-import React, { useState } from 'react'
+import { ScrollView, Text, View } from 'react-native'
+import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { styles } from './../config/Fonts'
 import FormField from '@/components/FormField'
 import CustomButton from '@/components/CustomButton'
 import { Link, router } from 'expo-router'
-import { multiFactor, signInWithEmailAndPassword } from 'firebase/auth'
-import { auth } from '../../firebase/firebaseConfig.js'
 import Snackbar from '@/components/Snackbar'
+import { authInstance } from '../config/axiosConfig'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 interface SignInProps {
   email: string
@@ -21,25 +21,50 @@ const SignIn: React.FC<SignInProps> = () => {
     password: ''
   });
 
-  const [showSnackbar, setShowSnackbar] = useState(false); // State for Snackbar visibility
-  const [snackbarMessage, setSnackbarMessage] = useState(''); // State for Snackbar message
-
   const [snackbarVisible, setSnackbarVisible] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  useEffect(() => {
+    const checkAuthToken = async () => {
+      try {
+        const token = await AsyncStorage.getItem('userToken');
+        if (token) {
+          setIsAuthenticated(true);
+          router.push('/verifCustomer'); // Redirect to protected route
+        }
+      } catch (error) {
+        console.error('Error checking stored token:', error);
+      }
+    };
+    checkAuthToken();
+  }, []);
 
-  const handleSignIn = async (email: string, password: string) => {
+  const handleSignIn = async ({ email, password }: SignInProps) => {
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      
-      console.log("successful sign in");
-      console.log(userCredential.user);
+      const response = await authInstance.post('', {
+        email,
+        password,
+      });
+      storeJWT(response.data["access_token"]);
+      console.log(response.data["access_token"]);
+      setIsAuthenticated(true);
       router.push('/verifCustomer');
-    } catch (error) {
-      console.log('ERROR SIGN IN', error);
-      // setShowSnackbar(true); // Show Snackbar on error
-      // setSnackbarMessage('Sign in failed. Please check your email and password.');
+    } catch (error: any) {
+      console.log('ERROR SIGN IN', error.response.data);
+      // Show Snackbar on error (assuming you have the implementation)
       setSnackbarVisible(true);
     }
   };
+
+  const storeJWT = async (token: string) => {
+    try {
+      const jsonToken = JSON.stringify(token)
+      await AsyncStorage.setItem('userToken', jsonToken)
+      console.log("Successful store JWT");
+    } catch (e) {
+      console.log("Failed to store JWT: ", e)
+    }
+  };
+
 
   return (
     <SafeAreaView className='bg-[#fff] h-full'>
@@ -70,7 +95,10 @@ const SignIn: React.FC<SignInProps> = () => {
             bgColor='bg-green'
             textColor='text-white'
             handlePress={() => {
-              handleSignIn(form.email, form.password);
+              handleSignIn({
+                email:form.email, 
+                password:form.password
+              });
             }}
           />
           <View className='justify-center pt-2 flex-row gap-2'>

@@ -21,5 +21,5 @@ export interface SignUpCustomerProps {
   phoneNumber: string
   pickUpAddress: string
   password: string
-  confirmPassword: string
+  grade: string
 }

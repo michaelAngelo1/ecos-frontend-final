@@ -69,7 +69,9 @@ const AddProfPic = () => {
             actionText="Upload"
             bgColor='bg-green'
             textColor='text-white'
-            handlePress={() => router.push('/home')}
+            handlePress={() => 
+              router.push('/home')
+            }
           />
           <CustomButton
             actionText="Skip for now"

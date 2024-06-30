@@ -93,7 +93,7 @@ const VehicleInfo = () => {
           />
           <FormField
             title="Number Plate"
-            value={form.seatCapacity}
+            value={form.numberPlate}
             handleChangeText={(e: string) => setForm({ ...form, 
               numberPlate: e
             })}

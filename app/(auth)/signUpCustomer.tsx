@@ -8,6 +8,8 @@ import { Link, router } from 'expo-router'
 import { SignUpCustomerProps } from '../config/Interface'
 import { createUserWithEmailAndPassword } from 'firebase/auth'
 import { auth } from '@/firebase/firebaseConfig'
+import { authInstance } from '../config/axiosConfig'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const SignUpCustomer = () => {
 
@@ -18,15 +20,39 @@ const SignUpCustomer = () => {
     phoneNumber: '',
     pickUpAddress: '',
     password: '',
-    confirmPassword: ''
+    grade: '',
   });
 
-  const handleSignUpCustomer = async ({firstName, lastName, email, phoneNumber, pickUpAddress, password, confirmPassword} : SignUpCustomerProps) => {
+  
+  const handleSignUpCustomer = async ({firstName, lastName, email, phoneNumber, pickUpAddress, grade, password} : SignUpCustomerProps) => {
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      let gradeInt = parseInt(grade);
+      console.log(firstName + " " + lastName)
+      console.log(email)
+      console.log(phoneNumber)
+      const response = await authInstance.patch('', {
+        name: firstName + lastName,
+        email: email,
+        phone: phoneNumber,
+        street: pickUpAddress,
+        password: password,
+        grade: gradeInt
+      });
+      storeJWT(response.data["access_token"]);
+      console.log(response.data["access_token"]);
       router.push('/verifCustomer');
     } catch (error) {
-      console.log('error creating account', error);
+      console.log(error);
+    }
+  };
+  
+  const storeJWT = async (token: string) => {
+    try {
+      const jsonToken = JSON.stringify(token)
+      await AsyncStorage.setItem('userToken', jsonToken)
+      console.log("Successful store JWT");
+    } catch (e) {
+      console.log("Failed to store JWT: ", e)
     }
   };
 
@@ -104,19 +130,28 @@ const SignUpCustomer = () => {
             keyboardType='password'
           />
           <FormField
-            title="Confirm password"
-            value={form.confirmPassword}
+            title="Enter your grade"
+            value={form.grade}
             handleChangeText={(e: string) => setForm({ ...form, 
-              confirmPassword: e
+              grade: e
             })}
             otherStyles="mt-3"
-            keyboardType='confirmPassword'
+            keyboardType='grade'
           />
           <CustomButton
             actionText="Sign up"
             bgColor='bg-green'
             textColor='text-white'
-            handlePress={() => router.push('/verifCustomer')}
+            handlePress={() => {
+              handleSignUpCustomer({
+                firstName: form.firstName, 
+                lastName: form.lastName, 
+                email: form.email, 
+                phoneNumber: form.phoneNumber, 
+                pickUpAddress: form.pickUpAddress, 
+                grade: form.grade, 
+                password: form.password})
+            }}
           />
 
           <View className='justify-center pt-2 flex-row gap-2'>

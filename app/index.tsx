@@ -1,10 +1,12 @@
-import { ScrollView, StatusBar, Text, TouchableOpacity, View } from 'react-native'
+import { ScrollView, StatusBar, Text, View } from 'react-native'
 import React from 'react'
-import { Link } from 'expo-router'
+// import { Link } from 'expo-router'
 import { styles } from './config/Fonts'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { Redirect, router } from 'expo-router';
+import { router } from 'expo-router';
 import CustomButton from '@/components/CustomButton'
+// import { Provider } from 'react-redux'
+// import store from './redux/store'
 
 const HomePage = () => {
   return (

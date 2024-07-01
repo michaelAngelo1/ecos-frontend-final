@@ -2,6 +2,7 @@ import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-nati
 import React from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { styles } from '../config/Fonts'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const Chats = () => {
 

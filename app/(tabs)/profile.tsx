@@ -1,23 +1,55 @@
 import { ScrollView, StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { styles } from '../config/Fonts'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import axios from 'axios'
 
 const Profile = () => {
 
-  const getToken = async () => {
+  const [userToken, setUserToken] = useState('');
+  const [userData, setUserData] = useState(null);
+
+  const getUserToken = async () => {
     try {
       const userToken = await AsyncStorage.getItem("userToken")
       if (userToken !== null) {
-        console.log("User token read: ", userToken);
-        return userToken;
+        console.log("User Token read: ", userToken);
+        setUserToken(userToken);
       }
     } catch (e) {
       console.log("Error reading JWT", e);
     }
   } 
 
+  const getUserData = async () => {
+    try {
+      console.log('user token on getuserdata: ', userToken);
+      const response = await axios.get('http://ecos.joheee.com:4040/user-detail', {
+        headers: {
+          'accept': '*/*',
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${userToken}`,
+        }
+      });
+      setUserData(response.data);
+      console.log("USER DETAIL DATA: ", response.data);
+    } catch (e) { 
+      console.log('error get user data: ', e);
+    }
+  }
+
+  useEffect(() => {
+    getUserToken();
+  }, []);
+
+  useEffect(() => {
+    if (userToken) {
+      console.log('user token exists');
+      getUserData();
+    }
+  }, [userToken]);
+  
   /* 
     TODO:
     1. Get token stored on AsyncStorage

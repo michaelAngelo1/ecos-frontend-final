@@ -12,7 +12,8 @@ export const userDetailInstance = axios.create({
   baseURL: 'http://ecos.joheee.com/user-detail',
   headers: {
     'accept': '*/*',
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer ${accessToken}',
   }
 })
 

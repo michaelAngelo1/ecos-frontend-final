@@ -161,7 +161,7 @@ const Home = () => {
           </ScrollView>
           <View className='flex flex-col justify-start items-start px-4'>
             <Text className='text-xl ml-2 mb-1' style={styles.montserratSemiBold}>Choose who to pick up first</Text>
-            Logic prioritize pick-up:
+            {/* Logic prioritize pick-up:
             1. Pressable component: 'Prioritize Pick-up' triggers Pop-up
             2. Pop-up shows a PRESSABLE list of passengers with its corresponding address: Max Quok - address, Steven Halim - address,  Aditya David - address
             3. Passenger is FIRST pressed -> change bgcolor to blue and add '1' in front of the name
@@ -169,7 +169,7 @@ const Home = () => {
             5. So on and so forth
             6. 'Clear config' and 'Save config' options
             7. 'Clear config' clears all state and returns the bgcolor of all list to white
-            8. 'Save config' saves all state and THIS CAN be seen by EACH PASSENGER
+            8. 'Save config' saves all state and THIS CAN be seen by EACH PASSENGER */}
           </View>
         </>
       }

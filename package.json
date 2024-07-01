@@ -19,6 +19,7 @@
     "@react-native-async-storage/async-storage": "^1.23.1",
     "@react-native-firebase/app": "^20.1.0",
     "@react-navigation/native": "^6.0.2",
+    "@reduxjs/toolkit": "^2.2.6",
     "@rneui/base": "^4.0.0-rc.7",
     "@rneui/themed": "^4.0.0-rc.8",
     "axios": "^1.7.2",
@@ -47,7 +48,8 @@
     "react-native-screens": "3.31.1",
     "react-native-select-dropdown": "^4.0.1",
     "react-native-snackbar": "^2.6.2",
-    "react-native-web": "~0.19.10"
+    "react-native-web": "~0.19.10",
+    "react-redux": "^9.1.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

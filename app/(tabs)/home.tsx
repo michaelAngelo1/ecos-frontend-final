@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { styles } from '../config/Fonts'
@@ -170,6 +170,13 @@ const Home = () => {
             6. 'Clear config' and 'Save config' options
             7. 'Clear config' clears all state and returns the bgcolor of all list to white
             8. 'Save config' saves all state and THIS CAN be seen by EACH PASSENGER */}
+            <TouchableOpacity 
+              className="bg-green w-full h-12 mt-3 p-2"
+              activeOpacity={0.7}
+              onPress={() => router.push('/paymentChoice')}
+            >
+              <Text className="text-white text-sm text-center" style={styles.montserratBold}>Click to prioritize </Text>
+            </TouchableOpacity>
           </View>
         </>
       }

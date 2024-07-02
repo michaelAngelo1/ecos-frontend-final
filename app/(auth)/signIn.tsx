@@ -8,11 +8,7 @@ import { Link, router } from 'expo-router'
 import Snackbar from '@/components/Snackbar'
 import { authInstance } from '../config/axiosConfig'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-
-interface SignInProps {
-  email: string
-  password: string
-}
+import { SignInProps } from '../config/Interface'
 
 const SignIn: React.FC<SignInProps> = () => {
 
@@ -57,8 +53,7 @@ const SignIn: React.FC<SignInProps> = () => {
 
   const storeJWT = async (token: string) => {
     try {
-      const jsonToken = JSON.stringify(token)
-      await AsyncStorage.setItem('userToken', jsonToken)
+      await AsyncStorage.setItem('userToken', token)
       console.log("Successful store JWT");
     } catch (e) {
       console.log("Failed to store JWT: ", e)

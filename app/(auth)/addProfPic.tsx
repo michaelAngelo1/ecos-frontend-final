@@ -4,11 +4,26 @@ import CustomButton from '@/components/CustomButton'
 import { styles } from '../config/Fonts'
 import { router } from 'expo-router'
 import * as ImagePicker from 'expo-image-picker'
+import { userDetailInstance, userImageInstance } from '../config/axiosConfig'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const AddProfPic = () => {
 
   const [image, setImage] = useState('');
+  const [imageFile, setImageFile] = useState<ImagePicker.ImagePickerAsset | null>(null)
 
+  const getToken = async () => {
+    try {
+      const userToken = await AsyncStorage.getItem("userToken")
+      if (userToken !== null) {
+        console.log("User token read: ", userToken);
+        return userToken;
+      }
+    } catch (e) {
+      console.log("Error reading JWT", e);
+    }
+  }
+  
   useEffect(() => {
     (async () => {
       if (Platform.OS !== 'web') {
@@ -33,12 +48,27 @@ const AddProfPic = () => {
       quality: 1,
     });
 
-    console.log(result.assets);
-
+    console.log(result.assets![0]);
     if(!result.canceled) {
+      setImageFile(result.assets[0])
       setImage(result.assets[0].uri)
     }
   };
+
+  const uploadImage = async () => {
+    try {
+      let userToken = await getToken();
+      const response = await userImageInstance(userToken!).patch('', {
+        profile_image_file: imageFile,
+      }).then(() => {
+        console.log('Success', response);
+        router.push('/home');
+      });
+
+    } catch (e) {
+      console.log(e.response);
+    }
+  }
 
   return (
     <SafeAreaView className='bg-[#fff] h-full'>
@@ -70,7 +100,7 @@ const AddProfPic = () => {
             bgColor='bg-green'
             textColor='text-white'
             handlePress={() => 
-              router.push('/home')
+              uploadImage()
             }
           />
           <CustomButton

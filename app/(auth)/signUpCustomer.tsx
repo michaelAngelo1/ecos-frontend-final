@@ -5,11 +5,12 @@ import { styles } from './../config/Fonts'
 import FormField from '@/components/FormField'
 import CustomButton from '@/components/CustomButton'
 import { Link, router } from 'expo-router'
-import { SignUpCustomerProps } from '../config/Interface'
+import { SignInProps, SignUpCustomerProps } from '../config/Interface'
 import { createUserWithEmailAndPassword } from 'firebase/auth'
 import { auth } from '@/firebase/firebaseConfig'
-import { authInstance } from '../config/axiosConfig'
+import { authInstance, userDetailInstance } from '../config/axiosConfig'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import axios from 'axios'
 
 const SignUpCustomer = () => {
 
@@ -23,13 +24,11 @@ const SignUpCustomer = () => {
     grade: '',
   });
 
-  
+  let role = 'CUSTOMER'
+  const [signUpToken, setSignUpToken] = useState('');
   const handleSignUpCustomer = async ({firstName, lastName, email, phoneNumber, pickUpAddress, grade, password} : SignUpCustomerProps) => {
     try {
       let gradeInt = parseInt(grade);
-      console.log(firstName + " " + lastName)
-      console.log(email)
-      console.log(phoneNumber)
       const response = await authInstance.patch('', {
         name: firstName + lastName,
         email: email,
@@ -37,24 +36,72 @@ const SignUpCustomer = () => {
         street: pickUpAddress,
         password: password,
         grade: gradeInt
+      }).then((res) => {
+        handleUpdateRole().then(() => {
+          getUpdatedToken(email).then((token) => {
+            storeJWT(token).then(() => {
+              router.push('/addProfPic')
+            })
+          });
+        });
+
       });
-      storeJWT(response.data["access_token"]);
-      console.log(response.data["access_token"]);
-      router.push('/verifCustomer');
     } catch (error) {
-      console.log(error);
+      if (axios.isAxiosError(error)) {
+        console.error('Axios error:', error.message);
+        if (error.response) {
+          // Server responded with a status other than 200 range
+          console.error('Response data:', error.response.data);
+          console.error('Response status:', error.response.status);
+          console.error('Response headers:', error.response.headers);
+        } else if (error.request) {
+          // Request was made but no response was received
+          console.error('Request data:', error.request);
+        } else {
+          // Something happened in setting up the request
+          console.error('Error message:', error.message);
+        }
+      }
     }
   };
+
+  const handleUpdateRole = async () => {
+    try {
+      console.log('sign up token: ', signUpToken);
+      const response = await userDetailInstance(signUpToken).patch('', {
+        role: role,
+      });
+      console.log("update role response: ", response.data.response.email); 
+      let email = response.data.response.email;
+      
+    } catch (e) {
+      console.log('error update role: ', e.response)
+    }
+  };
+
+  const getUpdatedToken = async (email: string) => {
+    try {
+      console.log(email);
+      console.log(form.password);
+      const response = await authInstance.post('', {
+        email: email,
+        password: form.password
+      });
+      return response.data['access_token']
+    } catch (e) {
+      console.log('error getting update token: ', e.response);
+    }
+  }
   
   const storeJWT = async (token: string) => {
     try {
-      const jsonToken = JSON.stringify(token)
-      await AsyncStorage.setItem('userToken', jsonToken)
+      await AsyncStorage.setItem('userToken', token)
       console.log("Successful store JWT");
     } catch (e) {
       console.log("Failed to store JWT: ", e)
     }
   };
+  
 
   return (
     <SafeAreaView className='bg-[#fff] h-full'>
@@ -139,7 +186,7 @@ const SignUpCustomer = () => {
             keyboardType='grade'
           />
           <CustomButton
-            actionText="Sign up"
+            actionText="Next up"
             bgColor='bg-green'
             textColor='text-white'
             handlePress={() => {
@@ -150,8 +197,10 @@ const SignUpCustomer = () => {
                 phoneNumber: form.phoneNumber, 
                 pickUpAddress: form.pickUpAddress, 
                 grade: form.grade, 
-                password: form.password})
-            }}
+                password: form.password
+              });
+            }
+          }
           />
 
           <View className='justify-center pt-2 flex-row gap-2'>

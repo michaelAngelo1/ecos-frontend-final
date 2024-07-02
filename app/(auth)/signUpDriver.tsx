@@ -18,6 +18,8 @@ const SignUpDriver = () => {
     confirmPassword: ''
   })
 
+  let role = 'Partner';
+
   return (
     <SafeAreaView className='bg-[#fff] h-full'>
       <ScrollView>

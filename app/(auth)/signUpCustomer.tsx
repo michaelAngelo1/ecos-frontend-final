@@ -40,7 +40,7 @@ const SignUpCustomer = () => {
         handleUpdateRole().then(() => {
           getUpdatedToken(email).then((token) => {
             storeJWT(token).then(() => {
-              router.push('/addProfPic')
+              router.push('/addProfPic');
             })
           });
         });

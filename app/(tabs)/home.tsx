@@ -7,6 +7,7 @@ import { Link, router } from 'expo-router'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { jwtDecode } from "jwt-decode";
 import Dropdown from '@/components/Dropdown'
+import { adminApprovalInstance, userDetailInstance } from '../config/axiosConfig'
 
 const Home = () => {
 
@@ -33,16 +34,57 @@ const Home = () => {
   */
   
   // dummy state role variable, replace LATER
-  let role = 'Partner'; // Partner or Passenger
+  const [email, setEmail] = useState('');
+  const [role, setRole] = useState('');
+
+  const getUserData = async () => {
+    try {
+      let userToken = await getToken();
+      const response = await userDetailInstance(userToken!).get('', );
+      setRole(response.data.response.role);
+      setEmail(response.data.response.email);
+      console.log('response',response.data.response.role);
+    } catch (e) {
+      console.log("error get user data: ", e);
+    }
+  }
+  
+  const [users, setUsers] = useState([{
+    email: '',
+    userDetail: {
+      is_admin_approved: false,
+    }
+  }]);
+  const getAllUsers = async () => {
+    try {
+      let userToken = await getToken();
+      const response = await adminApprovalInstance(userToken!).get('', );
+      let users = response.data.response;
+      console.log('TYPE USERS', typeof users);
+      users.forEach((user: { email: any }) => {
+        console.log(user.email);
+      })
+      setUsers(users);
+      // console.log(users);
+    } catch (e) {
+      console.log('error fetch all users', e);
+    }
+  }
+
+  useEffect(() => {
+    getUserData();
+    getAllUsers();
+  }, [])
+  
 
   return (
     <SafeAreaView className='bg-[#fff] h-full'>
       {
-        role == 'Passenger' ? 
+        role == 'CUSTOMER' ? 
         <>
           <View className='flex-row gap-1 mt-4 ml-5 mb-4'>
             <Text className='text-2xl text-black' style={styles.montserratRegular}>Welcome, </Text>
-            <Text className='text-2xl text-black' style={styles.montserratBold}>Angelita</Text>
+            <Text className='text-2xl text-black' style={styles.montserratBold}>{email.split('@')[0]}</Text>
           </View>
           <View className='flex flex-col justify-start items-start px-4'>
             <Text className='text-black text-sm ml-2' style={styles.montserratRegular}>Your current locations</Text>
@@ -122,11 +164,11 @@ const Home = () => {
             </View>
           </ScrollView>
         </>
-        :
+        : role == 'DRIVER' ?
         <>
           <View className='flex-row gap-1 mt-4 ml-5 mb-4'>
             <Text className='text-2xl text-black' style={styles.montserratRegular}>Welcome, </Text>
-            <Text className='text-2xl text-black' style={styles.montserratBold}>Sutanto</Text>
+            <Text className='text-2xl text-black' style={styles.montserratBold}>{email.split('@')[0]}</Text>
           </View>
           <View className='flex flex-col justify-start items-start px-4'>
             <Text className='text-xl ml-2 mb-1' style={styles.montserratSemiBold}>Your passengers this month</Text>
@@ -177,6 +219,52 @@ const Home = () => {
             >
               <Text className="text-white text-sm text-center" style={styles.montserratBold}>Click to prioritize </Text>
             </TouchableOpacity>
+          </View>
+        </>
+        : 
+        <>
+          <View className='flex-row gap-1 mt-4 ml-5 mb-4'>
+            <Text className='text-2xl text-black' style={styles.montserratRegular}>Welcome, </Text>
+            <Text className='text-2xl text-black' style={styles.montserratBold}>{email.split('@')[0]}</Text>
+          </View>
+          <View className='flex flex-col justify-start items-start px-4'>
+            <Text className='text-xl ml-2 mb-1' style={styles.montserratSemiBold}>All unverified users</Text>
+          </View>
+          <ScrollView className='max-h-[365px] overflow-auto'>
+            <View className='flex flex-col justify-start items-start px-4'>
+
+              {
+                users.map((user, index) => (
+                  <View key={index} className='relative w-full h-28 bg-[#fff] rounded-2xl border border-1 gray-200 shadow-sm mt-3'>
+                    <View className='absolute top-4 left-4 w-14 h-14 bg-green rounded-full'></View>
+                    <Text className='absolute top-0 left-[70px] text-black text-lg p-4' style={styles.montserratSemiBold}>{user.email}</Text>
+                    <Text className='absolute top-7 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>Unverified</Text>
+                    <Text className='absolute top-12 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>Jl. Meruya No. 7 Jakarta Barat</Text>
+                  </View>
+
+                ))
+              }
+
+              {/* <View className='relative w-full h-28 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm mt-3'>
+                <View className='absolute top-4 left-4 w-14 h-14 bg-green rounded-full'></View>
+                <Text className='absolute top-0 left-[70px] text-black text-lg p-4' style={styles.montserratSemiBold}>Steven Halim</Text>
+                <Text className='absolute top-7 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>+62 828 0316 2100</Text>
+                <Text className='absolute top-12 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>Jl. Meruya No. 7 Jakarta Barat</Text>
+              </View>
+
+              <View className='relative w-full h-28 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm mt-3'>
+                <View className='absolute top-4 left-4 w-14 h-14 bg-green rounded-full'></View>
+                <Text className='absolute top-0 left-[70px] text-black text-lg p-4' style={styles.montserratSemiBold}>Aditya David</Text>
+                <Text className='absolute top-7 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>+62 828 0316 2100</Text>
+                <Text className='absolute top-12 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>Jl. Meruya No. 7 Jakarta Barat</Text>
+              </View> */}
+
+              
+            </View>
+          </ScrollView>
+          <View className='flex flex-col justify-start items-start px-4'>
+            <Text className='text-xl ml-2 mb-1' style={styles.montserratSemiBold}>Verified users</Text>
+           
           </View>
         </>
       }

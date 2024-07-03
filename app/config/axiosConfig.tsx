@@ -26,3 +26,12 @@ export const userImageInstance = (token:string) => axios.create({
     'Authorization': `Bearer ${token}`,
   }
 })
+
+export const adminApprovalInstance = (token:string) => axios.create({
+  baseURL: 'http://ecos.joheee.com:4040/admin-approval',
+  headers: {
+    'accept': '*/*',
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`,
+  }
+})

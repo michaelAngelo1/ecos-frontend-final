@@ -6,7 +6,7 @@ import FormField from '@/components/FormField'
 import CustomButton from '@/components/CustomButton'
 import { Link, router } from 'expo-router'
 import Snackbar from '@/components/Snackbar'
-import { authInstance } from '../config/axiosConfig'
+import { authInstance, userDetailInstance } from '../config/axiosConfig'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { SignInProps } from '../config/Interface'
 
@@ -25,7 +25,7 @@ const SignIn: React.FC<SignInProps> = () => {
         const token = await AsyncStorage.getItem('userToken');
         if (token) {
           setIsAuthenticated(true);
-          router.push('/verifCustomer'); // Redirect to protected route
+          router.push('/home'); // Redirect to protected route
         }
       } catch (error) {
         console.error('Error checking stored token:', error);
@@ -43,13 +43,37 @@ const SignIn: React.FC<SignInProps> = () => {
       storeJWT(response.data["access_token"]);
       console.log(response.data["access_token"]);
       setIsAuthenticated(true);
-      router.push('/verifCustomer');
+      router.push('/home');
     } catch (error: any) {
       console.log('ERROR SIGN IN', error.response.data);
       // Show Snackbar on error (assuming you have the implementation)
       setSnackbarVisible(true);
     }
   };
+
+  const handleAdminSignIn = async (email: string, password: string, role: string) => {
+    try {
+      const response = await authInstance.post('', {
+        email, 
+        password
+      }).then(async (res) => {
+        let adminToken = res.data['access_token'];
+        const response = await userDetailInstance(adminToken).patch('', {
+          role: role,
+        }).then(async () => {
+          const response = await authInstance.post('', {
+            email,
+            password,
+          });
+          console.log(response.data['access_token']);
+          storeJWT(response.data['access_token']);
+          router.push('/home');
+        });
+      });
+    } catch (e) {
+      console.log('error admin sign in');
+    }
+  }
 
   const storeJWT = async (token: string) => {
     try {
@@ -90,10 +114,15 @@ const SignIn: React.FC<SignInProps> = () => {
             bgColor='bg-green'
             textColor='text-white'
             handlePress={() => {
-              handleSignIn({
-                email:form.email, 
-                password:form.password
-              });
+              if(form.email.includes('admin')) {
+                let role = 'ADMIN';
+                handleAdminSignIn(form.email, form.password, role);
+              } else {
+                handleSignIn({
+                  email:form.email, 
+                  password:form.password
+                });
+              }
             }}
           />
           <View className='justify-center pt-2 flex-row gap-2'>

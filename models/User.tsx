@@ -47,7 +47,7 @@ class UserDetail {
   }
 }
 
-class User {
+export class User {
   email: string;
   password: string;
   role: string;

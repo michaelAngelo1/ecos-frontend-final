@@ -1,14 +1,35 @@
 import { ScrollView, StatusBar, Text, View } from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react'
 // import { Link } from 'expo-router'
 import { styles } from './config/Fonts'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router';
 import CustomButton from '@/components/CustomButton'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 // import { Provider } from 'react-redux'
 // import store from './redux/store'
 
 const HomePage = () => {
+
+  useEffect(() => {
+    // getUserData();
+    // if(role == 'ADMIN') {
+    //   getAllUsers();
+    // }
+    const checkAuthToken = async () => {
+      try {
+        const token = await AsyncStorage.getItem('userToken');
+        if (token) {
+          // setIsAuthenticated(true);
+          router.replace('/home'); // Redirect to protected route
+        }
+      } catch (error) {
+        console.error('Error checking stored token:', error);
+      }
+    };
+    checkAuthToken();
+  }, []);
+
   return (
     <SafeAreaView className='bg-green h-full'>
       <ScrollView contentContainerStyle={{ height: '100%', flex: 1}}>
@@ -21,7 +42,7 @@ const HomePage = () => {
             actionText="Discover more"
             textColor="text-green"
             bgColor='bg-white'
-            handlePress={() => router.push('/signIn')}
+            handlePress={() => router.replace('/signIn')}
           />
         </View>
       </ScrollView>

@@ -1,8 +1,9 @@
 import { Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { styles } from '../config/Fonts'
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { userDetailInstance } from '../config/axiosConfig';
 
 class OrderHistory {
   driverName: string;
@@ -32,6 +33,27 @@ const Orders = () => {
     }
   } 
 
+  // const [email, setEmail] = useState('');
+  const [role, setRole] = useState('');
+
+  const getUserData = async () => {
+    try {
+      let userToken = await getToken();
+      const response = await userDetailInstance(userToken!).get('', );
+      setRole(response.data.response.role);
+      console.log(response.data.response.role);
+      // setEmail(response.data.response.email);
+      console.log('response',response.data.response.role);
+    } catch (e) {
+      console.log("error get user data: ", e);
+    }
+  }
+
+  useEffect(() => {
+    getUserData();
+  }, [])
+  
+
   /* 
     TODO:
     1. Get token stored on AsyncStorage
@@ -43,7 +65,7 @@ const Orders = () => {
   */
   
   // dummy state role variable, replace LATER
-  let role = 'Passenger'; // Partner or Passenger
+  // let role = 'Passenger'; // Partner or Passenger
 
   const [orderCategory, setOrderCategory] = useState('History');
   let orderCategories: string[] = ['History', 'Ongoing'];
@@ -59,7 +81,7 @@ const Orders = () => {
   return (
     <SafeAreaView className='bg-[#fff] h-full'>
       {
-        role == 'Passenger' ?
+        role == 'CUSTOMER' ?
         <>
           <Text className='text-2xl text-black mt-4 ml-5' style={styles.montserratBold}>Orders</Text>
           <View className='flex-row gap-2 ml-2 mt-4'>
@@ -80,7 +102,6 @@ const Orders = () => {
           </View>
           <ScrollView>
             <View className='flex flex-col justify-start items-start px-4'>
-
               
               { 
                   orders.filter((e) => {
@@ -121,9 +142,13 @@ const Orders = () => {
             </View>
           </ScrollView>
         </>
-        :
+        : role == 'DRIVER' ?
         <>
           <Text>Partner Orderpage</Text>
+        </>
+        :
+        <>
+          <Text>Admin orderpage</Text>
         </>
       }
     </SafeAreaView>    

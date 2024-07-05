@@ -25,7 +25,7 @@ const SignIn: React.FC<SignInProps> = () => {
         const token = await AsyncStorage.getItem('userToken');
         if (token) {
           setIsAuthenticated(true);
-          router.push('/home'); // Redirect to protected route
+          router.replace('/home'); // Redirect to protected route
         }
       } catch (error) {
         console.error('Error checking stored token:', error);
@@ -43,7 +43,7 @@ const SignIn: React.FC<SignInProps> = () => {
       storeJWT(response.data["access_token"]);
       console.log(response.data["access_token"]);
       setIsAuthenticated(true);
-      router.push('/home');
+      router.replace('/home');
     } catch (error: any) {
       console.log('ERROR SIGN IN', error.response.data);
       // Show Snackbar on error (assuming you have the implementation)
@@ -67,7 +67,7 @@ const SignIn: React.FC<SignInProps> = () => {
           });
           console.log(response.data['access_token']);
           storeJWT(response.data['access_token']);
-          router.push('/home');
+          router.replace('/home');
         });
       });
     } catch (e) {

@@ -107,7 +107,7 @@ const AddProfPic = () => {
             actionText="Skip for now"
             bgColor='bg-white'
             textColor='text-green'
-            handlePress={() => router.push('/home')}
+            handlePress={() => router.replace('/home')}
           />
           
         </View>

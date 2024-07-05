@@ -8,6 +8,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { jwtDecode } from "jwt-decode";
 import Dropdown from '@/components/Dropdown'
 import { adminApprovalInstance, userDetailInstance } from '../config/axiosConfig'
+import { User } from '@/models/User'
+
 
 const Home = () => {
 
@@ -37,34 +39,34 @@ const Home = () => {
   const [email, setEmail] = useState('');
   const [role, setRole] = useState('');
 
+  const [user, setUser] = useState<User | null>(null);
   const getUserData = async () => {
     try {
       let userToken = await getToken();
       const response = await userDetailInstance(userToken!).get('', );
       setRole(response.data.response.role);
       setEmail(response.data.response.email);
-      console.log('response',response.data.response.role);
+      console.log('USER DATA: ',response.data.response.email);
+      const user = new User(
+        response.data.response.email,
+        response.data.response.password,
+        response.data.response.role,
+        response.data.response.user_detail
+      )
+      setUser(user);
     } catch (e) {
       console.log("error get user data: ", e);
     }
   }
   
-  const [users, setUsers] = useState([{
-    email: '',
-    userDetail: {
-      is_admin_approved: false,
-    }
-  }]);
+  const [allUsers, setAllUsers] = useState<User[]>([]);
   const getAllUsers = async () => {
     try {
+      console.log('masuk get all user');
       let userToken = await getToken();
-      const response = await adminApprovalInstance(userToken!).get('', );
-      let users = response.data.response;
-      console.log('TYPE USERS', typeof users);
-      users.forEach((user: { email: any }) => {
-        console.log(user.email);
-      })
-      setUsers(users);
+      const response = await adminApprovalInstance(userToken!).get('', ).then((res) => {
+        console.log(res.config);
+      });
       // console.log(users);
     } catch (e) {
       console.log('error fetch all users', e);
@@ -73,7 +75,10 @@ const Home = () => {
 
   useEffect(() => {
     getUserData();
-    getAllUsers();
+    if(role == 'ADMIN') {
+      console.log(role);
+      getAllUsers();
+    }
   }, [])
   
 
@@ -84,13 +89,13 @@ const Home = () => {
         <>
           <View className='flex-row gap-1 mt-4 ml-5 mb-4'>
             <Text className='text-2xl text-black' style={styles.montserratRegular}>Welcome, </Text>
-            <Text className='text-2xl text-black' style={styles.montserratBold}>{email.split('@')[0]}</Text>
+            <Text className='text-2xl text-black' style={styles.montserratBold}>{user?.user_detail.name.split(' ')[0]}</Text>
           </View>
           <View className='flex flex-col justify-start items-start px-4'>
             <Text className='text-black text-sm ml-2' style={styles.montserratRegular}>Your current locations</Text>
             <View className='flex-row gap-1 mb-2'>
               <Text className='text-xl'>📍</Text>
-              <Text className='text-xl' style={styles.montserratBold}>Perum Aries Blok VI No. 7</Text>
+              <Text className='text-xl' style={styles.montserratBold}>{user?.user_detail.street}</Text>
             </View>
 
             <View className='w-96 h-52 bg-white rounded-xl'>
@@ -114,7 +119,7 @@ const Home = () => {
                 <Text className='absolute top-[70px] left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>3 persons</Text>
 
 
-                <Text className='absolute top-5 right-3 text-black text-base' style={styles.montserratRegular}>Rp 12.000</Text>
+                <Text className='absolute top-5 right-3 text-black text-base' style={styles.montserratRegular}>Rp 1.200.000</Text>
                 <TouchableOpacity 
                   className="absolute bottom-3 right-3 bg-green w-[104px] rounded-[20px] mt-3 p-2"
                   activeOpacity={0.7}
@@ -132,7 +137,7 @@ const Home = () => {
                 <Text className='absolute top-[70px] left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>3 persons</Text>
 
 
-                <Text className='absolute top-5 right-3 text-black text-base' style={styles.montserratRegular}>Rp 12.000</Text>
+                <Text className='absolute top-5 right-3 text-black text-base' style={styles.montserratRegular}>Rp 1.000.000</Text>
                 <TouchableOpacity 
                   className="absolute bottom-3 right-3 bg-green w-[104px] rounded-[20px] mt-3 p-2"
                   activeOpacity={0.7}
@@ -150,7 +155,7 @@ const Home = () => {
                 <Text className='absolute top-[70px] left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>4 persons</Text>
 
 
-                <Text className='absolute top-5 right-3 text-black text-base' style={styles.montserratRegular}>Rp 22.000</Text>
+                <Text className='absolute top-5 right-3 text-black text-base' style={styles.montserratRegular}>Rp 1.100.000</Text>
                 <TouchableOpacity 
                   className="absolute bottom-3 right-3 bg-green w-[104px] rounded-[20px] mt-3 p-2"
                   activeOpacity={0.7}
@@ -168,7 +173,7 @@ const Home = () => {
         <>
           <View className='flex-row gap-1 mt-4 ml-5 mb-4'>
             <Text className='text-2xl text-black' style={styles.montserratRegular}>Welcome, </Text>
-            <Text className='text-2xl text-black' style={styles.montserratBold}>{email.split('@')[0]}</Text>
+            <Text className='text-2xl text-black' style={styles.montserratBold}>{user?.user_detail.name.split(' ')[0]}</Text>
           </View>
           <View className='flex flex-col justify-start items-start px-4'>
             <Text className='text-xl ml-2 mb-1' style={styles.montserratSemiBold}>Your passengers this month</Text>
@@ -213,11 +218,11 @@ const Home = () => {
             7. 'Clear config' clears all state and returns the bgcolor of all list to white
             8. 'Save config' saves all state and THIS CAN be seen by EACH PASSENGER */}
             <TouchableOpacity 
-              className="bg-green w-full h-12 mt-3 p-2"
+              className="bg-[#fff] border-2 border-green w-full h-12 mt-3 p-2 items-center justify-center"
               activeOpacity={0.7}
               onPress={() => router.push('/paymentChoice')}
             >
-              <Text className="text-white text-sm text-center" style={styles.montserratBold}>Click to prioritize </Text>
+              <Text className="text-green text-sm text-center" style={styles.montserratBold}>Click to prioritize </Text>
             </TouchableOpacity>
           </View>
         </>
@@ -225,7 +230,7 @@ const Home = () => {
         <>
           <View className='flex-row gap-1 mt-4 ml-5 mb-4'>
             <Text className='text-2xl text-black' style={styles.montserratRegular}>Welcome, </Text>
-            <Text className='text-2xl text-black' style={styles.montserratBold}>{email.split('@')[0]}</Text>
+            <Text className='text-2xl text-black' style={styles.montserratBold}>{user?.user_detail.name.split(' ')[0]}</Text>
           </View>
           <View className='flex flex-col justify-start items-start px-4'>
             <Text className='text-xl ml-2 mb-1' style={styles.montserratSemiBold}>All unverified users</Text>
@@ -234,12 +239,19 @@ const Home = () => {
             <View className='flex flex-col justify-start items-start px-4'>
 
               {
-                users.map((user, index) => (
-                  <View key={index} className='relative w-full h-28 bg-[#fff] rounded-2xl border border-1 gray-200 shadow-sm mt-3'>
+                allUsers.map((user, index) => (
+                  <View key={index} className='relative w-full h-28 bg-[#fff] rounded-2xl border border-1 border-gray-200 shadow-sm mt-3'>
                     <View className='absolute top-4 left-4 w-14 h-14 bg-green rounded-full'></View>
                     <Text className='absolute top-0 left-[70px] text-black text-lg p-4' style={styles.montserratSemiBold}>{user.email}</Text>
-                    <Text className='absolute top-7 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>Unverified</Text>
-                    <Text className='absolute top-12 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>Jl. Meruya No. 7 Jakarta Barat</Text>
+                    {/* <Text className='absolute top-7 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}></Text> */}
+                    <Text className='absolute top-7 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>Jl. Meruya No. 7 Jakarta Barat</Text>
+                    <TouchableOpacity 
+                      className="absolute bottom-2 right-3 bg-green w-[104px] rounded-[20px] mt-3 p-2"
+                      activeOpacity={0.7}
+                      onPress={() => router.push('/paymentChoice')}
+                    >
+                      <Text className="text-white text-sm text-center" style={styles.montserratBold}>Verify</Text>
+                    </TouchableOpacity>
                   </View>
 
                 ))

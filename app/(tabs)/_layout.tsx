@@ -5,6 +5,7 @@ import { TabBarIcon } from '@/components/navigation/TabBarIcon'
 import  icons  from '../../constants/icons'
 import { styles } from '../config/Fonts'
 import { IconProps } from '../config/Interface'
+import { Stack } from 'expo-router'
 
 const TabIcon = ({ icon, color, name, focused} : IconProps) => {
   return (
@@ -23,6 +24,27 @@ const TabIcon = ({ icon, color, name, focused} : IconProps) => {
     </View>
   )
 }
+
+const ProfileStack = () => {
+  return (
+    <>
+      <Stack>
+        <Stack.Screen
+          name="profile"
+          options={{
+            headerShown: false
+          }}
+        />
+        <Stack.Screen
+          name="profileDetail"
+          options={{
+            headerShown: false
+          }}
+        />
+      </Stack>
+    </>
+  );
+};
 
 const TabsLayout = () => {
   
@@ -91,7 +113,7 @@ const TabsLayout = () => {
                 color={color}
                 focused={focused}
               />
-            )
+            ),
           }}
         />
       </Tabs>

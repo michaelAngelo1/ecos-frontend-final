@@ -13,7 +13,7 @@ const Role = () => {
       <ScrollView>
         <View className='flex flex-col min-h-[100vh] justify-center items-center px-4'>
           <Text className='text-4xl text-green' style={styles.montserratRegular}>Save the future with ECOS</Text>
-          <Text className='text-3xl text-black'>Placeholder Asset</Text>
+          {/* <Text className='text-3xl text-black'>Placeholder Asset</Text> */}
           <CustomButton
             actionText="Customer"
             bgColor='bg-green'

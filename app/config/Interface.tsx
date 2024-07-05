@@ -23,7 +23,9 @@ export interface SignUpCustomerProps {
   password: string
   grade: string
 }
+
 export interface SignInProps {
   email: string
   password: string
 }
+

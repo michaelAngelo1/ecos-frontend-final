@@ -1,15 +1,34 @@
 import { ScrollView, StatusBar, Text, View } from 'react-native'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 // import { Link } from 'expo-router'
 import { styles } from './config/Fonts'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router';
 import CustomButton from '@/components/CustomButton'
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { userDetailInstance } from './config/axiosConfig';
 // import { Provider } from 'react-redux'
 // import store from './redux/store'
 
 const HomePage = () => {
+
+  const [isAdminApproved, setIsAdminApproved] = useState<boolean>();
+  
+  const checkAdminVerification = async (userToken: string) => {
+    try {
+      const response = await userDetailInstance(userToken).get('',).then((res) => {
+        console.log('response: ', res.data.response.user_detail.is_admin_approved);
+        setIsAdminApproved(res.data.response.user_detail.is_admin_approved);
+      });
+      console.log('masuk check admin: ', isAdminApproved);
+      if(isAdminApproved) {
+        router.replace('/home');
+      } 
+      router.replace('/pendingApproval')
+    } catch (e) {
+      console.log('error check admin: ', e);
+    }
+  }
 
   useEffect(() => {
     // getUserData();
@@ -19,10 +38,13 @@ const HomePage = () => {
     const checkAuthToken = async () => {
       try {
         const token = await AsyncStorage.getItem('userToken');
-        if (token) {
+        
+        if (token && isAdminApproved) {
           // setIsAuthenticated(true);
-          router.replace('/home'); // Redirect to protected route
+          checkAdminVerification(token);// Redirect to protected route
         }
+        console.log('approval admin diluar if: ', isAdminApproved);
+        router.replace('/pendingApproval')
       } catch (error) {
         console.error('Error checking stored token:', error);
       }

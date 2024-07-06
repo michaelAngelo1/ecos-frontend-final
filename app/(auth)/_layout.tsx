@@ -61,6 +61,12 @@ const AuthLayout = () => {
             headerShown: false
           }}
         />
+        <Stack.Screen
+          name="pendingApproval"
+          options={{
+            headerShown: false
+          }}
+        />
       </Stack>
     </>
   )

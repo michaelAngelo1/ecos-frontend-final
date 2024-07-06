@@ -8,16 +8,18 @@ import { userDetailInstance } from '../config/axiosConfig';
 import CustomButton from '@/components/CustomButton';
 import { router } from 'expo-router';
 import { User } from '@/models/User';
+import icons from '@/constants/icons';
+import { Image } from 'expo-image';
 
 const Profile = () => {
   const [userToken, setUserToken] = useState('');
   const [userData, setUserData] = useState(null);
   const [role, setRole] = useState('');
-
   const checkAuthToken = async () => {
     try {
       const token = await AsyncStorage.getItem('userToken');
       if (!token) {
+        console.log('to index');
         router.replace('/');
       }
       console.log('user token exists: ', token);
@@ -64,6 +66,7 @@ const Profile = () => {
   const handleSignOut = async () => {
     try {
       const token = await AsyncStorage.removeItem('userToken');
+      // router.replace('/');
       checkAuthToken();
       console.log('signed out');
     } catch (error) {
@@ -73,74 +76,54 @@ const Profile = () => {
 
   useEffect(() => {
     getUserData();
+    checkAuthToken();
   }, []);
 
   return (
     <SafeAreaView className='bg-[#fff] h-full'>
-      {role === 'CUSTOMER' ? (
-        <>
-          <Text className='text-2xl text-black mt-4 ml-5' style={styles.montserratBold}>Profile</Text>
-          <ScrollView>
-            <View className='flex flex-col justify-start items-start px-4 mt-5'>
-            <View className='relative w-full h-24'>
-              <View className='absolute left-0 bottom-5 w-20 h-20 rounded-full bg-green'></View>
-              <Text className='absolute top-0 left-24 text-xl' style={styles.montserratSemiBold}>{user?.user_detail.name}</Text>
-              <Text className='absolute top-7 left-24 text-lg' style={styles.montserratMedium}>{user?.user_detail.phone}</Text>
-            </View>
-            <TouchableOpacity 
-              className="bg-white w-full h-12 rounded-[8px] mt-3 p-2 justify-center"
-              activeOpacity={0.7}
-              onPress={() => router.push('/profileDetail')}
-            >
+      <Text className='text-2xl text-black mt-4 ml-5' style={styles.montserratBold}>Profile</Text>
+      <ScrollView>
+        <View className='flex flex-col justify-start items-start px-4 mt-5'>
+        <View className='relative w-full h-24'>
+          <View className='absolute left-0 bottom-5 w-20 h-20 rounded-full bg-green'></View>
+          <Text className='absolute top-0 left-24 text-xl' style={styles.montserratSemiBold}>{user?.user_detail.name}</Text>
+          <Text className='absolute top-7 left-24 text-base' style={styles.montserratRegular}>{user?.user_detail.phone}</Text>
+        </View>
+        <TouchableOpacity 
+          className="bg-white w-full h-12 rounded-[8px] p-2 justify-center"
+          activeOpacity={0.7}
+          onPress={() => router.push('/profileDetail')}
+        >
+          <View className='flex-row items-center justify-between'>
+            <View className='flex-row gap-1'>
+              <Image className='w-6 h-6' source={icons.profile_filled}/>
               <Text className="text-black text-sm text-start" style={styles.montserratSemiBold}>Personal Details</Text>
-            </TouchableOpacity>
-            <TouchableOpacity 
-              className="bg-white w-full h-12 rounded-[8px] mt-3 p-2 justify-center"
-              activeOpacity={0.7}
-              onPress={() => router.push('/changePassword')}
-            >
-              <Text className="text-black text-sm text-start" style={styles.montserratSemiBold}>Change password</Text>
-            </TouchableOpacity>
-             
-
-              
-
-              
-
-              
-            <CustomButton
-              actionText='Sign out'
-              textColor='text-white'
-              bgColor='bg-green'
-              handlePress={handleSignOut}
-            />
             </View>
-          </ScrollView>
-        </>
-      ) 
-      : role == 'DRIVER' ? (
-        <>
-          <Text>Partner Profile Page</Text>
-          <CustomButton
-            actionText='Sign out'
-            textColor='text-white'
-            bgColor='bg-green'
-            handlePress={handleSignOut}
-          />
-          {/* Add partner-specific profile details here */}
-        </>
-      )
-      : 
-        <>
-          <Text>Admin Profile Page</Text>
-          <CustomButton
-            actionText='Sign out'
-            textColor='text-white'
-            bgColor='bg-green'
-            handlePress={handleSignOut}
-          />
-        </>
-    }
+            <Image className='w-8 h-8 opacity-70' source={icons.arrow_right}/>
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity 
+          className="bg-white w-full h-12 rounded-[8px] mt-3 p-2 justify-center"
+          activeOpacity={0.7}
+          onPress={() => router.push('/changePassword')}
+        >
+          <View className='flex-row items-center justify-between'>
+            <View className='flex-row gap-1'>
+              <Image className='w-6 h-6' source={icons.lock_icon}/>
+              <Text className="text-black text-sm text-start" style={styles.montserratSemiBold}>Change password</Text>
+            </View>
+            <Image className='w-8 h-8 opacity-70' source={icons.arrow_right}/>
+          </View>
+        </TouchableOpacity>
+          
+        <CustomButton
+          actionText='Sign out'
+          textColor='text-white'
+          bgColor='bg-green'
+          handlePress={handleSignOut}
+        />
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };

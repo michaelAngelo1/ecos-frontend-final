@@ -9,6 +9,8 @@ import { jwtDecode } from "jwt-decode";
 import Dropdown from '@/components/Dropdown'
 import { adminApprovalInstance, userDetailInstance } from '../config/axiosConfig'
 import { User } from '@/models/User'
+import { Image } from 'expo-image'
+import icons from '@/constants/icons'
 
 
 const Home = () => {
@@ -59,24 +61,56 @@ const Home = () => {
     }
   }
   
-  const [allUsers, setAllUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState([{
+    user_id: '',
+    email: '',
+    password: '',
+    role: '',
+    user_detail: {
+      name: '',
+      grade: '',
+      street: '',
+      phone: '',
+      is_admin_approved: false,
+      is_email_verified: '',
+      is_phone_verified: '',
+      profile_image: '',
+    }
+  }])
   const getAllUsers = async () => {
     try {
       console.log('masuk get all user');
       let userToken = await getToken();
       const response = await adminApprovalInstance(userToken!).get('', ).then((res) => {
-        console.log(res.config);
+        console.log(res.data.response.customer);
+        setUsers(res.data.response.customer);
       });
-      // console.log(users);
     } catch (e) {
       console.log('error fetch all users', e);
+    }
+  }
+
+  const verifyUser = async (id: string) => {
+    try {
+      console.log('verify user')
+      let userToken = await getToken();
+      const response = await adminApprovalInstance(userToken!).post('',
+        {
+          id: id
+        }
+      ).then((res) => {
+        console.log('USER EMAIL VERIFIED: ', res.data.response.name)
+        console.log('VERIF RESPONSE: ', res.data.response.is_admin_approved);
+      })
+    } catch (e) {
+      console.log('error verify user', e)
     }
   }
 
   useEffect(() => {
     getUserData();
     if(role == 'ADMIN') {
-      console.log(role);
+      console.log('ALL FETCHED USERs', users);
       getAllUsers();
     }
   }, [])
@@ -93,16 +127,17 @@ const Home = () => {
           </View>
           <View className='flex flex-col justify-start items-start px-4'>
             <Text className='text-black text-sm ml-2' style={styles.montserratRegular}>Your current locations</Text>
-            <View className='flex-row gap-1 mb-2'>
-              <Text className='text-xl'>📍</Text>
+            <View className='flex-row gap-2 mb-2 items-center'>
+              {/* <Text className='text-xl'>📍</Text> */}
+              <Image className='w-6 h-6' source={icons.mylocation_icon}/>
               <Text className='text-xl' style={styles.montserratBold}>{user?.user_detail.street}</Text>
             </View>
 
             <View className='w-96 h-52 bg-white rounded-xl'>
 
             </View>
-            <View className='flex-row gap-1 mt-2 mb-2'>
-              <Text className='text-xl'>📍</Text>
+            <View className='flex-row gap-2 mt-2 mb-2 items-center'>
+            <Image className='w-6 h-6' source={icons.destination_icon}/>
               <Text className='text-xl' style={styles.montserratBold}>Binus School Bekasi</Text>
             </View>
             <Text className='text-base ml-2 mb-1' style={styles.montserratSemiBold}>Available drivers to choose</Text>
@@ -239,16 +274,20 @@ const Home = () => {
             <View className='flex flex-col justify-start items-start px-4'>
 
               {
-                allUsers.map((user, index) => (
-                  <View key={index} className='relative w-full h-28 bg-[#fff] rounded-2xl border border-1 border-gray-200 shadow-sm mt-3'>
+                
+                users.map((user) => (
+                  <View key={user.user_id} className='relative w-full h-28 bg-[#fff] rounded-2xl border border-1 border-gray-200 shadow-sm mt-3'>
                     <View className='absolute top-4 left-4 w-14 h-14 bg-green rounded-full'></View>
-                    <Text className='absolute top-0 left-[70px] text-black text-lg p-4' style={styles.montserratSemiBold}>{user.email}</Text>
+                    <Text className='absolute top-0 left-[70px] text-black text-lg p-4' style={styles.montserratSemiBold}>{user.user_detail.name}</Text>
                     {/* <Text className='absolute top-7 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}></Text> */}
                     <Text className='absolute top-7 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>Jl. Meruya No. 7 Jakarta Barat</Text>
                     <TouchableOpacity 
                       className="absolute bottom-2 right-3 bg-green w-[104px] rounded-[20px] mt-3 p-2"
                       activeOpacity={0.7}
-                      onPress={() => router.push('/paymentChoice')}
+                      disabled={false}
+                      onPress={() => {
+                        verifyUser(user.user_id);
+                      }}
                     >
                       <Text className="text-white text-sm text-center" style={styles.montserratBold}>Verify</Text>
                     </TouchableOpacity>
@@ -270,7 +309,6 @@ const Home = () => {
                 <Text className='absolute top-7 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>+62 828 0316 2100</Text>
                 <Text className='absolute top-12 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>Jl. Meruya No. 7 Jakarta Barat</Text>
               </View> */}
-
               
             </View>
           </ScrollView>

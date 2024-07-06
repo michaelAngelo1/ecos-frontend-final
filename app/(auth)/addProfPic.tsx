@@ -48,7 +48,7 @@ const AddProfPic = () => {
       quality: 1,
     });
 
-    console.log(result.assets![0]);
+    console.log('UPLOADED IMAGE: ', result.assets![0]);
     if(!result.canceled) {
       setImageFile(result.assets[0])
       setImage(result.assets[0].uri)
@@ -57,16 +57,25 @@ const AddProfPic = () => {
 
   const uploadImage = async () => {
     try {
+      console.log('upload image');
       let userToken = await getToken();
+
+      const formData = new FormData();
+      formData.append('profile_picture', {
+        uri: imageFile!.uri,
+        name: imageFile!.fileName,
+        type: imageFile!.type 
+      })
+      console.log('form data: ', formData);
       const response = await userImageInstance(userToken!).patch('', {
-        profile_image_file: imageFile,
+        profile_image_file: formData,
       }).then(() => {
         console.log('Success', response);
         router.push('/home');
       });
 
     } catch (e) {
-      console.log(e.response);
+      console.log('error upload image', e);
     }
   }
 

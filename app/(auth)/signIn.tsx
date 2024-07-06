@@ -19,20 +19,42 @@ const SignIn: React.FC<SignInProps> = () => {
 
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAdminApproved, setIsAdminApproved] = useState<boolean>();
+
+  const checkAuthToken = async () => {
+    try {
+      const token = await AsyncStorage.getItem('userToken');
+      console.log('TOKEN HERE: ', token);
+      if (token) {
+        setIsAuthenticated(true);
+        console.log('masuk sini dong');
+        checkAdminVerification(token);
+      } 
+      // router.replace('/pendingApproval')
+    } catch (error) {
+      console.error('Error checking stored token:', error);
+    }
+  };
   useEffect(() => {
-    const checkAuthToken = async () => {
-      try {
-        const token = await AsyncStorage.getItem('userToken');
-        if (token) {
-          setIsAuthenticated(true);
-          router.replace('/home'); // Redirect to protected route
-        }
-      } catch (error) {
-        console.error('Error checking stored token:', error);
-      }
-    };
     checkAuthToken();
+
   }, []);
+
+  const checkAdminVerification = async (userToken: string) => {
+    try {
+      const response = await userDetailInstance(userToken).get('',).then((res) => {
+        console.log('response: ', res.data.response.user_detail.is_admin_approved);
+        setIsAdminApproved(res.data.response.user_detail.is_admin_approved);
+      });
+      console.log('masuk check admin: ', isAdminApproved);
+      if(isAdminApproved) {
+        router.replace('/home');
+      } 
+      router.replace('/pendingApproval')
+    } catch (e) {
+      console.log('error check admin: ', e);
+    }
+  }
 
   const handleSignIn = async ({ email, password }: SignInProps) => {
     console.log('masuk handle sign in');
@@ -44,8 +66,10 @@ const SignIn: React.FC<SignInProps> = () => {
       if(response && response.data) {
         storeJWT(response.data["access_token"]);
         console.log(response.data["access_token"]);
+        console.log('respons signin', response.config.data.email);
         setIsAuthenticated(true);
-        router.replace('/home');
+        checkAdminVerification(response.data['access_token']);
+        // router.replace('/home');
       } else {
         console.log('NO RESPONSE');
         throw new Error('No response data');

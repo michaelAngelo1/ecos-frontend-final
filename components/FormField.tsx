@@ -4,13 +4,13 @@ import { styles } from '@/app/config/Fonts'
 
 interface FormFieldProps {
   title: string
-  value: string
+  value: string | undefined
   handleChangeText: (e: string) => void
   otherStyles: string
   keyboardType: string
 }
 
-const FormField = ({ title, value, handleChangeText, otherStyles, ...props } : FormFieldProps) => {
+const FormField = ({ title, value, handleChangeText, otherStyles} : FormFieldProps) => {
 
   const [showPassword, setShowPassword] = useState(false);
 

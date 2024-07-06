@@ -35,15 +35,21 @@ const SignIn: React.FC<SignInProps> = () => {
   }, []);
 
   const handleSignIn = async ({ email, password }: SignInProps) => {
+    console.log('masuk handle sign in');
     try {
       const response = await authInstance.post('', {
         email,
         password,
       });
-      storeJWT(response.data["access_token"]);
-      console.log(response.data["access_token"]);
-      setIsAuthenticated(true);
-      router.replace('/home');
+      if(response && response.data) {
+        storeJWT(response.data["access_token"]);
+        console.log(response.data["access_token"]);
+        setIsAuthenticated(true);
+        router.replace('/home');
+      } else {
+        console.log('NO RESPONSE');
+        throw new Error('No response data');
+      }
     } catch (error: any) {
       console.log('ERROR SIGN IN', error.response.data);
       // Show Snackbar on error (assuming you have the implementation)
@@ -118,6 +124,7 @@ const SignIn: React.FC<SignInProps> = () => {
                 let role = 'ADMIN';
                 handleAdminSignIn(form.email, form.password, role);
               } else {
+                console.log('masuk else sini');
                 handleSignIn({
                   email:form.email, 
                   password:form.password

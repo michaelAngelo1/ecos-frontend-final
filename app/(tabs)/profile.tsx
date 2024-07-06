@@ -1,4 +1,4 @@
-import { ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -81,9 +81,26 @@ const Profile = () => {
         <>
           <Text className='text-2xl text-black mt-4 ml-5' style={styles.montserratBold}>Profile</Text>
           <ScrollView>
-            <View className='flex flex-col justify-start items-start px-4'>
-
-            
+            <View className='flex flex-col justify-start items-start px-4 mt-5'>
+            <View className='relative w-full h-24'>
+              <View className='absolute left-0 bottom-5 w-20 h-20 rounded-full bg-green'></View>
+              <Text className='absolute top-0 left-24 text-xl' style={styles.montserratSemiBold}>{user?.user_detail.name}</Text>
+              <Text className='absolute top-7 left-24 text-lg' style={styles.montserratMedium}>{user?.user_detail.phone}</Text>
+            </View>
+            <TouchableOpacity 
+              className="bg-white w-full h-12 rounded-[8px] mt-3 p-2 justify-center"
+              activeOpacity={0.7}
+              onPress={() => router.push('/profileDetail')}
+            >
+              <Text className="text-black text-sm text-start" style={styles.montserratSemiBold}>Personal Details</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              className="bg-white w-full h-12 rounded-[8px] mt-3 p-2 justify-center"
+              activeOpacity={0.7}
+              onPress={() => router.push('/changePassword')}
+            >
+              <Text className="text-black text-sm text-start" style={styles.montserratSemiBold}>Change password</Text>
+            </TouchableOpacity>
              
 
               

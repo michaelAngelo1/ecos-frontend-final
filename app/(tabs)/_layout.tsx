@@ -1,7 +1,6 @@
 import { StyleSheet, Text, View, Image, ImageSourcePropType } from 'react-native'
 import React, { useState } from 'react'
 import { Tabs, Redirect } from 'expo-router'
-import { TabBarIcon } from '@/components/navigation/TabBarIcon'
 import  icons  from '../../constants/icons'
 import { styles } from '../config/Fonts'
 import { IconProps } from '../config/Interface'
@@ -25,26 +24,6 @@ const TabIcon = ({ icon, color, name, focused} : IconProps) => {
   )
 }
 
-const ProfileStack = () => {
-  return (
-    <>
-      <Stack>
-        <Stack.Screen
-          name="profile"
-          options={{
-            headerShown: false
-          }}
-        />
-        <Stack.Screen
-          name="profileDetail"
-          options={{
-            headerShown: false
-          }}
-        />
-      </Stack>
-    </>
-  );
-};
 
 const TabsLayout = () => {
   

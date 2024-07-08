@@ -8,7 +8,37 @@ const OrderLayout = () => {
     <>
       <Stack>
         <Stack.Screen
-          name="paymentChoice"
+          name="paymentProcess"
+          options={{
+            headerShown: false
+          }}
+        />
+        <Stack.Screen
+          name="driverDetail"
+          options={{
+            headerShown: false
+          }}
+        />
+        <Stack.Screen
+          name="pendingPaymentVerif"
+          options={{
+            headerShown: false
+          }}
+        />
+        <Stack.Screen
+          name="successPaymentVerif"
+          options={{
+            headerShown: false
+          }}
+        />
+        <Stack.Screen
+          name="orderDetail"
+          options={{
+            headerShown: false
+          }}
+        />
+        <Stack.Screen
+          name="cancelOrder"
           options={{
             headerShown: false
           }}

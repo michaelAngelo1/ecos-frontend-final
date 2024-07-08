@@ -35,3 +35,12 @@ export const adminApprovalInstance = (token:string) => axios.create({
     'Authorization': `Bearer ${token}`,
   }
 })
+
+export const customerDetailInstance = (token:string) => axios.create({
+  baseURL: 'http://ecos.joheee.com:4040/customer-detail',
+  headers: {
+    'accept': '*/*',
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`,
+  }
+})

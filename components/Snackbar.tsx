@@ -7,9 +7,10 @@ interface SnackbarProps {
   setVisible: (isVisible: boolean) => void;
   duration?: number;
   onPressAction?: () => void;
+  bgColor: string
 }
 
-const Snackbar: React.FC<SnackbarProps> = ({ message, setVisible, duration = 3000, onPressAction }) => {
+const Snackbar: React.FC<SnackbarProps> = ({ bgColor, message, setVisible, duration = 3000, onPressAction }) => {
   const [opacity] = useState(new Animated.Value(0));
 
   useEffect(() => {
@@ -39,8 +40,8 @@ const Snackbar: React.FC<SnackbarProps> = ({ message, setVisible, duration = 300
   };
 
   return (
-    <Animated.View className={`absolute left-0 bottom-0 w-screen h-[80px] justify-center items-center bg-red-900 ${opacity}`}>
-      <Text className='text-base text-white p-2' style={styles.montserratRegular}>{message}</Text>
+    <Animated.View className={`absolute left-0 bottom-0 w-screen h-[80px] justify-center items-center ${bgColor} ${opacity}`}>
+      <Text className='text-base text-white p-2' style={styles.montserratSemiBold}>{message}</Text>
     </Animated.View>
   );
 };

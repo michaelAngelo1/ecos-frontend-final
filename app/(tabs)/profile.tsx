@@ -85,7 +85,8 @@ const Profile = () => {
       <ScrollView>
         <View className='flex flex-col justify-start items-start px-4 mt-5'>
         <View className='relative w-full h-24'>
-          <View className='absolute left-0 bottom-5 w-20 h-20 rounded-full bg-green'></View>
+          <Image className='absolute left-0 bottom-5 w-20 h-20 rounded-full' source={`http://ecos.joheee.com:4040/public/user/${user?.user_detail.profile_image}`}/>
+          {/* <View className='absolute left-0 bottom-5 w-20 h-20 rounded-full bg-green'></View> */}
           <Text className='absolute top-0 left-24 text-xl' style={styles.montserratSemiBold}>{user?.user_detail.name}</Text>
           <Text className='absolute top-7 left-24 text-base' style={styles.montserratRegular}>{user?.user_detail.phone}</Text>
         </View>

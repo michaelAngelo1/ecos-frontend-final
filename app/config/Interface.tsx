@@ -22,6 +22,8 @@ export interface SignUpCustomerProps {
   pickUpAddress: string
   password: string
   grade: string
+  binusianId: string
+  parentsPhone: string
 }
 
 export interface SignInProps {

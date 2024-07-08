@@ -6,11 +6,14 @@ import { router } from 'expo-router'
 import * as ImagePicker from 'expo-image-picker'
 import { userDetailInstance, userImageInstance } from '../config/axiosConfig'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import Snackbar from '@/components/Snackbar'
 
 const AddProfPic = () => {
 
   const [image, setImage] = useState('');
   const [imageFile, setImageFile] = useState<ImagePicker.ImagePickerAsset | null>(null)
+
+  const [snackbarVisible, setSnackbarVisible] = useState(false);
 
   const getToken = async () => {
     try {
@@ -44,7 +47,7 @@ const AddProfPic = () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
-      aspect: [4, 3],
+      aspect: [1, 1],
       quality: 1,
     });
 
@@ -79,10 +82,16 @@ const AddProfPic = () => {
     }
   }
 
+  const dummyUploadImage = async () => {
+    setSnackbarVisible(true);
+    await new Promise(resolve => setTimeout(resolve, 3000));
+    router.push('/signIn');
+  }
+
   return (
     <SafeAreaView className='bg-[#fff] h-full'>
       <ScrollView>
-        <View className='flex flex-col min-h-[100vh] justify-center items-center px-4'>
+        <View className='flex flex-col min-h-[104vh] justify-center items-center px-4'>
           <Text className='text-4xl text-green text-center' style={styles.montserratRegular}>Add a profile picture</Text>
           <Text className='text-xl text-green text-center' style={styles.montserratRegular}>Show us your best smile!</Text>
           {
@@ -108,17 +117,26 @@ const AddProfPic = () => {
             actionText="Upload"
             bgColor='bg-green'
             textColor='text-white'
-            handlePress={() => 
-              uploadImage()
+            handlePress={() => {
+              dummyUploadImage();
+            }
+              // uploadImage()
             }
           />
           <CustomButton
             actionText="Skip for now"
             bgColor='bg-white'
             textColor='text-green'
-            handlePress={() => router.replace('/home')}
+            handlePress={() => router.replace('/pendingApproval')}
           />
-          
+          { snackbarVisible && 
+            <Snackbar
+              message="Your account has been verified! Let's sign in" // Update message if needed
+              setVisible={setSnackbarVisible} // Pass the function to update visibility
+              duration={3000}
+              bgColor='bg-blue'
+            />
+          }
         </View>
       </ScrollView>
     </SafeAreaView>

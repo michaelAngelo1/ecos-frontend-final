@@ -42,17 +42,11 @@ const SignIn: React.FC<SignInProps> = () => {
 
   const checkAdminVerification = async (userToken: string) => {
     try {
-      const response = await userDetailInstance(userToken).get('',).then((res) => {
-        console.log('response: ', res.data.response.user_detail.is_admin_approved);
-        setIsAdminApproved(res.data.response.user_detail.is_admin_approved);
-      });
-      console.log('masuk check admin: ', isAdminApproved);
-      if(isAdminApproved) {
-        router.replace('/home');
-      } 
-      router.replace('/pendingApproval')
+      const response = await userDetailInstance(userToken).get('',)
+      return response.data.response.user_detail.is_admin_approved
     } catch (e) {
       console.log('error check admin: ', e);
+      
     }
   }
 
@@ -65,10 +59,15 @@ const SignIn: React.FC<SignInProps> = () => {
       });
       if(response && response.data) {
         storeJWT(response.data["access_token"]);
-        console.log(response.data["access_token"]);
-        console.log('respons signin', response.config.data.email);
         setIsAuthenticated(true);
-        checkAdminVerification(response.data['access_token']);
+        const isAdminApproved = await checkAdminVerification(response.data['access_token']);
+        console.log("is admin approved: ",isAdminApproved);
+        if(!isAdminApproved!) {
+          router.replace('/pendingApproval');
+          return;
+        }
+        console.log('is Admin approved: ', isAdminApproved);
+        router.replace('/home');
         // router.replace('/home');
       } else {
         console.log('NO RESPONSE');
@@ -80,30 +79,6 @@ const SignIn: React.FC<SignInProps> = () => {
       setSnackbarVisible(true);
     }
   };
-
-  const handleAdminSignIn = async (email: string, password: string, role: string) => {
-    try {
-      const response = await authInstance.post('', {
-        email, 
-        password
-      }).then(async (res) => {
-        let adminToken = res.data['access_token'];
-        const response = await userDetailInstance(adminToken).patch('', {
-          role: role,
-        }).then(async () => {
-          const response = await authInstance.post('', {
-            email,
-            password,
-          });
-          console.log(response.data['access_token']);
-          storeJWT(response.data['access_token']);
-          router.replace('/home');
-        });
-      });
-    } catch (e) {
-      console.log('error admin sign in');
-    }
-  }
 
   const storeJWT = async (token: string) => {
     try {
@@ -144,16 +119,10 @@ const SignIn: React.FC<SignInProps> = () => {
             bgColor='bg-green'
             textColor='text-white'
             handlePress={() => {
-              if(form.email.includes('admin')) {
-                let role = 'ADMIN';
-                handleAdminSignIn(form.email, form.password, role);
-              } else {
-                console.log('masuk else sini');
-                handleSignIn({
-                  email:form.email, 
-                  password:form.password
-                });
-              }
+              handleSignIn({
+                email:form.email, 
+                password:form.password
+              });
             }}
           />
           <View className='justify-center pt-2 flex-row gap-2'>
@@ -174,6 +143,7 @@ const SignIn: React.FC<SignInProps> = () => {
               message="Sign in failed. Check your username and password." // Update message if needed
               setVisible={setSnackbarVisible} // Pass the function to update visibility
               duration={3000}
+              bgColor='bg-red-900'
             />
           }
         </View>

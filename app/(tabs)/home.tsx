@@ -11,6 +11,7 @@ import { adminApprovalInstance, userDetailInstance } from '../config/axiosConfig
 import { User } from '@/models/User'
 import { Image } from 'expo-image'
 import icons from '@/constants/icons'
+import images from '@/constants/images'
 
 
 const Home = () => {
@@ -61,7 +62,7 @@ const Home = () => {
     }
   }
   
-  const [users, setUsers] = useState([{
+  const [customers, setCustomers] = useState([{
     user_id: '',
     email: '',
     password: '',
@@ -76,15 +77,17 @@ const Home = () => {
       is_phone_verified: '',
       profile_image: '',
     }
-  }])
+  }]);
+
+  
+
   const getAllUsers = async () => {
     try {
       console.log('masuk get all user');
       let userToken = await getToken();
-      const response = await adminApprovalInstance(userToken!).get('', ).then((res) => {
-        console.log(res.data.response.customer);
-        setUsers(res.data.response.customer);
-      });
+      const response = await adminApprovalInstance(userToken!).get('', );
+      console.log(response.data.response.driver);
+      setCustomers(response.data.response.customer);
     } catch (e) {
       console.log('error fetch all users', e);
     }
@@ -110,7 +113,7 @@ const Home = () => {
   useEffect(() => {
     getUserData();
     if(role == 'ADMIN') {
-      console.log('ALL FETCHED USERs', users);
+      console.log('ALL FETCHED USERs', customers);
       getAllUsers();
     }
   }, [])
@@ -134,6 +137,7 @@ const Home = () => {
             </View>
 
             <View className='w-96 h-52 bg-white rounded-xl'>
+            <Image className='w-96 h-52 rounded-xl' source={images.dummy_maps}/>
 
             </View>
             <View className='flex-row gap-2 mt-2 mb-2 items-center'>
@@ -148,56 +152,67 @@ const Home = () => {
 
               <View className='relative w-full h-32 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm'>
                 <View className='absolute top-4 left-4 w-14 h-14 bg-green rounded-full'></View>
+                <Image className='absolute top-4 left-4 w-14 h-14 rounded-full' source={images.driver_dummy}/>
                 <Text className='absolute top-0 left-[70px] text-black text-lg p-4' style={styles.montserratSemiBold}>Pak Wahyudi</Text>
                 <Text className='absolute top-7 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>+62 818 0313 3100</Text>
-                <Text className='absolute top-12 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>4 km away</Text>
-                <Text className='absolute top-[70px] left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>3 persons</Text>
-
+                <Image className='absolute top-16 left-[80px] w-6 h-6' source={icons.destination_icon}/>
+                <Text className='absolute top-12 left-[90px] text-black text-sm p-4' style={styles.montserratRegular}>3 km away</Text>
+                <Image className='absolute top-[85px] left-[80px] w-6 h-6' source={icons.passengers_icon}/>
+                <Text className='absolute top-[70px] left-[90px] text-black text-sm p-4' style={styles.montserratRegular}>4 persons</Text>
 
                 <Text className='absolute top-5 right-3 text-black text-base' style={styles.montserratRegular}>Rp 1.200.000</Text>
                 <TouchableOpacity 
-                  className="absolute bottom-3 right-3 bg-green w-[104px] rounded-[20px] mt-3 p-2"
+                  className="absolute bottom-3 right-3 bg-blue w-[104px] rounded-[20px] mt-3 p-2"
                   activeOpacity={0.7}
-                  onPress={() => router.push('/paymentChoice')}
+                  // onPress={() => router.push('/driverDetail')}
+                  onPress={() => router.push('/orderDetail')}
                 >
-                  <Text className="text-white text-sm text-center" style={styles.montserratBold}>Order</Text>
+                  <Text className="text-white text-sm text-center" style={styles.montserratBold}>Matched</Text>
                 </TouchableOpacity>
               </View>
 
               <View className='relative w-full h-32 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm mt-3'>
                 <View className='absolute top-4 left-4 w-14 h-14 bg-green rounded-full'></View>
+                <Image className='absolute top-4 left-4 w-14 h-14 rounded-full' source={images.driver_dummy2}/>
                 <Text className='absolute top-0 left-[70px] text-black text-lg p-4' style={styles.montserratSemiBold}>Pak Budi</Text>
                 <Text className='absolute top-7 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>+62 828 0316 2100</Text>
-                <Text className='absolute top-12 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>2 km away</Text>
-                <Text className='absolute top-[70px] left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>3 persons</Text>
+                <Image className='absolute top-16 left-[80px] w-6 h-6' source={icons.destination_icon}/>
+                <Text className='absolute top-12 left-[90px] text-black text-sm p-4' style={styles.montserratRegular}>3 km away</Text>
+                <Image className='absolute top-[85px] left-[80px] w-6 h-6' source={icons.passengers_icon}/>
+                <Text className='absolute top-[70px] left-[90px] text-black text-sm p-4' style={styles.montserratRegular}>4 persons</Text>
 
 
                 <Text className='absolute top-5 right-3 text-black text-base' style={styles.montserratRegular}>Rp 1.000.000</Text>
-                <TouchableOpacity 
+                {/* <TouchableOpacity 
                   className="absolute bottom-3 right-3 bg-green w-[104px] rounded-[20px] mt-3 p-2"
                   activeOpacity={0.7}
-                  onPress={() => router.push('/paymentChoice')}
+                  onPress={() => router.replace('/driverDetail')}
                 >
                   <Text className="text-white text-sm text-center" style={styles.montserratBold}>Order</Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
               </View>
 
               <View className='relative w-full h-32 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm mt-3'>
                 <View className='absolute top-4 left-4 w-14 h-14 bg-green rounded-full'></View>
+                <Image className='absolute top-4 left-4 w-14 h-14 rounded-full' source={images.driver_dummy3}/>
                 <Text className='absolute top-0 left-[70px] text-black text-lg p-4' style={styles.montserratSemiBold}>Pak Setyono</Text>
                 <Text className='absolute top-7 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>+62 828 0316 2100</Text>
-                <Text className='absolute top-12 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>3 km away</Text>
-                <Text className='absolute top-[70px] left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>4 persons</Text>
+
+              
+                <Image className='absolute top-16 left-[80px] w-6 h-6' source={icons.destination_icon}/>
+                <Text className='absolute top-12 left-[90px] text-black text-sm p-4' style={styles.montserratRegular}>3 km away</Text>
+                <Image className='absolute top-[85px] left-[80px] w-6 h-6' source={icons.passengers_icon}/>
+                <Text className='absolute top-[70px] left-[90px] text-black text-sm p-4' style={styles.montserratRegular}>4 persons</Text>
 
 
                 <Text className='absolute top-5 right-3 text-black text-base' style={styles.montserratRegular}>Rp 1.100.000</Text>
-                <TouchableOpacity 
+                {/* <TouchableOpacity 
                   className="absolute bottom-3 right-3 bg-green w-[104px] rounded-[20px] mt-3 p-2"
                   activeOpacity={0.7}
-                  onPress={() => router.push('/paymentChoice')}
+                  onPress={() => router.replace('/driverDetail')}
                 >
                   <Text className="text-white text-sm text-center" style={styles.montserratBold}>Order</Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
               </View>
 
               
@@ -255,7 +270,7 @@ const Home = () => {
             <TouchableOpacity 
               className="bg-[#fff] border-2 border-green w-full h-12 mt-3 p-2 items-center justify-center"
               activeOpacity={0.7}
-              onPress={() => router.push('/paymentChoice')}
+              onPress={() => router.replace('/paymentProcess')}
             >
               <Text className="text-green text-sm text-center" style={styles.montserratBold}>Click to prioritize </Text>
             </TouchableOpacity>
@@ -275,12 +290,12 @@ const Home = () => {
 
               {
                 
-                users.map((user) => (
+                customers.map((user) => (
                   <View key={user.user_id} className='relative w-full h-28 bg-[#fff] rounded-2xl border border-1 border-gray-200 shadow-sm mt-3'>
                     <View className='absolute top-4 left-4 w-14 h-14 bg-green rounded-full'></View>
                     <Text className='absolute top-0 left-[70px] text-black text-lg p-4' style={styles.montserratSemiBold}>{user.user_detail.name}</Text>
                     {/* <Text className='absolute top-7 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}></Text> */}
-                    <Text className='absolute top-7 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>Jl. Meruya No. 7 Jakarta Barat</Text>
+                    <Text className='absolute top-7 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>{user.user_detail.street}</Text>
                     <TouchableOpacity 
                       className="absolute bottom-2 right-3 bg-green w-[104px] rounded-[20px] mt-3 p-2"
                       activeOpacity={0.7}
@@ -295,26 +310,11 @@ const Home = () => {
 
                 ))
               }
-
-              {/* <View className='relative w-full h-28 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm mt-3'>
-                <View className='absolute top-4 left-4 w-14 h-14 bg-green rounded-full'></View>
-                <Text className='absolute top-0 left-[70px] text-black text-lg p-4' style={styles.montserratSemiBold}>Steven Halim</Text>
-                <Text className='absolute top-7 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>+62 828 0316 2100</Text>
-                <Text className='absolute top-12 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>Jl. Meruya No. 7 Jakarta Barat</Text>
-              </View>
-
-              <View className='relative w-full h-28 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm mt-3'>
-                <View className='absolute top-4 left-4 w-14 h-14 bg-green rounded-full'></View>
-                <Text className='absolute top-0 left-[70px] text-black text-lg p-4' style={styles.montserratSemiBold}>Aditya David</Text>
-                <Text className='absolute top-7 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>+62 828 0316 2100</Text>
-                <Text className='absolute top-12 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>Jl. Meruya No. 7 Jakarta Barat</Text>
-              </View> */}
               
             </View>
           </ScrollView>
           <View className='flex flex-col justify-start items-start px-4'>
-            <Text className='text-xl ml-2 mb-1' style={styles.montserratSemiBold}>Verified users</Text>
-           
+            <Text className='text-xl ml-2 mb-1' style={styles.montserratSemiBold}>All unverified drivers</Text>
           </View>
         </>
       }

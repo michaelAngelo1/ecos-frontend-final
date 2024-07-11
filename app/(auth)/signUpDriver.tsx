@@ -1,4 +1,4 @@
-import { ScrollView, Text, TextInput, View } from 'react-native'
+import { Pressable, ScrollView, Text, TextInput, View } from 'react-native'
 import React, { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { styles } from './../config/Fonts'
@@ -11,6 +11,8 @@ import { auth } from '@/firebase/firebaseConfig'
 import { authInstance, userDetailInstance } from '../config/axiosConfig'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import axios from 'axios'
+import icons from '@/constants/icons'
+import { Image } from 'expo-image'
 
 const SignUpDriver = () => {
   const [form, setForm] = useState({
@@ -21,27 +23,29 @@ const SignUpDriver = () => {
     pickUpAddress: '',
     password: '',
     grade: '',
+    binusianId: '',
   });
 
   let role = 'DRIVER';
   const [signUpToken, setSignUpToken] = useState('');
 
-  const handleSignUpCustomer = async ({ firstName, lastName, email, phoneNumber, pickUpAddress, password }: SignUpCustomerProps) => {
+  const handleSignUpCustomer = async ({ firstName, lastName, email, phoneNumber, pickUpAddress, password, grade }: SignUpCustomerProps) => {
     try {
-      const response = await authInstance.patch('', {
-        name: firstName + " " +  lastName,
-        email: email,
-        phone: phoneNumber,
-        street: pickUpAddress,
-        password: password,
-        grade: 0,
-      });
+      // const response = await authInstance.patch('', {
+      //   name: firstName + " " +  lastName,
+      //   email: email,
+      //   phone: phoneNumber,
+      //   street: pickUpAddress,
+      //   password: password,
+      //   grade: 0,
+      // });
 
-      console.log(response.data['access_token']);
+      // console.log(response.data['access_token']);
 
-      // Update the state and wait for it to be set before proceeding
-      setSignUpToken(response.data['access_token']);
-      handleNextSteps(response.data['access_token'], email);
+      // // Update the state and wait for it to be set before proceeding
+      // setSignUpToken(response.data['access_token']);
+      // handleNextSteps(response.data['access_token'], email);
+      router.push('/addProfPic');
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.error('Axios error:', error.message);
@@ -119,6 +123,9 @@ const SignUpDriver = () => {
   //   }
   // };
 
+  // DUMMY TERMS & CONDITIONS STATE
+  const [termsConditions, setTermsConditions] = useState(false);
+
   return (
     <SafeAreaView className="bg-[#fff] h-full">
       <ScrollView>
@@ -178,12 +185,33 @@ const SignUpDriver = () => {
             keyboardType="pickUpAddress"
           />
           <FormField
+            title="Enter your Binusian ID"
+            value={form.binusianId}
+            handleChangeText={(e: string) => setForm({ ...form, binusianId: e })}
+            otherStyles="mt-3"
+            keyboardType="grade"
+          />
+          <FormField
             title="Enter your password"
             value={form.password}
             handleChangeText={(e: string) => setForm({ ...form, password: e })}
             otherStyles="mt-3"
             keyboardType="password"
           />
+          <View className='flex-row gap-1 items-center mt-1'>
+            <Pressable
+              onPress={() => setTermsConditions(!termsConditions)}
+            >
+              {
+                termsConditions ? 
+                  <Image className='w-6 h-6' source={icons.verified_icon}/>
+                :
+                  <View className='w-6 h-6 rounded-full border border-1 border-green'></View>
+              }
+              
+            </Pressable>
+            <Text className='text-sm text-green' style={styles.montserratRegular}>I agree to terms and conditions</Text>
+          </View>
           <CustomButton
             actionText="Next up"
             bgColor="bg-green"
@@ -197,6 +225,8 @@ const SignUpDriver = () => {
                 pickUpAddress: form.pickUpAddress,
                 grade: form.grade,
                 password: form.password,
+                binusianId: '2413',
+                parentsPhone: '3824'
               })
             }
           />

@@ -6,10 +6,12 @@ import CustomButton from '@/components/CustomButton'
 import { Link, router } from 'expo-router'
 import { styles } from '../config/Fonts'
 import * as ImagePicker from 'expo-image-picker'
+import Snackbar from '@/components/Snackbar'
 
 const VehicleInfo = () => {
 
   const [image, setImage] = useState('');
+  const [snackbarVisible, setSnackbarVisible] = useState(false);
 
   const [form, setForm] = useState({
     vehicleModel: '',
@@ -106,12 +108,26 @@ const VehicleInfo = () => {
             actionText="Submit"
             bgColor='bg-green'
             textColor='text-white'
-            handlePress={() => router.push('/addProfPic')}
+            handlePress={() => {
+              if(form.vehicleModel == '' && form.seatCapacity == '' && form.numberPlate == '') {
+                setSnackbarVisible(true);
+                return;
+              }
+              router.push('/documentVerif')
+            }}
           />
 
           <View className='justify-center pt-2 flex-row gap-2'>
             
           </View>
+          { snackbarVisible && 
+            <Snackbar
+              message="Please fill your vehicle information" // Update message if needed
+              setVisible={setSnackbarVisible} // Pass the function to update visibility
+              duration={3000}
+              bgColor='bg-red-900'
+            />
+          }
         </View>
       </ScrollView>
     </SafeAreaView>

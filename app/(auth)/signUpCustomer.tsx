@@ -32,22 +32,22 @@ const SignUpCustomer = () => {
 
   const handleSignUpCustomer = async ({ firstName, lastName, email, phoneNumber, pickUpAddress, grade, password, binusianId, parentsPhone }: SignUpCustomerProps) => {
     try {
-      // let gradeInt = parseInt(grade);
-      // const response = await authInstance.patch('', {
-      //   name: firstName + " " + lastName,
-      //   email: email,
-      //   phone: phoneNumber,
-      //   street: pickUpAddress,
-      //   password: password,
-      //   grade: gradeInt,
-      // });
+      let gradeInt = parseInt(grade);
+      const response = await authInstance.patch('', {
+        name: firstName + " " + lastName,
+        email: email,
+        phone: phoneNumber,
+        street: pickUpAddress,
+        password: password,
+        grade: gradeInt,
+      });
 
-      // console.log(response.data['access_token']);
+      console.log(response.data['access_token']);
 
-      // // Update the state and wait for it to be set before proceeding
-      // setSignUpToken(response.data['access_token']);
-      // handleNextSteps(response.data['access_token'], email, binusianId, parentsPhone);
-      router.push('/addProfPic');
+      // Update the state and wait for it to be set before proceeding
+      setSignUpToken(response.data['access_token']);
+      handleNextSteps(response.data['access_token'], email, binusianId, parentsPhone);
+      // router.push('/addProfPic');
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.error('Axios error:', error.message);
@@ -68,6 +68,7 @@ const SignUpCustomer = () => {
     try {
       await handleUpdateRole(token);
       const updatedToken = await getUpdatedToken(email);
+      console.log('updated token next steps: ', updatedToken);
       const response = await customerDetailInstance(updatedToken).post('',
         {
           binusian_id: binusianId,
@@ -117,17 +118,6 @@ const SignUpCustomer = () => {
     }
   };
 
-  // DUMMY BINUSIAN ID
-  const [binusianID, setBinusianID] = useState('');
-  const handleBinusianIdChange = (text: string) => {
-    setBinusianID(text);
-  }
-
-  // DUMMY ACTIVE PARENTS PHONE NUMBER
-  const [parentsPhone, setParentsPhone] = useState('');
-  const handleParentsPhone = (text: string) => {
-    setParentsPhone(text);
-  }
 
   // DUMMY TERMS & CONDITIONS STATE
   const [termsConditions, setTermsConditions] = useState(false);
@@ -246,6 +236,8 @@ const SignUpCustomer = () => {
                 pickUpAddress: form.pickUpAddress,
                 grade: form.grade,
                 password: form.password,
+                binusianId: form.binusianId,
+                parentsPhone: form.parentsPhone
               })
             }
           />

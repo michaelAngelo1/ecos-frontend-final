@@ -16,6 +16,7 @@ import payment_icon from "../assets/icons/driver/payment_icon.png";
 import people_green from "../assets/icons/driver/people_green.png";
 import phone_icon from "../assets/icons/driver/phone_icon.png";
 import pickup_time from "../assets/icons/driver/pickup_time.png";
+import vehicle_info from "../assets/icons/profile/vehicle_info.png";
 
 
 export default {
@@ -36,5 +37,6 @@ export default {
   payment_icon,
   people_green,
   phone_icon,
-  pickup_time
+  pickup_time,
+  vehicle_info
 };

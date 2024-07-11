@@ -68,15 +68,13 @@ const AddProfPic = () => {
         uri: imageFile!.uri,
         name: imageFile!.fileName,
         type: imageFile!.type 
-      })
-      console.log('form data: ', formData);
+      });
+      console.log('form data: ', typeof formData);
       const response = await userImageInstance(userToken!).patch('', {
         profile_image_file: formData,
-      }).then(() => {
-        console.log('Success', response);
-        router.push('/home');
       });
-
+      console.log('Success: ', response);
+      router.push('/home');
     } catch (e) {
       console.log('error upload image', e);
     }
@@ -85,7 +83,7 @@ const AddProfPic = () => {
   const dummyUploadImage = async () => {
     setSnackbarVisible(true);
     await new Promise(resolve => setTimeout(resolve, 3000));
-    router.push('/signIn');
+    router.push('/vehicleInfo');
   }
 
   return (
@@ -118,7 +116,7 @@ const AddProfPic = () => {
             bgColor='bg-green'
             textColor='text-white'
             handlePress={() => {
-              dummyUploadImage();
+              uploadImage();
             }
               // uploadImage()
             }
@@ -127,7 +125,7 @@ const AddProfPic = () => {
             actionText="Skip for now"
             bgColor='bg-white'
             textColor='text-green'
-            handlePress={() => router.replace('/pendingApproval')}
+            handlePress={() => router.replace('/vehicleInfo')}
           />
           { snackbarVisible && 
             <Snackbar

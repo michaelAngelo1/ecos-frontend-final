@@ -1,4 +1,4 @@
-import { Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View, Modal, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { styles } from '../config/Fonts'
@@ -13,9 +13,7 @@ import { Image } from 'expo-image'
 import icons from '@/constants/icons'
 import images from '@/constants/images'
 
-
 const Home = () => {
-
   const getToken = async () => {
     try {
       const userToken = await AsyncStorage.getItem("userToken")
@@ -26,23 +24,13 @@ const Home = () => {
     } catch (e) {
       console.log("Error reading JWT", e);
     }
-  } 
+  }
 
-  /* 
-    TODO:
-    1. Get token stored on AsyncStorage
-    2. Get user detail by token
-    3. Get ROLE from user detail
-    4. If ROLE == 'Passenger', show Passenger Homepage
-    5. Else if ROLE == 'Partner', show Partner Homepage
-    6. Also fetch the name to show on 'Welcome, {name}'
-  */
-  
-  // dummy state role variable, replace LATER
   const [email, setEmail] = useState('');
   const [role, setRole] = useState('');
-
   const [user, setUser] = useState<User | null>(null);
+  const [modalVisible, setModalVisible] = useState(false);
+
   const getUserData = async () => {
     try {
       let userToken = await getToken();
@@ -61,7 +49,7 @@ const Home = () => {
       console.log("error get user data: ", e);
     }
   }
-  
+
   const [customers, setCustomers] = useState([{
     user_id: '',
     email: '',
@@ -79,7 +67,22 @@ const Home = () => {
     }
   }]);
 
-  
+  const [drivers, setDrivers] = useState([{
+    user_id: '',
+    email: '',
+    password: '',
+    role: '',
+    user_detail: {
+      name: '',
+      grade: '',
+      street: '',
+      phone: '',
+      is_admin_approved: false,
+      is_email_verified: '',
+      is_phone_verified: '',
+      profile_image: '',
+    }
+  }]);
 
   const getAllUsers = async () => {
     try {
@@ -87,6 +90,7 @@ const Home = () => {
       let userToken = await getToken();
       const response = await adminApprovalInstance(userToken!).get('', );
       console.log(response.data.response.driver);
+      setDrivers(response.data.response.driver);
       setCustomers(response.data.response.customer);
     } catch (e) {
       console.log('error fetch all users', e);
@@ -117,10 +121,31 @@ const Home = () => {
       getAllUsers();
     }
   }, [])
-  
 
   return (
     <SafeAreaView className='bg-[#fff] h-full'>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <View className="flex-1 justify-center items-center">
+          <View className="bg-white p-6 rounded-lg shadow-lg items-center">
+            <Text className="text-green text-center text-lg mb-4" style={styles.montserratBold}>
+              You have arrived to your destination. Mind your belongings and thanks for using ECOS!
+            </Text>
+            <TouchableOpacity
+              className="bg-green w-20 py-3 rounded-lg"
+              onPress={() => setModalVisible(false)}
+            >
+              <Text className="text-white text-center" style={styles.montserratBold}>End trip</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
       {
         role == 'CUSTOMER' ? 
         <>
@@ -131,25 +156,20 @@ const Home = () => {
           <View className='flex flex-col justify-start items-start px-4'>
             <Text className='text-black text-sm ml-2' style={styles.montserratRegular}>Your current locations</Text>
             <View className='flex-row gap-2 mb-2 items-center'>
-              {/* <Text className='text-xl'>📍</Text> */}
               <Image className='w-6 h-6' source={icons.mylocation_icon}/>
               <Text className='text-xl' style={styles.montserratBold}>{user?.user_detail.street}</Text>
             </View>
-
             <View className='w-96 h-52 bg-white rounded-xl'>
-            <Image className='w-96 h-52 rounded-xl' source={images.dummy_maps}/>
-
+              <Image className='w-96 h-52 rounded-xl' source={images.dummy_maps}/>
             </View>
             <View className='flex-row gap-2 mt-2 mb-2 items-center'>
-            <Image className='w-6 h-6' source={icons.destination_icon}/>
+              <Image className='w-6 h-6' source={icons.destination_icon}/>
               <Text className='text-xl' style={styles.montserratBold}>Binus School Bekasi</Text>
             </View>
             <Text className='text-base ml-2 mb-1' style={styles.montserratSemiBold}>Available drivers to choose</Text>
           </View>
           <ScrollView>
             <View className='flex flex-col justify-start items-start px-4'>
-
-
               <View className='relative w-full h-32 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm'>
                 <View className='absolute top-4 left-4 w-14 h-14 bg-green rounded-full'></View>
                 <Image className='absolute top-4 left-4 w-14 h-14 rounded-full' source={images.driver_dummy}/>
@@ -159,12 +179,10 @@ const Home = () => {
                 <Text className='absolute top-12 left-[90px] text-black text-sm p-4' style={styles.montserratRegular}>3 km away</Text>
                 <Image className='absolute top-[85px] left-[80px] w-6 h-6' source={icons.passengers_icon}/>
                 <Text className='absolute top-[70px] left-[90px] text-black text-sm p-4' style={styles.montserratRegular}>4 persons</Text>
-
                 <Text className='absolute top-5 right-3 text-black text-base' style={styles.montserratRegular}>Rp 1.200.000</Text>
                 <TouchableOpacity 
                   className="absolute bottom-3 right-3 bg-blue w-[104px] rounded-[20px] mt-3 p-2"
                   activeOpacity={0.7}
-                  // onPress={() => router.push('/driverDetail')}
                   onPress={() => router.push('/orderDetail')}
                 >
                   <Text className="text-white text-sm text-center" style={styles.montserratBold}>Matched</Text>
@@ -214,112 +232,163 @@ const Home = () => {
                   <Text className="text-white text-sm text-center" style={styles.montserratBold}>Order</Text>
                 </TouchableOpacity> */}
               </View>
-
-              
             </View>
           </ScrollView>
         </>
-        : role == 'DRIVER' ?
+        :
+        role == 'DRIVER' ? 
         <>
           <View className='flex-row gap-1 mt-4 ml-5 mb-4'>
             <Text className='text-2xl text-black' style={styles.montserratRegular}>Welcome, </Text>
             <Text className='text-2xl text-black' style={styles.montserratBold}>{user?.user_detail.name.split(' ')[0]}</Text>
           </View>
-          <View className='flex flex-col justify-start items-start px-4'>
-            <Text className='text-xl ml-2 mb-1' style={styles.montserratSemiBold}>Your passengers this month</Text>
-          </View>
-          <ScrollView className='max-h-[365px] overflow-auto'>
+          <ScrollView>
             <View className='flex flex-col justify-start items-start px-4'>
-
-
-              <View className='relative w-full h-28 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm'>
-                <View className='absolute top-4 left-4 w-14 h-14 bg-green rounded-full'></View>
-                <Text className='absolute top-0 left-[70px] text-black text-lg p-4' style={styles.montserratSemiBold}>Max Quok</Text>
-                <Text className='absolute top-7 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>+62 818 0313 3100</Text>
-                <Text className='absolute top-12 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>Jl. Meruya No. 7 Jakarta Barat</Text>
-              </View>
-
-              <View className='relative w-full h-28 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm mt-3'>
-                <View className='absolute top-4 left-4 w-14 h-14 bg-green rounded-full'></View>
-                <Text className='absolute top-0 left-[70px] text-black text-lg p-4' style={styles.montserratSemiBold}>Steven Halim</Text>
-                <Text className='absolute top-7 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>+62 828 0316 2100</Text>
-                <Text className='absolute top-12 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>Jl. Meruya No. 7 Jakarta Barat</Text>
-              </View>
-
-              <View className='relative w-full h-28 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm mt-3'>
-                <View className='absolute top-4 left-4 w-14 h-14 bg-green rounded-full'></View>
-                <Text className='absolute top-0 left-[70px] text-black text-lg p-4' style={styles.montserratSemiBold}>Aditya David</Text>
-                <Text className='absolute top-7 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>+62 828 0316 2100</Text>
-                <Text className='absolute top-12 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>Jl. Meruya No. 7 Jakarta Barat</Text>
-              </View>
-
-              
+              <Text className='text-xl ml-2 mb-1' style={styles.montserratSemiBold}>Your trip this month</Text>
             </View>
-          </ScrollView>
-          <View className='flex flex-col justify-start items-start px-4'>
-            <Text className='text-xl ml-2 mb-1' style={styles.montserratSemiBold}>Choose who to pick up first</Text>
-            {/* Logic prioritize pick-up:
-            1. Pressable component: 'Prioritize Pick-up' triggers Pop-up
-            2. Pop-up shows a PRESSABLE list of passengers with its corresponding address: Max Quok - address, Steven Halim - address,  Aditya David - address
-            3. Passenger is FIRST pressed -> change bgcolor to blue and add '1' in front of the name
-            4. Passenger is SECOND pressed -> change bgcolor to green and add '2' in front of the name
-            5. So on and so forth
-            6. 'Clear config' and 'Save config' options
-            7. 'Clear config' clears all state and returns the bgcolor of all list to white
-            8. 'Save config' saves all state and THIS CAN be seen by EACH PASSENGER */}
-            <TouchableOpacity 
-              className="bg-[#fff] border-2 border-green w-full h-12 mt-3 p-2 items-center justify-center"
-              activeOpacity={0.7}
-              onPress={() => router.replace('/paymentProcess')}
-            >
-              <Text className="text-green text-sm text-center" style={styles.montserratBold}>Click to prioritize </Text>
-            </TouchableOpacity>
-          </View>
-        </>
-        : 
-        <>
-          <View className='flex-row gap-1 mt-4 ml-5 mb-4'>
-            <Text className='text-2xl text-black' style={styles.montserratRegular}>Welcome, </Text>
-            <Text className='text-2xl text-black' style={styles.montserratBold}>{user?.user_detail.name.split(' ')[0]}</Text>
-          </View>
-          <View className='flex flex-col justify-start items-start px-4'>
-            <Text className='text-xl ml-2 mb-1' style={styles.montserratSemiBold}>All unverified users</Text>
-          </View>
-          <ScrollView className='max-h-[365px] overflow-auto'>
-            <View className='flex flex-col justify-start items-start px-4'>
+            <View className='w-fit h-36 bg-[#fff] rounded-2xl border border-gray-200 justify-start items-start mx-4 mb-3'>
+              <View className='absolute top-4 left-4 w-14 h-14 bg-green rounded-full'></View>
+              <Text className='absolute top-0 left-[70px] text-black text-lg p-4' style={styles.montserratSemiBold}>Trip #243881D</Text>
+              <Text className='absolute top-1 left-[274px] text-black text-sm p-4' style={styles.montserratMedium}>July 2024</Text>
+              <Text className='absolute top-7 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>Passenger(s): 3 persons</Text>
+              <Text className='absolute top-12 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>To: Binus School Bekasi</Text>
+              <TouchableOpacity 
+                className="absolute bottom-3 right-3 bg-green w-[104px] rounded-[20px] mt-3 p-2"
+                activeOpacity={0.7}
+                onPress={() => router.push('/tripDetail')}
+              >
+                <Text className="text-white text-sm text-center" style={styles.montserratBold}>Details</Text>
+              </TouchableOpacity>
+            </View>
 
-              {
+            <View className='flex flex-col justify-start items-start px-4'>
+              <Text className='text-xl ml-2 mb-1' style={styles.montserratSemiBold}>Your daily trip</Text>
+            </View>
+            <View className='w-fit h-44 bg-[#fff] rounded-2xl border border-gray-200 justify-start items-start mx-4 mb-3'>
+              <View className='absolute top-4 left-4 w-14 h-14 bg-green rounded-full'></View>
+              <Text className='absolute top-[2px] left-[70px] text-black text-base p-4' style={styles.montserratSemiBold}>Daily Trip #243881D</Text>
+              <Text className='absolute top-1 left-[264px] text-black text-sm p-4' style={styles.montserratMedium}>12/07/2024</Text>
+              <Text className='absolute top-7 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>Passenger(s): 3 persons</Text>
+              <Text className='absolute top-12 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>To: Binus School Bekasi</Text>
+              <Text className='absolute top-[68px] left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>Scheduled for: 06:00 - 07:00</Text>
+              <Text className='absolute bottom-0 left-0 text-black text-sm p-4' style={styles.montserratMedium}>Your trip has ended</Text>
+              <TouchableOpacity 
+                className="absolute bottom-3 right-3 bg-green w-[104px] rounded-[20px] mt-3 p-2"
+                activeOpacity={0.7}
+                onPress={() => router.push('/dailyTripDetail')}
+              >
+                <Text className="text-white text-sm text-center" style={styles.montserratBold}>Details</Text>
+              </TouchableOpacity>
+            </View>
+            <View className='flex flex-col justify-start items-start px-4'>
+              <Text className='text-xl ml-2 mb-1' style={styles.montserratSemiBold}>Your passengers this month</Text>
+            </View>
+            <ScrollView className='min-h-[365px] overflow-auto'>
+              <View className='flex flex-col justify-start items-start px-4'>
+                <View className='relative w-full h-28 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm'>
+                  <View className='absolute top-4 left-4 w-14 h-14 bg-green rounded-full'></View>
+                  <Text className='absolute top-0 left-[70px] text-black text-lg p-4' style={styles.montserratSemiBold}>Max Quok</Text>
+                  <Text className='absolute top-7 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>+62 818 0313 3100</Text>
+                  <Text className='absolute top-12 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>Jl. Meruya No. 7 Jakarta Barat</Text>
+                </View>
+
+                <View className='relative w-full h-28 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm mt-3'>
+                  <View className='absolute top-4 left-4 w-14 h-14 bg-green rounded-full'></View>
+                  <Text className='absolute top-0 left-[70px] text-black text-lg p-4' style={styles.montserratSemiBold}>Steven Halim</Text>
+                  <Text className='absolute top-7 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>+62 828 0316 2100</Text>
+                  <Text className='absolute top-12 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>Jl. Meruya No. 7 Jakarta Barat</Text>
+                </View>
+
+                <View className='relative w-full h-28 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm mt-3'>
+                  <View className='absolute top-4 left-4 w-14 h-14 bg-green rounded-full'></View>
+                  <Text className='absolute top-0 left-[70px] text-black text-lg p-4' style={styles.montserratSemiBold}>Aditya David</Text>
+                  <Text className='absolute top-7 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>+62 828 0316 2100</Text>
+                  <Text className='absolute top-12 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>Jl. Meruya No. 7 Jakarta Barat</Text>
+                </View>
+
                 
-                customers.map((user) => (
-                  <View key={user.user_id} className='relative w-full h-28 bg-[#fff] rounded-2xl border border-1 border-gray-200 shadow-sm mt-3'>
-                    <View className='absolute top-4 left-4 w-14 h-14 bg-green rounded-full'></View>
-                    <Text className='absolute top-0 left-[70px] text-black text-lg p-4' style={styles.montserratSemiBold}>{user.user_detail.name}</Text>
-                    {/* <Text className='absolute top-7 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}></Text> */}
-                    <Text className='absolute top-7 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>{user.user_detail.street}</Text>
-                    <TouchableOpacity 
-                      className="absolute bottom-2 right-3 bg-green w-[104px] rounded-[20px] mt-3 p-2"
-                      activeOpacity={0.7}
-                      disabled={false}
-                      onPress={() => {
-                        verifyUser(user.user_id);
-                      }}
-                    >
-                      <Text className="text-white text-sm text-center" style={styles.montserratBold}>Verify</Text>
-                    </TouchableOpacity>
-                  </View>
-
-                ))
-              }
-              
+              </View>
+            </ScrollView>
+            <View className='flex flex-col justify-start items-start px-4'>
+              <Text className='text-xl ml-2 mb-1' style={styles.montserratSemiBold}>Choose who to pick up first</Text>
+              {/* Logic prioritize pick-up:
+              1. Pressable component: 'Prioritize Pick-up' triggers Pop-up
+              2. Pop-up shows a PRESSABLE list of passengers with its corresponding address: Max Quok - address, Steven Halim - address,  Aditya David - address
+              3. Passenger is FIRST pressed -> change bgcolor to blue and add '1' in front of the name
+              4. Passenger is SECOND pressed -> change bgcolor to green and add '2' in front of the name
+              5. So on and so forth
+              6. 'Clear config' and 'Save config' options
+              7. 'Clear config' clears all state and returns the bgcolor of all list to white
+              8. 'Save config' saves all state and THIS CAN be seen by EACH PASSENGER */}
+              <TouchableOpacity 
+                className="bg-[#fff] border-2 border-green w-full h-12 mt-3 p-2 items-center justify-center"
+                activeOpacity={0.7}
+                onPress={() => router.replace('/paymentProcess')}
+              >
+                <Text className="text-green text-sm text-center" style={styles.montserratBold}>Click to prioritize </Text>
+              </TouchableOpacity>
             </View>
           </ScrollView>
-          <View className='flex flex-col justify-start items-start px-4'>
-            <Text className='text-xl ml-2 mb-1' style={styles.montserratSemiBold}>All unverified drivers</Text>
-          </View>
         </>
+        :
+        role == 'ADMIN' ? 
+        <>
+          <View className='flex-row gap-1 mt-4 ml-5 mb-4'>
+            <Text className='text-2xl text-black' style={styles.montserratRegular}>Welcome, </Text>
+            <Text className='text-2xl text-black' style={styles.montserratBold}>{user?.user_detail.name.split(' ')[0]}</Text>
+          </View>
+          <ScrollView>
+            <View className='flex flex-col justify-start items-start px-4'>
+              <Text className='text-base ml-2 mb-1' style={styles.montserratSemiBold}>Customer that needs to be verified</Text>
+              {
+                customers?.map((item, index) => {
+                  return(
+                    <View key={index} className='relative w-full h-32 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm mt-3'>
+                      <View className='absolute top-4 left-4 w-14 h-14 bg-green rounded-full'></View>
+                      <Image className='absolute top-4 left-4 w-14 h-14 rounded-full' source={{ uri: item.user_detail.profile_image }} />
+                      <Text className='absolute top-0 left-[70px] text-black text-lg p-4' style={styles.montserratSemiBold}>{item.user_detail.name}</Text>
+                      <Text className='absolute top-7 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>{item.email}</Text>
+                      <TouchableOpacity 
+                        className="absolute bottom-3 right-3 bg-green w-[104px] rounded-[20px] mt-3 p-2"
+                        activeOpacity={0.7}
+                        onPress={() => verifyUser(item.user_id)}
+                      >
+                        <Text className="text-white text-sm text-center" style={styles.montserratBold}>Verify</Text>
+                      </TouchableOpacity>
+                    </View>
+                  )
+                })
+              }
+              {
+                drivers?.map((item, index) => {
+                  return(
+                    <View key={index} className='relative w-full h-32 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm mt-3'>
+                      <View className='absolute top-4 left-4 w-14 h-14 bg-green rounded-full'></View>
+                      <Image className='absolute top-4 left-4 w-14 h-14 rounded-full' source={{ uri: item.user_detail.profile_image }} />
+                      <Text className='absolute top-0 left-[70px] text-black text-lg p-4' style={styles.montserratSemiBold}>{item.user_detail.name}</Text>
+                      <Text className='absolute top-7 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>{item.email}</Text>
+                      <TouchableOpacity 
+                        className="absolute bottom-3 right-3 bg-green w-[104px] rounded-[20px] mt-3 p-2"
+                        activeOpacity={0.7}
+                        onPress={() => verifyUser(item.user_id)}
+                      >
+                        <Text className="text-white text-sm text-center" style={styles.montserratBold}>Verify</Text>
+                      </TouchableOpacity>
+                    </View>
+                  )
+                })
+              }
+            </View>
+          </ScrollView>
+        </>
+        :
+        <View className='w-full h-full items-center justify-center'>
+          <ActivityIndicator size="large" color="green" />
+
+        </View>
       }
-    </SafeAreaView>                                                                                                                                                                             
+    </SafeAreaView>
   )
 }
 
-export default Home                                                                                                                                          
+export default Home;

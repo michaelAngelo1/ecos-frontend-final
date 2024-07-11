@@ -106,6 +106,19 @@ const Profile = () => {
         <TouchableOpacity 
           className="bg-white w-full h-12 rounded-[8px] mt-3 p-2 justify-center"
           activeOpacity={0.7}
+          onPress={() => router.push('(profile)/vehicleInfo')}
+        >
+          <View className='flex-row items-center justify-between'>
+            <View className='flex-row gap-1'>
+              <Image className='w-6 h-6' source={icons.vehicle_info}/>
+              <Text className="text-black text-sm text-start" style={styles.montserratSemiBold}>Vehicle Information</Text>
+            </View>
+            <Image className='w-8 h-8 opacity-70' source={icons.arrow_right}/>
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity 
+          className="bg-white w-full h-12 rounded-[8px] mt-3 p-2 justify-center"
+          activeOpacity={0.7}
           onPress={() => router.push('/changePassword')}
         >
           <View className='flex-row items-center justify-between'>

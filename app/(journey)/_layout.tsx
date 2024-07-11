@@ -3,24 +3,18 @@ import React from 'react'
 import { styles } from '../config/Fonts'
 import { Stack } from 'expo-router'
 
-const AuthLayout = () => {
+const JourneyLayout = () => {
   return (
     <>
       <Stack>
         <Stack.Screen
-          name="changePassword"
+          name="tripDetail"
           options={{
             headerShown: false
           }}
         />
         <Stack.Screen
-          name="profileDetail"
-          options={{
-            headerShown: false
-          }}
-        />
-        <Stack.Screen
-          name="vehicleInfo"
+          name="dailyTripDetail"
           options={{
             headerShown: false
           }}
@@ -30,4 +24,4 @@ const AuthLayout = () => {
   )
 }
 
-export default AuthLayout
+export default JourneyLayout

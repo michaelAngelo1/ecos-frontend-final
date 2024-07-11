@@ -1,4 +1,4 @@
-import { Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { styles } from '../config/Fonts'
@@ -144,12 +144,58 @@ const Orders = () => {
         </>
         : role == 'DRIVER' ?
         <>
-          <Text>Partner Orderpage</Text>
+          <View className='flex-row gap-1 mt-4 ml-5 mb-4'>
+            <Text className='text-2xl text-black' style={styles.montserratBold}>Orders</Text>
+          </View>
+          <View className='flex flex-col justify-start items-start px-4'>
+            <Text className='text-xl ml-2 mb-1' style={styles.montserratSemiBold}>Your passengers this month</Text>
+            <Text className='text-base ml-2 mb-1' style={styles.montserratMedium}>July 2024</Text>
+          </View>
+          <ScrollView className='min-h-[365px] overflow-auto'>
+              <View className='flex flex-col justify-start items-start px-4'>
+                <View className='relative w-full h-28 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm'>
+                  <View className='absolute top-4 left-4 w-14 h-14 bg-green rounded-full'></View>
+                  <Text className='absolute top-0 left-[70px] text-black text-lg p-4' style={styles.montserratSemiBold}>Max Quok</Text>
+                  <Text className='absolute top-7 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>+62 818 0313 3100</Text>
+                  <Text className='absolute top-12 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>Jl. Meruya No. 7 Jakarta Barat</Text>
+                </View>
+
+                <View className='relative w-full h-28 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm mt-3'>
+                  <View className='absolute top-4 left-4 w-14 h-14 bg-green rounded-full'></View>
+                  <Text className='absolute top-0 left-[70px] text-black text-lg p-4' style={styles.montserratSemiBold}>Steven Halim</Text>
+                  <Text className='absolute top-7 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>+62 828 0316 2100</Text>
+                  <Text className='absolute top-12 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>Jl. Meruya No. 7 Jakarta Barat</Text>
+                </View>
+
+                <View className='relative w-full h-28 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm mt-3'>
+                  <View className='absolute top-4 left-4 w-14 h-14 bg-green rounded-full'></View>
+                  <Text className='absolute top-0 left-[70px] text-black text-lg p-4' style={styles.montserratSemiBold}>Aditya David</Text>
+                  <Text className='absolute top-7 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>+62 828 0316 2100</Text>
+                  <Text className='absolute top-12 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>Jl. Meruya No. 7 Jakarta Barat</Text>
+                </View>
+
+                
+              </View>
+            </ScrollView>
+            <View className='flex flex-col justify-start items-start px-4'>
+            <Text className='text-xl ml-2 mb-1 mt-3' style={styles.montserratSemiBold}>Your order request this month</Text>
+            <Text className='text-base ml-2 mb-1' style={styles.montserratMedium}>July 2024</Text>
+          </View>
+          <ScrollView className='min-h-[365px] overflow-auto'>
+              <View className='flex flex-col justify-center items-center px-4'>
+                <Text className='text-sm text-black' style={styles.montserratRegular}>No order request for this month</Text>
+              </View>
+            </ScrollView>
         </>
-        :
+        : role == "ADMIN" ?
         <>
           <Text>Admin orderpage</Text>
         </>
+        :
+        <View className='w-full h-full items-center justify-center'>
+          <ActivityIndicator size="large" color="green" />
+
+        </View>
       }
     </SafeAreaView>    
   )

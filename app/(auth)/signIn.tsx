@@ -1,14 +1,14 @@
-import { ScrollView, Text, View } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { styles } from './../config/Fonts'
-import FormField from '@/components/FormField'
-import CustomButton from '@/components/CustomButton'
-import { Link, router } from 'expo-router'
-import Snackbar from '@/components/Snackbar'
-import { authInstance, userDetailInstance } from '../config/axiosConfig'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import { SignInProps } from '../config/Interface'
+import { ScrollView, Text, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { styles } from './../config/Fonts';
+import FormField from '@/components/FormField';
+import CustomButton from '@/components/CustomButton';
+import { Link, router } from 'expo-router';
+import Snackbar from '@/components/Snackbar';
+import { authInstance, userDetailInstance } from '../config/axiosConfig';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { SignInProps } from '../config/Interface';
 
 const SignIn: React.FC<SignInProps> = () => {
 
@@ -28,67 +28,70 @@ const SignIn: React.FC<SignInProps> = () => {
       if (token) {
         setIsAuthenticated(true);
         console.log('masuk sini dong');
-        checkAdminVerification(token);
+        const isAdminApproved = await checkAdminVerification(token);
+        if (isAdminApproved === false) {
+          router.replace('/pendingApproval');
+        } else {
+          router.replace('/home');
+        }
       } 
-      // router.replace('/pendingApproval')
     } catch (error) {
       console.error('Error checking stored token:', error);
     }
   };
-  useEffect(() => {
-    checkAuthToken();
 
+  useEffect(() => {
+    checkAuthToken().catch(error => console.error('Error in checkAuthToken useEffect:', error));
   }, []);
 
-  const checkAdminVerification = async (userToken: string) => {
+  const checkAdminVerification = async (userToken: string): Promise<boolean> => {
     try {
-      const response = await userDetailInstance(userToken).get('',)
-      return response.data.response.user_detail.is_admin_approved
+      const response = await userDetailInstance(userToken).get('');
+      return response.data.response.user_detail.is_admin_approved;
     } catch (e) {
-      console.log('error check admin: ', e);
-      
+      console.log('Error checking admin verification: ', e);
+      return false;
     }
-  }
+  };
 
   const handleSignIn = async ({ email, password }: SignInProps) => {
-    console.log('masuk handle sign in');
+    console.log('Handling sign in');
     try {
       const response = await authInstance.post('', {
         email,
         password,
       });
-      if(response && response.data) {
-        storeJWT(response.data["access_token"]);
+      console.log(response);
+      if (response && response.data) {
+        await storeJWT(response.data["access_token"]);
         setIsAuthenticated(true);
         const isAdminApproved = await checkAdminVerification(response.data['access_token']);
-        console.log("is admin approved: ",isAdminApproved);
-        if(!isAdminApproved!) {
+        console.log("is admin approved: ", isAdminApproved);
+        if (!isAdminApproved) {
           router.replace('/pendingApproval');
           return;
         }
         console.log('is Admin approved: ', isAdminApproved);
         router.replace('/home');
-        // router.replace('/home');
       } else {
         console.log('NO RESPONSE');
         throw new Error('No response data');
       }
     } catch (error: any) {
-      console.log('ERROR SIGN IN', error.response.data);
-      // Show Snackbar on error (assuming you have the implementation)
+      console.log('Error during sign in', error);
+      // Show Snackbar on error
       setSnackbarVisible(true);
     }
   };
 
   const storeJWT = async (token: string) => {
     try {
-      await AsyncStorage.setItem('userToken', token)
+      await AsyncStorage.setItem('userToken', token);
       console.log("Successful store JWT");
     } catch (e) {
-      console.log("Failed to store JWT: ", e)
+      console.log("Failed to store JWT: ", e);
     }
   };
-
 
   return (
     <SafeAreaView className='bg-[#fff] h-full'>
@@ -98,18 +101,14 @@ const SignIn: React.FC<SignInProps> = () => {
           <FormField
             title="Enter your email"
             value={form.email}
-            handleChangeText={(e: string) => setForm({ ...form, 
-              email: e
-            })}
+            handleChangeText={(e: string) => setForm({ ...form, email: e })}
             otherStyles="mt-4"
             keyboardType="email-address"
           />
           <FormField
             title="Enter your password"
             value={form.password}
-            handleChangeText={(e: string) => setForm({ ...form, 
-              password: e
-            })}
+            handleChangeText={(e: string) => setForm({ ...form, password: e })}
             otherStyles="mt-3"
             keyboardType='password'
           />
@@ -120,9 +119,9 @@ const SignIn: React.FC<SignInProps> = () => {
             textColor='text-white'
             handlePress={() => {
               handleSignIn({
-                email:form.email, 
-                password:form.password
-              });
+                email: form.email, 
+                password: form.password
+              }).catch(error => console.error('Error during handleSignIn:', error));
             }}
           />
           <View className='justify-center pt-2 flex-row gap-2'>
@@ -140,8 +139,8 @@ const SignIn: React.FC<SignInProps> = () => {
           
           { snackbarVisible && 
             <Snackbar
-              message="Sign in failed. Check your username and password." // Update message if needed
-              setVisible={setSnackbarVisible} // Pass the function to update visibility
+              message="Sign in failed. Check your username and password."
+              setVisible={setSnackbarVisible}
               duration={3000}
               bgColor='bg-red-900'
             />
@@ -149,7 +148,7 @@ const SignIn: React.FC<SignInProps> = () => {
         </View>
       </ScrollView>
     </SafeAreaView>
-  )
-}
+  );
+};
 
-export default SignIn
+export default SignIn;

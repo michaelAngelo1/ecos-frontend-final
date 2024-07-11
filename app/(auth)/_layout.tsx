@@ -67,6 +67,12 @@ const AuthLayout = () => {
             headerShown: false
           }}
         />
+        <Stack.Screen
+          name="documentVerif"
+          options={{
+            headerShown: false
+          }}
+        />
       </Stack>
     </>
   )

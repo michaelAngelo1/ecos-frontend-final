@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import React, { useState } from 'react'
 import { Image } from 'expo-image';
 import images from '@/constants/images';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -7,6 +7,8 @@ import { styles } from '../config/Fonts';
 import CustomButton from '@/components/CustomButton';
 import { router } from 'expo-router';
 import { Linking } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { userDetailInstance } from '../config/axiosConfig';
 
 const dailyTripDetail = () => {
 
@@ -16,7 +18,27 @@ const dailyTripDetail = () => {
     2. if role partner, ada Start Journey button dan Emergency Button
     3. if role passenger, cuman ada Emergency Button
     4. 
-  */
+  */ 
+  
+  const [role, setRole] = useState();
+  const getToken = async () => {
+    try {
+      const userToken = await AsyncStorage.getItem("userToken")
+      if (userToken !== null) {
+        console.log("User token read: ", userToken);
+        return userToken;
+      }
+    } catch (e) {
+      console.log("Error reading JWT", e);
+    }
+  }
+
+  const getUserData = async () => {
+    let userToken = await getToken();
+    const response = await userDetailInstance(userToken!).get('', );
+    setRole(response.data.response.role);
+  }
+  
 
   const handleEmergency = () => {
     console.log('call emergency number 6281803133100')
@@ -32,7 +54,7 @@ const dailyTripDetail = () => {
       <View className='flex flex-col'>
         <Image className='w-full h-60' source={images.dummy_maps}/>
         <View className='mt-3 px-4'>
-          <Text className='text-lg text-black' style={styles.montserratSemiBold}>Daily Trip #243881D finished!</Text>
+          <Text className='text-lg text-black' style={styles.montserratSemiBold}>Daily Trip #243881D ongoing</Text>
           <Text className=' text-base text-black' style={styles.montserratMedium}>July 12nd, 2024. 06:00 - 07:00</Text>
           <Text className='text-base text-black' style={styles.montserratMedium}>To: Binus School Bekasi</Text>
         </View>
@@ -61,8 +83,8 @@ const dailyTripDetail = () => {
               <Text style={styles.montserratRegular}>Jl. Mulyosari 2 No. 3</Text>
             </View>
             <View>
-              <Text style={styles.montserratMedium}>3. Steven William</Text>
-              <Text style={styles.montserratRegular}>Jl. Nirwana Eksekutif 1 No. 21A</Text>
+              <Text style={styles.montserratMedium}>3. Mike Angelo</Text>
+              <Text style={styles.montserratRegular}>Jl. Galaxy Bumi Permai V No. 5</Text>
             </View>
           </View>
         </View>
@@ -84,14 +106,13 @@ const dailyTripDetail = () => {
           />
 
         </View> */}
-        <View className='flex-row gap-2 pr-48 mx-4'>
+        <View className='w-full px-4'>
           <CustomButton
-            actionText='Emergency'
+            actionText='Emergency Contact Admin'
             bgColor='bg-red-900'
             textColor='text-white'
             handlePress={handleEmergency}
           />
-          <View className='w-1'></View>
         </View>
       </View>
     </SafeAreaView>

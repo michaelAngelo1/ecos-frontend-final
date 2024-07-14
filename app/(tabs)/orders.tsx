@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { styles } from '../config/Fonts'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { userDetailInstance } from '../config/axiosConfig';
+import { router } from 'expo-router';
 
 class OrderHistory {
   driverName: string;
@@ -52,14 +53,15 @@ const Orders = () => {
   const [orderCategory, setOrderCategory] = useState('History');
   let orderCategories: string[] = ['History', 'Ongoing'];
 
-  let order2 = new OrderHistory("Pak Haryanto", "May 4nd, 06:45", "IDR 14.000", false);
-  let order3 = new OrderHistory("Pak Setyono", "May 5th, 06:58", "IDR 10.000", false);
-  let order4 = new OrderHistory("Pak Wahyudi", "May 6nd, 17:55", "IDR 12.000", true);
+  let order2 = new OrderHistory("Pak Haryanto", "May 2024", "Rp 1.400.000", false);
+  let order3 = new OrderHistory("Pak Setyono", "June 2024", "Rp 1.000.000", false);
+  let order4 = new OrderHistory("Bu Lily Halim", "July 2024", "Rp 1.200.000", true);
 
   let orders: OrderHistory[] = [order2, order3, order4];
 
   const handleCurrentOrder = () => {
     console.log('to current order page');
+    router.push('/dailyTripDetail');
   }
 
   const handleHistoryOrder = () => {
@@ -123,7 +125,7 @@ const Orders = () => {
                             <Text className="text-white text-sm text-center" style={styles.montserratBold}>Track</Text>
                           </TouchableOpacity>
                         :
-                        <TouchableOpacity 
+                        <TouchableOpacity   
                           className="absolute bottom-3 right-3 bg-green w-[104px] rounded-[20px] mt-3 p-2"
                           activeOpacity={0.7}
                           onPress={handleHistoryOrder}
@@ -156,21 +158,21 @@ const Orders = () => {
                   <View className='absolute top-4 left-4 w-14 h-14 bg-green rounded-full'></View>
                   <Text className='absolute top-0 left-[70px] text-black text-lg p-4' style={styles.montserratSemiBold}>Max Quok</Text>
                   <Text className='absolute top-7 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>+62 818 0313 3100</Text>
-                  <Text className='absolute top-12 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>Jl. Meruya No. 7 Jakarta Barat</Text>
+                  <Text className='absolute top-12 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>Jl. Kendangsari 1 No. 5</Text>
                 </View>
 
                 <View className='relative w-full h-28 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm mt-3'>
                   <View className='absolute top-4 left-4 w-14 h-14 bg-green rounded-full'></View>
                   <Text className='absolute top-0 left-[70px] text-black text-lg p-4' style={styles.montserratSemiBold}>Steven Halim</Text>
                   <Text className='absolute top-7 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>+62 828 0316 2100</Text>
-                  <Text className='absolute top-12 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>Jl. Meruya No. 7 Jakarta Barat</Text>
+                  <Text className='absolute top-12 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>Jl. Mulyosari 2 No. 3</Text>
                 </View>
 
                 <View className='relative w-full h-28 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm mt-3'>
                   <View className='absolute top-4 left-4 w-14 h-14 bg-green rounded-full'></View>
-                  <Text className='absolute top-0 left-[70px] text-black text-lg p-4' style={styles.montserratSemiBold}>Aditya David</Text>
+                  <Text className='absolute top-0 left-[70px] text-black text-lg p-4' style={styles.montserratSemiBold}>Mike Angelo</Text>
                   <Text className='absolute top-7 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>+62 828 0316 2100</Text>
-                  <Text className='absolute top-12 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>Jl. Meruya No. 7 Jakarta Barat</Text>
+                  <Text className='absolute top-12 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>Jl. Galaxy Bumi Permai V No. 5</Text>
                 </View>
 
                 

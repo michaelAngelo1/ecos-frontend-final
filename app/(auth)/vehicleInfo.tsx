@@ -7,6 +7,9 @@ import { Link, router } from 'expo-router'
 import { styles } from '../config/Fonts'
 import * as ImagePicker from 'expo-image-picker'
 import Snackbar from '@/components/Snackbar'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { driverDetailInstance } from '../config/axiosConfig'
+import { VehicleInfoProps } from '../config/Interface'
 
 const VehicleInfo = () => {
 
@@ -17,6 +20,7 @@ const VehicleInfo = () => {
     vehicleModel: '',
     seatCapacity: '',
     numberPlate: '',
+    yearReleased: '',
   })
 
   useEffect(() => {
@@ -50,12 +54,39 @@ const VehicleInfo = () => {
     }
   };
 
+  const getToken = async () => {
+    try {
+      const userToken = await AsyncStorage.getItem("userToken")
+      if (userToken !== null) {
+        console.log("User token read: ", userToken);
+        return userToken;
+      }
+    } catch (e) {
+      console.log("Error reading JWT", e);
+    }
+  }
+
+  const handleSubmitVehicleInfo = async ({vehicleModel, seatCapacity, yearReleased, numberPlate} : VehicleInfoProps) => {
+    try {
+      let userToken = await getToken();
+      const response = await driverDetailInstance(userToken!).patch('', {
+        vehicle_model: vehicleModel,
+        vehicle_capacity: seatCapacity,
+        vehicle_number_plate: numberPlate
+      });
+      // console.log('update role response: ', response.data.response.role);
+      router.push('/pendingApproval')
+    } catch (e) {
+      console.log('error vehicle info: ', e.response);
+    }
+  }
+
   return (
     <SafeAreaView className='bg-[#fff] h-full'>
       <ScrollView>
         <View className='flex flex-col min-h-[100vh] justify-center items-center px-4'>
           <Text className='text-4xl text-green text-center' style={styles.montserratRegular}>Vehicle Information</Text>
-          {image ?
+          {/* {image ?
             <>
               <Image source={{ uri: image }} className='w-36 h-36'/>
               <View className='flex-row gap-1 w-screen px-4 mt-2'>
@@ -71,7 +102,7 @@ const VehicleInfo = () => {
                 <Text className='text-sm text-green p-2 border-2 border-green rounded-md' style={styles.montserratRegular}>Upload car picture</Text>
               </Pressable>
             </>
-          }
+          } */}
           
           
 
@@ -94,6 +125,15 @@ const VehicleInfo = () => {
             keyboardType="seat-capacity"
           />
           <FormField
+            title="Vehicle Release Year"
+            value={form.yearReleased}
+            handleChangeText={(e: string) => setForm({ ...form, 
+              yearReleased: e
+            })}
+            otherStyles="mt-3"
+            keyboardType="year-released"
+          />
+          <FormField
             title="Number Plate"
             value={form.numberPlate}
             handleChangeText={(e: string) => setForm({ ...form, 
@@ -109,11 +149,18 @@ const VehicleInfo = () => {
             bgColor='bg-green'
             textColor='text-white'
             handlePress={() => {
-              if(form.vehicleModel == '' && form.seatCapacity == '' && form.numberPlate == '') {
+              if(form.vehicleModel == '' && form.seatCapacity == '' && form.numberPlate == '' && form.yearReleased == '') {
                 setSnackbarVisible(true);
                 return;
+              } else if(parseInt(form.yearReleased) >= 2014) {
+                return;
               }
-              router.push('/documentVerif')
+              handleSubmitVehicleInfo({
+                vehicleModel: form.vehicleModel,
+                seatCapacity: form.seatCapacity,
+                numberPlate: form.numberPlate,
+                yearReleased: form.yearReleased
+              });
             }}
           />
 
@@ -122,7 +169,7 @@ const VehicleInfo = () => {
           </View>
           { snackbarVisible && 
             <Snackbar
-              message="Please fill your vehicle information" // Update message if needed
+              message="Please fill your vehicle information. Make sure your vehicle release year is >= 2014" // Update message if needed
               setVisible={setSnackbarVisible} // Pass the function to update visibility
               duration={3000}
               bgColor='bg-red-900'

@@ -42,3 +42,10 @@ export interface SignInProps {
   password: string
 }
 
+export interface VehicleInfoProps {
+  vehicleModel: string
+  seatCapacity: string
+  numberPlate: string
+  yearReleased: string
+}
+

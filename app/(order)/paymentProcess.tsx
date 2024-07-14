@@ -1,4 +1,4 @@
-import { Platform } from 'react-native'
+import { ActivityIndicator, Platform } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import * as ImagePicker from 'expo-image-picker'
 
@@ -28,9 +28,15 @@ const paymentProcess = () => {
     }
   };
 
+  const [loading, setLoading] = useState(false);
   const uploadImage = async () => {
     console.log('image uploaded');
+    setLoading(true);
+    await new Promise(resolve => setTimeout(resolve, 2400));
+    setLoading(false);
+    await new Promise(resolve => setTimeout(resolve, 400));
     setSnackbarVisible(true);
+    router.push('/pendingPaymentVerif');
   }
 
   useEffect(() => {
@@ -75,23 +81,28 @@ const paymentProcess = () => {
             </>
           }
           
-
-          <CustomButton
-            actionText="Upload proof"
-            bgColor='bg-green'
-            textColor='text-white'
-            handlePress={() => 
-              uploadImage()
-            }
-          />
-          <CustomButton
+          {
+            loading ?
+            
+            <ActivityIndicator className='mt-3 p-1' size="large" color="green" />
+            :
+            <CustomButton
+              actionText="Upload proof"
+              bgColor='bg-green'
+              textColor='text-white'
+              handlePress={() => 
+                uploadImage()
+              }
+            />
+          }
+          {/* <CustomButton
             actionText="Next up"
             bgColor='bg-white'
             textColor='text-green'
             handlePress={() => 
               router.push('/pendingPaymentVerif')
             }
-          />
+          /> */}
         { snackbarVisible && 
           <Snackbar
             message="Successfully uploaded payment proof" // Update message if needed

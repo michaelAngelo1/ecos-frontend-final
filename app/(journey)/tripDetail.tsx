@@ -43,8 +43,8 @@ const tripDetail = () => {
               <Text style={styles.montserratRegular}>Jl. Mulyosari 2 No. 3</Text>
             </View>
             <View>
-              <Text style={styles.montserratMedium}>3. Steven William</Text>
-              <Text style={styles.montserratRegular}>Jl. Nirwana Eksekutif 1 No. 21A</Text>
+              <Text style={styles.montserratMedium}>3. Mike Angelo</Text>
+              <Text style={styles.montserratRegular}>Jl. Galaxy Bumi Permai V No. 5</Text>
             </View>
           </View>
         </View>

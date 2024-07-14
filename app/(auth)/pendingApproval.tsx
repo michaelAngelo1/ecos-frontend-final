@@ -71,6 +71,8 @@ const PendingApproval = () => {
       }
       setIsApproved(response.data.response.user_detail.is_admin_approved);
       setSnackbarVisible(true);
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      setSnackbarVisible(false);
       console.log("admin approval: ", response.data.response.user_detail.is_admin_approved);
     } catch (e) {
       console.log('error check admin: ', e);

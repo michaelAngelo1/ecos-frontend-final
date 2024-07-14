@@ -27,6 +27,13 @@ const AddProfPic = () => {
     }
   }
   
+  const [role, setRole] = useState('');
+  const getUserData = async () => {
+    let userToken = await getToken();
+    const response = await userDetailInstance(userToken!).get('', );
+    setRole(response.data.response.role);
+  }
+
   useEffect(() => {
     (async () => {
       if (Platform.OS !== 'web') {
@@ -41,6 +48,7 @@ const AddProfPic = () => {
         }
       }
     })();
+    getUserData();
   }, []);
 
   const pickImage = async () => {
@@ -76,13 +84,19 @@ const AddProfPic = () => {
         profile_image_file: formData,
       });
       console.log('Success: ', response);
-      router.push('/home');
+      router.push('/pendingApproval');
     } catch (e) {
       console.log('error upload image', e);
     }
   }
 
- 
+  const handleSkipForNow = () => {
+    if(role == 'CUSTOMER') {
+      router.push('/pendingApproval');
+    } else if(role == 'DRIVER') {
+      router.push('/vehicleInfo')
+    }
+  }
 
   return (
     <SafeAreaView className='bg-[#fff] h-full'>
@@ -122,7 +136,7 @@ const AddProfPic = () => {
             actionText="Skip for now"
             bgColor='bg-white'
             textColor='text-green'
-            handlePress={() => router.replace('/vehicleInfo')}
+            handlePress={handleSkipForNow}
           />
           { snackbarVisible && 
             <Snackbar

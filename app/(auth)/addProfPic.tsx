@@ -67,9 +67,11 @@ const AddProfPic = () => {
       formData.append('profile_picture', {
         uri: imageFile!.uri,
         name: imageFile!.fileName,
-        type: imageFile!.type 
+        type: imageFile!.mimeType
       });
-      console.log('form data: ', typeof formData);
+      console.log('uri: ', imageFile!.uri);
+      console.log("name: ", imageFile!.fileName);
+      console.log("type: ", imageFile!.mimeType);
       const response = await userImageInstance(userToken!).patch('', {
         profile_image_file: formData,
       });
@@ -80,11 +82,7 @@ const AddProfPic = () => {
     }
   }
 
-  const dummyUploadImage = async () => {
-    setSnackbarVisible(true);
-    await new Promise(resolve => setTimeout(resolve, 3000));
-    router.push('/vehicleInfo');
-  }
+ 
 
   return (
     <SafeAreaView className='bg-[#fff] h-full'>
@@ -118,7 +116,6 @@ const AddProfPic = () => {
             handlePress={() => {
               uploadImage();
             }
-              // uploadImage()
             }
           />
           <CustomButton

@@ -49,34 +49,26 @@ const Orders = () => {
     }
   }
 
-  useEffect(() => {
-    getUserData();
-  }, [])
-  
-
-  /* 
-    TODO:
-    1. Get token stored on AsyncStorage
-    2. Get user detail by token
-    3. Get ROLE from user detail
-    4. If ROLE == 'Passenger', show Passenger Orderpage
-    5. Else if ROLE == 'Partner', show Partner Orderpage
-    6. Also fetch the name to show on 'Welcome, {name}'
-  */
-  
-  // dummy state role variable, replace LATER
-  // let role = 'Passenger'; // Partner or Passenger
-
   const [orderCategory, setOrderCategory] = useState('History');
   let orderCategories: string[] = ['History', 'Ongoing'];
 
-  let order1 = new OrderHistory("Pak Wahyudi", "May 2nd, 06:55", "IDR 12.000", false);
   let order2 = new OrderHistory("Pak Haryanto", "May 4nd, 06:45", "IDR 14.000", false);
   let order3 = new OrderHistory("Pak Setyono", "May 5th, 06:58", "IDR 10.000", false);
-  let order4 = new OrderHistory("Pak Chandra", "May 6nd, 17:55", "IDR 12.000", true);
-  let order5 = new OrderHistory("Pak Agung", "June 6th, 06:47", "IDR 14.000", true);
+  let order4 = new OrderHistory("Pak Wahyudi", "May 6nd, 17:55", "IDR 12.000", true);
 
-  let orders: OrderHistory[] = [order1, order2, order3, order4, order5];
+  let orders: OrderHistory[] = [order2, order3, order4];
+
+  const handleCurrentOrder = () => {
+    console.log('to current order page');
+  }
+
+  const handleHistoryOrder = () => {
+    console.log('to order history page');
+  }
+  useEffect(() => {
+    getUserData();
+  }, [])
+
 
   return (
     <SafeAreaView className='bg-[#fff] h-full'>
@@ -121,17 +113,24 @@ const Orders = () => {
                         
                       }
                       <Text className='absolute top-14 left-[88px] text-black text-sm' style={styles.montserratRegular}>{orderHistory.date}</Text>
-                      <TouchableOpacity 
-                        className="absolute bottom-3 right-3 bg-green w-[104px] rounded-[20px] mt-3 p-2"
-                        activeOpacity={0.7}
-                      >
-                        {
-                          orderHistory.isOngoing ?
+                      {
+                        orderHistory.isOngoing ?
+                          <TouchableOpacity 
+                            className="absolute bottom-3 right-3 bg-green w-[104px] rounded-[20px] mt-3 p-2"
+                            activeOpacity={0.7}
+                            onPress={handleCurrentOrder}
+                          >
                             <Text className="text-white text-sm text-center" style={styles.montserratBold}>Track</Text>
-                          :
-                            <Text className="text-white text-sm text-center" style={styles.montserratBold}>Rejoin</Text>
-                        }
-                      </TouchableOpacity>
+                          </TouchableOpacity>
+                        :
+                        <TouchableOpacity 
+                          className="absolute bottom-3 right-3 bg-green w-[104px] rounded-[20px] mt-3 p-2"
+                          activeOpacity={0.7}
+                          onPress={handleHistoryOrder}
+                        >
+                          <Text className="text-white text-sm text-center" style={styles.montserratBold}>Rejoin</Text>
+                        </TouchableOpacity>
+                      }
                     </View>
 
                   ))

@@ -22,11 +22,7 @@ const PendingApproval = () => {
   */ 
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [isApproved, setIsApproved] = useState(false);
-  const checkVerif = () => {
-    setIsApproved(!isApproved);
-    setSnackbarVisible(true);
-    router.push('/signIn');
-  }
+  
   const getToken = async () => {
     try {
       const userToken = await AsyncStorage.getItem("userToken")
@@ -68,9 +64,13 @@ const PendingApproval = () => {
       const userToken = await getToken();
       const response = await userDetailInstance(userToken!).get('',);
       if(response.data.response.user_detail.is_admin_approved) {
+        setSnackbarVisible(false);
+        await new Promise(resolve => setTimeout(resolve, 3000));
         router.replace('/home');
         return;
       }
+      setIsApproved(response.data.response.user_detail.is_admin_approved);
+      setSnackbarVisible(true);
       console.log("admin approval: ", response.data.response.user_detail.is_admin_approved);
     } catch (e) {
       console.log('error check admin: ', e);
@@ -93,8 +93,8 @@ const PendingApproval = () => {
             textColor='text-white'
             bgColor='bg-green'
             handlePress={ () => {
-              // checkAdminVerification
-              checkVerif()
+              checkAdminVerification();
+              // checkVerif()
               
             }
             }
@@ -105,9 +105,16 @@ const PendingApproval = () => {
             bgColor='bg-white'
             handlePress={handleSignOut}
           />
-          { snackbarVisible && 
+          { isApproved ?
+              <Snackbar
+                message="You have been verified by the admin. Let's sign in!" // Update message if needed
+                setVisible={setSnackbarVisible} // Pass the function to update visibility
+                duration={3000}
+                bgColor='bg-blue'
+              />
+            : 
             <Snackbar
-              message="Your account has been verified! Let's sign in" // Update message if needed
+              message="Verification process is still ongoing. Please wait." // Update message if needed
               setVisible={setSnackbarVisible} // Pass the function to update visibility
               duration={3000}
               bgColor='bg-blue'

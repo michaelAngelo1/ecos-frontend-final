@@ -90,6 +90,7 @@ const Home = () => {
       let userToken = await getToken();
       const response = await adminApprovalInstance(userToken!).get('', );
       console.log(response.data.response.driver);
+      console.log(response.data.response.customer);
       setDrivers(response.data.response.driver);
       setCustomers(response.data.response.customer);
     } catch (e) {
@@ -116,10 +117,11 @@ const Home = () => {
 
   useEffect(() => {
     getUserData();
-    if(role == 'ADMIN') {
-      console.log('ALL FETCHED USERs', customers);
-      getAllUsers();
-    }
+    getAllUsers();
+    // if(role == 'ADMIN') {
+    //   console.log('ALL FETCHED USERs', customers);
+    //   getAllUsers();
+    // }
   }, [])
 
   return (
@@ -180,12 +182,17 @@ const Home = () => {
                 <Image className='absolute top-[85px] left-[80px] w-6 h-6' source={icons.passengers_icon}/>
                 <Text className='absolute top-[70px] left-[90px] text-black text-sm p-4' style={styles.montserratRegular}>4 persons</Text>
                 <Text className='absolute top-5 right-3 text-black text-base' style={styles.montserratRegular}>Rp 1.200.000</Text>
+                
+                <Text className="absolute bottom-14 right-7 text-blue text-sm text-center" style={styles.montserratRegular}>Matched</Text>
+                
                 <TouchableOpacity 
-                  className="absolute bottom-3 right-3 bg-blue w-[104px] rounded-[20px] mt-3 p-2"
+                  className="absolute bottom-3 right-3 bg-green w-[104px] rounded-[20px] mt-3 p-2"
                   activeOpacity={0.7}
-                  onPress={() => router.push('/orderDetail')}
+                  onPress={() => {
+                    router.push('/dailyTripDetail')
+                  }}
                 >
-                  <Text className="text-white text-sm text-center" style={styles.montserratBold}>Matched</Text>
+                  <Text className="text-white text-sm text-center" style={styles.montserratBold}>Track</Text>
                 </TouchableOpacity>
               </View>
 
@@ -339,7 +346,7 @@ const Home = () => {
           </View>
           <ScrollView>
             <View className='flex flex-col justify-start items-start px-4'>
-              <Text className='text-base ml-2 mb-1' style={styles.montserratSemiBold}>Customer that needs to be verified</Text>
+              <Text className='text-base ml-2 mb-1' style={styles.montserratSemiBold}>Passengers who need to be verified</Text>
               {
                 customers?.map((item, index) => {
                   return(
@@ -351,14 +358,27 @@ const Home = () => {
                       <TouchableOpacity 
                         className="absolute bottom-3 right-3 bg-green w-[104px] rounded-[20px] mt-3 p-2"
                         activeOpacity={0.7}
-                        onPress={() => verifyUser(item.user_id)}
+                        disabled={item.user_detail.is_admin_approved ? true : false}
+                        onPress={() => 
+                          {
+                            verifyUser(item.user_id);
+                            getAllUsers();
+                          }
+                        }
                       >
-                        <Text className="text-white text-sm text-center" style={styles.montserratBold}>Verify</Text>
+                        {
+                          item.user_detail.is_admin_approved ?
+                            <Text className="text-white text-sm text-center" style={styles.montserratBold}>Verified</Text>
+                          :
+                            <Text className="text-white text-sm text-center" style={styles.montserratBold}>Verify</Text>
+
+                        }
                       </TouchableOpacity>
                     </View>
                   )
                 })
               }
+              <Text className='text-base ml-2 mb-1' style={styles.montserratSemiBold}>Partners who need to be verified</Text>
               {
                 drivers?.map((item, index) => {
                   return(
@@ -370,9 +390,21 @@ const Home = () => {
                       <TouchableOpacity 
                         className="absolute bottom-3 right-3 bg-green w-[104px] rounded-[20px] mt-3 p-2"
                         activeOpacity={0.7}
-                        onPress={() => verifyUser(item.user_id)}
+                        disabled={item.user_detail.is_admin_approved ? true : false}
+                        onPress={() => 
+                          {
+                            verifyUser(item.user_id);
+                            getAllUsers();
+                          }
+                        }
                       >
-                        <Text className="text-white text-sm text-center" style={styles.montserratBold}>Verify</Text>
+                        {
+                          item.user_detail.is_admin_approved ?
+                            <Text className="text-white text-sm text-center" style={styles.montserratBold}>Verified</Text>
+                          :
+                            <Text className="text-white text-sm text-center" style={styles.montserratMedium}>Verify</Text>
+
+                        }
                       </TouchableOpacity>
                     </View>
                   )

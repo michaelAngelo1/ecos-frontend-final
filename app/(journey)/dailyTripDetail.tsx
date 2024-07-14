@@ -6,11 +6,21 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { styles } from '../config/Fonts';
 import CustomButton from '@/components/CustomButton';
 import { router } from 'expo-router';
+import { Linking } from 'react-native';
 
 const dailyTripDetail = () => {
 
+  /*
+    TODO: 
+    1. Get role partner / passenger
+    2. if role partner, ada Start Journey button dan Emergency Button
+    3. if role passenger, cuman ada Emergency Button
+    4. 
+  */
+
   const handleEmergency = () => {
     console.log('call emergency number 6281803133100')
+    Linking.openURL('https://wa.me/+6289620033399');
   }
 
   const handleStartJourney = () => {
@@ -65,7 +75,7 @@ const dailyTripDetail = () => {
             <Text style={styles.montserratRegular}>None for today</Text>
           </View>
         </View>
-        <View className='mx-4'>
+        {/* <View className='mx-4'>
           <CustomButton
             actionText='End Journey'
             bgColor='bg-green'
@@ -73,8 +83,8 @@ const dailyTripDetail = () => {
             handlePress={handleStartJourney}
           />
 
-        </View>
-        {/* <View className='flex-row gap-2 pr-48 mx-4'>
+        </View> */}
+        <View className='flex-row gap-2 pr-48 mx-4'>
           <CustomButton
             actionText='Emergency'
             bgColor='bg-red-900'
@@ -82,7 +92,7 @@ const dailyTripDetail = () => {
             handlePress={handleEmergency}
           />
           <View className='w-1'></View>
-        </View> */}
+        </View>
       </View>
     </SafeAreaView>
   )

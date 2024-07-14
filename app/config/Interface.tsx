@@ -26,6 +26,17 @@ export interface SignUpCustomerProps {
   parentsPhone: string
 }
 
+export interface SignUpDriverProps {
+  firstName: string
+  lastName: string
+  email: string
+  phoneNumber: string
+  pickUpAddress: string
+  password: string
+  grade: string
+  binusianId: string
+}
+
 export interface SignInProps {
   email: string
   password: string

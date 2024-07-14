@@ -5,7 +5,7 @@ import { styles } from './../config/Fonts'
 import FormField from '@/components/FormField'
 import CustomButton from '@/components/CustomButton'
 import { Link, router } from 'expo-router'
-import { SignInProps, SignUpCustomerProps } from '../config/Interface'
+import { SignInProps, SignUpCustomerProps, SignUpDriverProps } from '../config/Interface'
 import { createUserWithEmailAndPassword } from 'firebase/auth'
 import { auth } from '@/firebase/firebaseConfig'
 import { authInstance, userDetailInstance } from '../config/axiosConfig'
@@ -29,23 +29,23 @@ const SignUpDriver = () => {
   let role = 'DRIVER';
   const [signUpToken, setSignUpToken] = useState('');
 
-  const handleSignUpCustomer = async ({ firstName, lastName, email, phoneNumber, pickUpAddress, password, grade }: SignUpCustomerProps) => {
+  const handleSignUpCustomer = async ({ firstName, lastName, email, phoneNumber, pickUpAddress, password, grade, binusianId }: SignUpDriverProps) => {
     try {
-      // const response = await authInstance.patch('', {
-      //   name: firstName + " " +  lastName,
-      //   email: email,
-      //   phone: phoneNumber,
-      //   street: pickUpAddress,
-      //   password: password,
-      //   grade: 0,
-      // });
+      const response = await authInstance.patch('', {
+        name: firstName + " " +  lastName,
+        email: email,
+        phone: phoneNumber,
+        street: pickUpAddress,
+        password: password,
+        binusian_id: binusianId,
+        grade: 0,
+      });
 
-      // console.log(response.data['access_token']);
+      console.log(response.data['access_token']);
 
-      // // Update the state and wait for it to be set before proceeding
-      // setSignUpToken(response.data['access_token']);
-      // handleNextSteps(response.data['access_token'], email);
-      router.push('/addProfPic');
+      // Update the state and wait for it to be set before proceeding
+      setSignUpToken(response.data['access_token']);
+      handleNextSteps(response.data['access_token'], email);
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.error('Axios error:', error.message);
@@ -185,7 +185,7 @@ const SignUpDriver = () => {
             keyboardType="pickUpAddress"
           />
           <FormField
-            title="Enter your Binusian ID"
+            title="Enter your child's Binusian ID"
             value={form.binusianId}
             handleChangeText={(e: string) => setForm({ ...form, binusianId: e })}
             otherStyles="mt-3"

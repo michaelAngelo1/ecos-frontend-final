@@ -1,11 +1,10 @@
-import { ScrollView, StyleSheet, Text, View } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import { ScrollView, Text, View } from 'react-native'
+import React, { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import NumberInput from '@/components/NumberInput'
 import { styles } from '../config/Fonts'
 import { router } from 'expo-router'
 import CustomButton from '@/components/CustomButton'
-import { signInWithPhoneNumber, onAuthStateChanged, Auth } from "firebase/auth";
 
 const VerifCustomer = () => {
 

@@ -72,11 +72,11 @@ const AddProfPic = () => {
       let userToken = await getToken();
 
       const formData = new FormData();
-      formData.append('profile_picture', {
-        uri: imageFile!.uri,
-        name: imageFile!.fileName,
-        type: imageFile!.mimeType
-      });
+      // formData.append('profile_picture', {
+      //   uri: imageFile!.uri,
+      //   name: imageFile!.fileName,
+      //   type: imageFile!.mimeType
+      // });
       console.log('uri: ', imageFile!.uri);
       console.log("name: ", imageFile!.fileName);
       console.log("type: ", imageFile!.mimeType);

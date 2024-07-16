@@ -32,7 +32,7 @@ const vehicleInfo = () => {
             <FormField
               title=''
               value={seatCapacity}
-              handleChangeText={seatCapacity}
+              handleChangeText={setSeatCapacity}
               otherStyles='mt-3'
               keyboardType='phone'
             />

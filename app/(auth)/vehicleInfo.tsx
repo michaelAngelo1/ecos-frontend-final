@@ -1,4 +1,4 @@
-import { Button, Platform, ScrollView, StyleSheet, Text, View, Image, Pressable } from 'react-native'
+import { Button, Platform, ScrollView, StyleSheet, Text, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import FormField from '@/components/FormField'
@@ -69,11 +69,16 @@ const VehicleInfo = () => {
   const handleSubmitVehicleInfo = async ({vehicleModel, seatCapacity, yearReleased, numberPlate} : VehicleInfoProps) => {
     try {
       let userToken = await getToken();
-      const response = await driverDetailInstance(userToken!).patch('', {
-        vehicle_model: vehicleModel,
-        vehicle_capacity: seatCapacity,
-        vehicle_number_plate: numberPlate
-      });
+      if(vehicleModel == '' || seatCapacity == '' || numberPlate == '' || yearReleased == '' || parseInt(yearReleased) < 2014) {
+        setSnackbarVisible(true);
+        return;
+      }
+      // const response = await driverDetailInstance(userToken!).patch('', {
+      //   vehicle_model: vehicleModel,
+      //   vehicle_capacity: seatCapacity,
+      //   vehicle_number_plate: numberPlate,
+      //   vehicle_category: 'MPV'
+      // });
       // console.log('update role response: ', response.data.response.role);
       router.push('/pendingApproval')
     } catch (e) {
@@ -149,12 +154,6 @@ const VehicleInfo = () => {
             bgColor='bg-green'
             textColor='text-white'
             handlePress={() => {
-              if(form.vehicleModel == '' && form.seatCapacity == '' && form.numberPlate == '' && form.yearReleased == '') {
-                setSnackbarVisible(true);
-                return;
-              } else if(parseInt(form.yearReleased) >= 2014) {
-                return;
-              }
               handleSubmitVehicleInfo({
                 vehicleModel: form.vehicleModel,
                 seatCapacity: form.seatCapacity,

@@ -35,6 +35,7 @@ export interface SignUpDriverProps {
   password: string
   grade: string
   binusianId: string
+  parentsPhone: string
 }
 
 export interface SignInProps {

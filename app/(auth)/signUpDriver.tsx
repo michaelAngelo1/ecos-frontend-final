@@ -128,14 +128,14 @@ const SignUpDriver = () => {
     <SafeAreaView className="bg-[#fff] h-full">
       <ScrollView>
         <View className="flex flex-col min-h-[100vh] justify-center items-center px-4">
-          <Text className="text-4xl text-green" style={styles.montserratRegular}>
+          <Text className="text-4xl text-green" style={styles.montserratMedium}>
             Sign up to ECOS
           </Text>
           <Text className="text-2xl text-green" style={styles.montserratRegular}>
             as a Partner
           </Text>
-          <View className="w-full justify-center pt-2 flex-row gap-2 mt-3">
-            <View className="w-[182px] space-y-2">
+          <View className="w-full justify-center pt-2 flex-row mt-3">
+            <View className="w-1/2 pr-3">
               <View className="h-14 bg-white rounded-lg">
                 <TextInput
                   className="flex-1 p-4 text-green text-base opacity-80"
@@ -147,7 +147,7 @@ const SignUpDriver = () => {
                 />
               </View>
             </View>
-            <View className="w-1/2 space-y-2">
+            <View className="w-1/2">
               <View className="h-14 bg-white px-4 rounded-lg">
                 <TextInput
                   className="flex-1 text-green text-base opacity-80"

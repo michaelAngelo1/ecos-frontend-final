@@ -131,8 +131,8 @@ const SignUpCustomer = () => {
           <Text className="text-2xl text-green" style={styles.montserratRegular}>
             as a Passenger
           </Text>
-          <View className="w-full justify-center pt-2 flex-row gap-2">
-            <View className="w-[182px] space-y-2">
+          <View className="w-full justify-center pt-2 flex-row">
+            <View className="w-1/2 pr-3">
               <View className="h-14 bg-white rounded-lg">
                 <TextInput
                   className="flex-1 p-4 text-green text-base opacity-80"
@@ -144,7 +144,7 @@ const SignUpCustomer = () => {
                 />
               </View>
             </View>
-            <View className="w-1/2 space-y-2">
+            <View className="w-1/2">
               <View className="h-14 bg-white px-4 rounded-lg">
                 <TextInput
                   className="flex-1 text-green text-base opacity-80"

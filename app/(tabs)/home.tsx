@@ -381,7 +381,7 @@ const Home = () => {
                           item.user_detail.is_admin_approved ?
                             <Text className="text-white text-sm text-center" style={styles.montserratBold}>Verified</Text>
                           :
-                            <Text className="text-white text-sm text-center" style={styles.montserratBold}>Verify</Text>
+                            <Text className="text-white text-sm text-center" style={styles.montserratMedium}>Verify</Text>
 
                         }
                       </TouchableOpacity>

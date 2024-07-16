@@ -20,7 +20,7 @@ const PendingApproval = () => {
     6. STREAM calling the API to check if is_admin_verified has changed from FALSE to TRUE
     7. if is_admin_verified changed to TRUE, forward to Home
   */ 
-  const [snackbarVisible, setSnackbarVisible] = useState(false);
+  const [snackbarVisible, setSnackbarVisible] = useState<boolean>();
   const [isApproved, setIsApproved] = useState(false);
   
   const getToken = async () => {
@@ -79,9 +79,17 @@ const PendingApproval = () => {
     }
   }
 
+  const [role, setRole] = useState('');
+  const getUserData = async () => {
+    let userToken = await getToken();
+    const response = await userDetailInstance(userToken!).get('', );
+    setRole(response.data.response.role);
+  }
+
   useEffect(() => {
     // checkAuthToken();
     // checkAdminVerification();
+    getUserData();
   }, []);
 
   return (
@@ -90,6 +98,22 @@ const PendingApproval = () => {
         <View className='flex flex-col min-h-[100vh] justify-center items-center px-4'>
           <Text className='text-2xl text-green' style={styles.montserratBold}>Pending Approval</Text>
           <Text className='text-base text-green text-center mb-3' style={styles.montserratMedium}>Wait for admin to approve of your request. Thank you for choosing ECOS!</Text>
+          {
+            role == 'DRIVER' ?
+            <>
+              <Text className='text-small text-green text-center mb-3' style={styles.montserratMedium}>For partners, please submit a clear and complete copy of your valid documents to Academic Operations team include the following: </Text>
+              <View className='flex-col'>
+                <Text className='text-small text-green text-center mb-3' style={styles.montserratMedium}>KTP</Text>
+                <Text className='text-small text-green text-center mb-3' style={styles.montserratMedium}>SIM</Text>
+                <Text className='text-small text-green text-center mb-3' style={styles.montserratMedium}>KK</Text>
+                <Text className='text-small text-green text-center mb-3' style={styles.montserratMedium}>STNK</Text>
+              </View>
+              <Text className='text-small text-green text-center mb-3' style={styles.montserratMedium}>Submit to: Academic Operations room. We will verify your documents within 2x24 hours (working days)</Text>
+
+            </>
+            :
+            <></>
+          }
           <CustomButton
             actionText='Check admin verification'
             textColor='text-white'
@@ -107,20 +131,13 @@ const PendingApproval = () => {
             bgColor='bg-white'
             handlePress={handleSignOut}
           />
-          { isApproved ?
+          { snackbarVisible &&
               <Snackbar
-                message="You have been verified by the admin. Let's sign in!" // Update message if needed
+                message="Verification process is still ongoing. Please wait." // Update message if needed
                 setVisible={setSnackbarVisible} // Pass the function to update visibility
                 duration={3000}
                 bgColor='bg-blue'
               />
-            : 
-            <Snackbar
-              message="Verification process is still ongoing. Please wait." // Update message if needed
-              setVisible={setSnackbarVisible} // Pass the function to update visibility
-              duration={3000}
-              bgColor='bg-blue'
-            />
           }
         </View>
       </ScrollView>
@@ -129,7 +146,3 @@ const PendingApproval = () => {
 }
 
 export default PendingApproval
-
-function setIsPaid(arg0: boolean) {
-  throw new Error('Function not implemented.')
-}

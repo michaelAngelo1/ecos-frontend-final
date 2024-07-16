@@ -2,6 +2,7 @@ import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-nativ
 import React, { useState } from 'react'
 import { styles } from '@/app/config/Fonts'
 
+
 interface FormFieldProps {
   title: string
   value: string | undefined

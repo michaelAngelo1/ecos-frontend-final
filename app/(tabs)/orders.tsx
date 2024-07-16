@@ -1,10 +1,12 @@
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import React, { startTransition, useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { styles } from '../config/Fonts'
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { userDetailInstance } from '../config/axiosConfig';
+import { adminTimeBlockInstance, userDetailInstance } from '../config/axiosConfig';
 import { router } from 'expo-router';
+import DatePicker from 'react-native-modern-datepicker';
+import CustomButton from '@/components/CustomButton';
 
 class OrderHistory {
   driverName: string;
@@ -67,6 +69,43 @@ const Orders = () => {
   const handleHistoryOrder = () => {
     console.log('to order history page');
   }
+
+  // ORDER WAVE IN A SPECIFIC DATE PERIOD
+  // const [form, setForm] = useState({
+  //   startDate: Date,
+  //   endDate: Date,
+  // });
+
+  const [startDate, setStartDate] = useState(new Date()) ;
+  const [endDate, setEndDate] = useState(new Date());
+  const [startDateVisible, setStartDateVisible] = useState(false);
+  const [endDateVisible, setEndDateVisible] = useState(false);
+  const [startConfirmButton, setStartConfirmButton] = useState(false);
+  const [endConfirmButton, setEndConfirmButton] = useState(false);
+  const currentDate = new Date();
+  const gmt7Offset = 7 * 60 * 60 * 1000;
+  const gmt7Date = new Date(currentDate.getTime() + gmt7Offset);
+
+  const handleSubmitOrderWaveDate = async (startDate: Date, endDate: Date) => {
+    console.log(startDate);
+    startDate = new Date(startDate);
+    endDate = new Date(endDate);
+    console.log(startDate);
+    // try {
+      
+    //   const userToken = await getToken();
+    //   const response = await adminTimeBlockInstance(userToken!).post('', {
+    //     start_date: startDate.toISOString(),
+    //     end_date: endDate.toISOString()
+    //   })
+    //   console.log('response submit date: ', response.data.response);
+    // } catch (e) {
+    //   console.log('error submiting order wave date', e);
+    // }
+  }
+
+
+
   useEffect(() => {
     getUserData();
   }, [])
@@ -190,7 +229,86 @@ const Orders = () => {
         </>
         : role == "ADMIN" ?
         <>
-          <Text>Admin orderpage</Text>
+          <View className='flex-row gap-1 mt-4 ml-5 mb-4'>
+            <Text className='text-2xl text-black' style={styles.montserratBold}>Order Wave</Text>
+          </View> 
+          <ScrollView>
+            <View className='flex-col gap-1 px-4'>
+              <Text style={styles.montserratMedium}>Set start order wave date</Text>
+              <TextInput
+                className='w-full h-14 bg-white px-3'
+                style={styles.montserratMedium}
+                placeholder='Select Date'
+                editable={true}
+                value={startDate.toString()}
+                onPress={() => setStartDateVisible(true)}
+              />
+              {
+                startDateVisible && 
+                <DatePicker
+                  onSelectedChange={(date: Date) => {
+                      console.log('date: ', date);
+
+                      setStartDate(date)
+                      setStartConfirmButton(true);
+                    }
+                  }
+                />
+              }
+              {
+                startConfirmButton && 
+                <CustomButton
+                  actionText='Confirm start date'
+                  textColor='text-white'
+                  bgColor='bg-green'
+                  handlePress={() => {
+                    setStartDateVisible(false);
+                    setStartConfirmButton(false);
+                  }}
+                />
+              }
+
+              <Text style={styles.montserratMedium}>Set end order wave date</Text>
+              <TextInput
+                className='w-full h-14 bg-white px-3'
+                style={styles.montserratMedium}
+                placeholder='Select Date'
+                editable={true}
+                value={endDate.toString()}
+                onPress={() => setEndDateVisible(true)}
+              />
+              {
+                endDateVisible && 
+                <DatePicker
+                  onSelectedChange={(date: Date) => {
+                    setEndDate(date)
+                    setEndConfirmButton(true);
+                  }}
+                />
+              }
+              {
+                endConfirmButton && 
+                <CustomButton
+                  actionText='Confirm end date'
+                  textColor='text-white'
+                  bgColor='bg-green'
+                  handlePress={() => {
+                    setEndDateVisible(false);
+                    setEndConfirmButton(false);
+                  }}
+                />
+              }
+              <CustomButton
+                actionText='Set order wave period'
+                bgColor='bg-green'
+                textColor='text-white'
+                handlePress={() => {
+                  handleSubmitOrderWaveDate(startDate, endDate)
+                  }
+                }
+              />
+            </View>
+          </ScrollView>
         </>
         :
         <View className='w-full h-full items-center justify-center'>

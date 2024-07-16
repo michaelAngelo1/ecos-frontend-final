@@ -63,3 +63,12 @@ export const driverDetailInstance = (token:string) => axios.create({
   }
 })
 
+export const adminTimeBlockInstance = (token:string) => axios.create({
+  baseURL: 'http://ecos.joheee.com:4040/admin-time-block',
+  headers: {
+    'accept': '*/*',
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`,
+  }
+})
+

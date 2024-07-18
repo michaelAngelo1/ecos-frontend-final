@@ -1,4 +1,4 @@
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { startTransition, useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { styles } from '../config/Fonts'
@@ -7,6 +7,7 @@ import { adminTimeBlockInstance, userDetailInstance } from '../config/axiosConfi
 import { router } from 'expo-router';
 import DatePicker from 'react-native-modern-datepicker';
 import CustomButton from '@/components/CustomButton';
+import { parse } from 'date-fns';
 
 class OrderHistory {
   driverName: string;
@@ -76,21 +77,32 @@ const Orders = () => {
   //   endDate: Date,
   // });
 
-  const [startDate, setStartDate] = useState(new Date()) ;
-  const [endDate, setEndDate] = useState(new Date());
+  const [startDate, setStartDate] = useState('') ;
+  const [endDate, setEndDate] = useState('');
   const [startDateVisible, setStartDateVisible] = useState(false);
   const [endDateVisible, setEndDateVisible] = useState(false);
   const [startConfirmButton, setStartConfirmButton] = useState(false);
   const [endConfirmButton, setEndConfirmButton] = useState(false);
+
+  // get today's date
   const currentDate = new Date();
   const gmt7Offset = 7 * 60 * 60 * 1000;
   const gmt7Date = new Date(currentDate.getTime() + gmt7Offset);
 
-  const handleSubmitOrderWaveDate = async (startDate: Date, endDate: Date) => {
-    console.log(startDate);
-    startDate = new Date(startDate);
-    endDate = new Date(endDate);
-    console.log(startDate);
+
+  const handleSubmitOrderWaveDate = async (startDate: string, endDate: string) => {
+    console.log('start date: ', startDate);
+    console.log('start date type: ', typeof startDate);
+    console.log('end date: ', endDate);
+    console.log(typeof gmt7Date.toISOString());
+
+    // attempt converting startDate from STRING to DATE
+    // const isoDateString = `${startDate.replace(/\//g, "-")}T00:00:00.000Z`;
+    const realStartDate = new Date(startDate.toString());
+    console.log('start date converted: ', realStartDate);
+    console.log('start date converted type: ', typeof realStartDate);
+    
+
     // try {
       
     //   const userToken = await getToken();
@@ -242,30 +254,34 @@ const Orders = () => {
                 editable={true}
                 value={startDate.toString()}
                 onPress={() => setStartDateVisible(true)}
+                showSoftInputOnFocus={false}
               />
               {
                 startDateVisible && 
-                <DatePicker
-                  onSelectedChange={(date: Date) => {
-                      console.log('date: ', date);
-
-                      setStartDate(date)
-                      setStartConfirmButton(true);
+                <Modal animationType='fade' visible={startDateVisible} onRequestClose={() => setStartDateVisible(!startDateVisible)}>
+                  <View className='flex flex-col justify-center items-center w-full min-h-[100vh] px-4 bg-white'>
+                    <DatePicker
+                      onSelectedChange={(date: string) => {
+                          console.log('date: ', typeof date);
+                          setStartDate(date)
+                          setStartConfirmButton(true);
+                        }
+                      }
+                    />
+                    {
+                      startConfirmButton && 
+                      <CustomButton
+                        actionText='Confirm start date'
+                        textColor='text-white'
+                        bgColor='bg-green'
+                        handlePress={() => {
+                          setStartDateVisible(false);
+                          setStartConfirmButton(false);
+                        }}
+                      />
                     }
-                  }
-                />
-              }
-              {
-                startConfirmButton && 
-                <CustomButton
-                  actionText='Confirm start date'
-                  textColor='text-white'
-                  bgColor='bg-green'
-                  handlePress={() => {
-                    setStartDateVisible(false);
-                    setStartConfirmButton(false);
-                  }}
-                />
+                  </View>
+                </Modal>
               }
 
               <Text style={styles.montserratMedium}>Set end order wave date</Text>
@@ -276,27 +292,32 @@ const Orders = () => {
                 editable={true}
                 value={endDate.toString()}
                 onPress={() => setEndDateVisible(true)}
+                showSoftInputOnFocus={false}
               />
               {
                 endDateVisible && 
-                <DatePicker
-                  onSelectedChange={(date: Date) => {
-                    setEndDate(date)
-                    setEndConfirmButton(true);
-                  }}
-                />
-              }
-              {
-                endConfirmButton && 
-                <CustomButton
-                  actionText='Confirm end date'
-                  textColor='text-white'
-                  bgColor='bg-green'
-                  handlePress={() => {
-                    setEndDateVisible(false);
-                    setEndConfirmButton(false);
-                  }}
-                />
+                <Modal animationType='fade' visible={endDateVisible} onRequestClose={() => setEndDateVisible(!endDateVisible)}>
+                  <View className='flex flex-col justify-center items-center w-full min-h-[100vh] px-4 bg-white'>
+                    <DatePicker
+                      onSelectedChange={(date: string) => {
+                        setEndDate(date)
+                        setEndConfirmButton(true);
+                      }}
+                    />
+                    {
+                      endConfirmButton && 
+                      <CustomButton
+                        actionText='Confirm end date'
+                        textColor='text-white'
+                        bgColor='bg-green'
+                        handlePress={() => {
+                          setEndDateVisible(false);
+                          setEndConfirmButton(false);
+                        }}
+                      />
+                    }
+                  </View>
+                </Modal>
               }
               <CustomButton
                 actionText='Set order wave period'

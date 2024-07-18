@@ -359,67 +359,77 @@ const Home = () => {
             <View className='flex flex-col justify-start items-start px-4'>
               <Text className='text-base ml-2 mb-1' style={styles.montserratSemiBold}>Passengers who need to be verified</Text>
               {
-                customers?.map((item, index) => {
-                  return(
-                    <View key={index} className='relative w-full h-32 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm mt-3'>
-                      <View className='absolute top-4 left-4 w-14 h-14 bg-green rounded-full'></View>
-                      <Image className='absolute top-4 left-4 w-14 h-14 rounded-full' source={{ uri: item.user_detail.profile_image }} />
-                      <Text className='absolute top-0 left-[70px] text-black text-lg p-4' style={styles.montserratSemiBold}>{item.user_detail.name}</Text>
-                      <Text className='absolute top-7 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>{item.email}</Text>
-                      <TouchableOpacity 
-                        className="absolute bottom-3 right-3 bg-green w-[104px] rounded-[20px] mt-3 p-2"
-                        activeOpacity={0.7}
-                        disabled={item.user_detail.is_admin_approved ? true : false}
-                        onPress={() => 
-                          {
-                            verifyUser(item.user_id);
-                            getAllUsers();
+                customers.length > 1 ?
+                  customers?.map((item, index) => {
+                    return(
+                      <View key={index} className='relative w-full h-32 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm mt-3'>
+                        <View className='absolute top-4 left-4 w-14 h-14 bg-green rounded-full'></View>
+                        <Image className='absolute top-4 left-4 w-14 h-14 rounded-full' source={{ uri: item.user_detail.profile_image }} />
+                        <Text className='absolute top-0 left-[70px] text-black text-lg p-4' style={styles.montserratSemiBold}>{item.user_detail.name}</Text>
+                        <Text className='absolute top-7 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>{item.email}</Text>
+                        <TouchableOpacity 
+                          className="absolute bottom-3 right-3 bg-green w-[104px] rounded-[20px] mt-3 p-2"
+                          activeOpacity={0.7}
+                          disabled={item.user_detail.is_admin_approved ? true : false}
+                          onPress={() => 
+                            {
+                              verifyUser(item.user_id);
+                              getAllUsers();
+                            }
                           }
-                        }
-                      >
-                        {
-                          item.user_detail.is_admin_approved ?
-                            <Text className="text-white text-sm text-center" style={styles.montserratBold}>Verified</Text>
-                          :
-                            <Text className="text-white text-sm text-center" style={styles.montserratMedium}>Verify</Text>
+                        >
+                          {
+                            item.user_detail.is_admin_approved ?
+                              <Text className="text-white text-sm text-center" style={styles.montserratBold}>Verified</Text>
+                            :
+                              <Text className="text-white text-sm text-center" style={styles.montserratMedium}>Verify</Text>
 
-                        }
-                      </TouchableOpacity>
-                    </View>
-                  )
-                })
+                          }
+                        </TouchableOpacity>
+                      </View>
+                    )
+                  })
+                :
+                <View className='w-full h-14 justify-center items-center'>
+                  <Text style={styles.montserratRegular}>No passengers need to be verified</Text>
+                </View>
               }
               <Text className='text-base ml-2 mb-1' style={styles.montserratSemiBold}>Partners who need to be verified</Text>
               {
-                drivers?.map((item, index) => {
-                  return(
-                    <View key={index} className='relative w-full h-32 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm mt-3'>
-                      <View className='absolute top-4 left-4 w-14 h-14 bg-green rounded-full'></View>
-                      <Image className='absolute top-4 left-4 w-14 h-14 rounded-full' source={{ uri: item.user_detail.profile_image }} />
-                      <Text className='absolute top-0 left-[70px] text-black text-lg p-4' style={styles.montserratSemiBold}>{item.user_detail.name}</Text>
-                      <Text className='absolute top-7 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>{item.email}</Text>
-                      <TouchableOpacity 
-                        className="absolute bottom-3 right-3 bg-green w-[104px] rounded-[20px] mt-3 p-2"
-                        activeOpacity={0.7}
-                        disabled={item.user_detail.is_admin_approved ? true : false}
-                        onPress={() => 
-                          {
-                            verifyUser(item.user_id);
-                            getAllUsers();
+                drivers.length > 1 ?
+                  drivers?.map((item, index) => {
+                    return(
+                      <View key={index} className='relative w-full h-32 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm mt-3'>
+                        <View className='absolute top-4 left-4 w-14 h-14 bg-green rounded-full'></View>
+                        <Image className='absolute top-4 left-4 w-14 h-14 rounded-full' source={{ uri: item.user_detail.profile_image }} />
+                        <Text className='absolute top-0 left-[70px] text-black text-lg p-4' style={styles.montserratSemiBold}>{item.user_detail.name}</Text>
+                        <Text className='absolute top-7 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>{item.email}</Text>
+                        <TouchableOpacity 
+                          className="absolute bottom-3 right-3 bg-green w-[104px] rounded-[20px] mt-3 p-2"
+                          activeOpacity={0.7}
+                          disabled={item.user_detail.is_admin_approved ? true : false}
+                          onPress={() => 
+                            {
+                              verifyUser(item.user_id);
+                              getAllUsers();
+                            }
                           }
-                        }
-                      >
-                        {
-                          item.user_detail.is_admin_approved ?
-                            <Text className="text-white text-sm text-center" style={styles.montserratBold}>Verified</Text>
-                          :
-                            <Text className="text-white text-sm text-center" style={styles.montserratMedium}>Verify</Text>
+                        >
+                          {
+                            item.user_detail.is_admin_approved ?
+                              <Text className="text-white text-sm text-center" style={styles.montserratBold}>Verified</Text>
+                            :
+                              <Text className="text-white text-sm text-center" style={styles.montserratMedium}>Verify</Text>
 
-                        }
-                      </TouchableOpacity>
-                    </View>
-                  )
-                })
+                          }
+                        </TouchableOpacity>
+                      </View>
+                    )
+                  })
+                :
+                <View className='w-full h-14 justify-center items-center'>
+                  <Text style={styles.montserratRegular}>No partners need to be verified</Text>
+                </View>
               }
             </View>
           </ScrollView>

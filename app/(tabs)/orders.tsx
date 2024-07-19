@@ -15,6 +15,7 @@ import { styles } from "../config/Fonts";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   adminTimeBlockInstance,
+  driverOrderHeaderInstance,
   userDetailInstance,
 } from "../config/axiosConfig";
 import { router } from "expo-router";
@@ -121,10 +122,6 @@ const Orders = () => {
   const [startConfirmButton, setStartConfirmButton] = useState(false);
   const [endConfirmButton, setEndConfirmButton] = useState(false);
 
-  // get today's date
-  const currentDate = new Date();
-  const gmt7Offset = 7 * 60 * 60 * 1000;
-  const gmt7Date = new Date(currentDate.getTime() + gmt7Offset);
 
   const handleSubmitOrderWaveDate = async () => {
     const start_date: Date = convertDateToIso(startDate);
@@ -145,8 +142,54 @@ const Orders = () => {
     }
   };
 
+  // DRIVER ORDER WAVE REGISTRATION
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const getCurrentDate = () => {
+    const date = new Date();
+    console.log('Date: ', date);
+    setCurrentDate(date);
+  }
+
+  const [orderWaveList, setOrderWaveList] = useState([{
+    time_block_id: '',
+    start_date: '',
+    end_date: '',
+    user: {
+      user_id: '',
+      email: '',
+      password: '',
+      role: '',
+      created_at: false,
+    }
+  }]);
+
+  const fetchOrderWave = async () => {
+    try {
+      let userToken = await getToken();
+      const response = await adminTimeBlockInstance(userToken!).get('',);
+      console.log('order wave available: ', response.data.response);
+      setOrderWaveList(response.data.response);
+    } catch (e) { 
+      console.log('error fetch order wave: ', e.response);
+    }
+  }
+
+  const handlePartnerRegisAsDriver = async (timeBlockId: string) => {
+    try {
+      let userToken = await getToken();
+      const response = await driverOrderHeaderInstance(userToken!).post('', {
+        driver_id: userToken,
+        time_block_id: timeBlockId
+      });
+      console.log('response partner regis driver: ', response.data.response);
+    } catch (e) {
+      console.log('error partner regis driver: ', e);
+    }
+  }
+
   useEffect(() => {
     getUserData();
+    fetchOrderWave();
   }, []);
 
   return (
@@ -267,112 +310,164 @@ const Orders = () => {
               Orders
             </Text>
           </View>
-          <View className="flex flex-col justify-start items-start px-4">
+          <ScrollView className="w-full h-screen">
             <Text
-              className="text-xl ml-2 mb-1"
-              style={styles.montserratSemiBold}
-            >
-              Your passengers this month
-            </Text>
-            <Text
-              className="text-base ml-2 mb-1"
-              style={styles.montserratMedium}
-            >
-              July 2024
-            </Text>
-          </View>
-          <ScrollView className="min-h-[365px] overflow-auto">
-            <View className="flex flex-col justify-start items-start px-4">
-              <View className="relative w-full h-28 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm">
-                <View className="absolute top-4 left-4 w-14 h-14 bg-green rounded-full"></View>
-                <Text
-                  className="absolute top-0 left-[70px] text-black text-lg p-4"
-                  style={styles.montserratSemiBold}
-                >
-                  Max Quok
-                </Text>
-                <Text
-                  className="absolute top-7 left-[70px] text-black text-sm p-4"
-                  style={styles.montserratRegular}
-                >
-                  +62 818 0313 3100
-                </Text>
-                <Text
-                  className="absolute top-12 left-[70px] text-black text-sm p-4"
-                  style={styles.montserratRegular}
-                >
-                  Jl. Kendangsari 1 No. 5
-                </Text>
-              </View>
-
-              <View className="relative w-full h-28 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm mt-3">
-                <View className="absolute top-4 left-4 w-14 h-14 bg-green rounded-full"></View>
-                <Text
-                  className="absolute top-0 left-[70px] text-black text-lg p-4"
-                  style={styles.montserratSemiBold}
-                >
-                  Steven Halim
-                </Text>
-                <Text
-                  className="absolute top-7 left-[70px] text-black text-sm p-4"
-                  style={styles.montserratRegular}
-                >
-                  +62 828 0316 2100
-                </Text>
-                <Text
-                  className="absolute top-12 left-[70px] text-black text-sm p-4"
-                  style={styles.montserratRegular}
-                >
-                  Jl. Mulyosari 2 No. 3
-                </Text>
-              </View>
-
-              <View className="relative w-full h-28 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm mt-3">
-                <View className="absolute top-4 left-4 w-14 h-14 bg-green rounded-full"></View>
-                <Text
-                  className="absolute top-0 left-[70px] text-black text-lg p-4"
-                  style={styles.montserratSemiBold}
-                >
-                  Mike Angelo
-                </Text>
-                <Text
-                  className="absolute top-7 left-[70px] text-black text-sm p-4"
-                  style={styles.montserratRegular}
-                >
-                  +62 828 0316 2100
-                </Text>
-                <Text
-                  className="absolute top-12 left-[70px] text-black text-sm p-4"
-                  style={styles.montserratRegular}
-                >
-                  Jl. Galaxy Bumi Permai V No. 5
-                </Text>
-              </View>
-            </View>
-          </ScrollView>
-          <View className="flex flex-col justify-start items-start px-4">
-            <Text
-              className="text-xl ml-2 mb-1 mt-3"
-              style={styles.montserratSemiBold}
-            >
-              Your order request this month
-            </Text>
-            <Text
-              className="text-base ml-2 mb-1"
-              style={styles.montserratMedium}
-            >
-              July 2024
-            </Text>
-          </View>
-          <ScrollView className="min-h-[365px] overflow-auto">
-            <View className="flex flex-col justify-center items-center px-4">
-              <Text
-                className="text-sm text-black"
-                style={styles.montserratRegular}
+                className="text-xl ml-2 mb-1 px-4"
+                style={styles.montserratSemiBold}
               >
-                No order request for this month
+              Register as Driver in this period
+            </Text>
+            <ScrollView className="min-h-[220px] overflow-auto">
+              <View className="flex flex-col px-4">
+
+                {
+                  orderWaveList.map((orderWave) => {
+                      const orderWaveEndDate: Date = convertDateToIso(orderWave.end_date);
+                      if(currentDate < orderWaveEndDate) {
+                        return(
+                          <View key={orderWave.time_block_id} className="relative w-full h-28 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm mb-3">
+                            <View className="absolute top-4 left-4 w-14 h-14 bg-green rounded-full"></View>
+                            <Text
+                              className="absolute top-0 left-[70px] text-black text-lg p-4"
+                              style={styles.montserratSemiBold}
+                            >
+                              {orderWave.start_date.substring(0, 10)}
+                            </Text>
+                            <Text
+                              className="absolute top-0 left-[200px] text-black text-lg p-4"
+                              style={styles.montserratSemiBold}
+                            >
+                              {orderWave.end_date.substring(0, 10)}
+                            </Text>
+                            <Text
+                              className="absolute top-7 left-[70px] text-black text-sm p-4"
+                              style={styles.montserratRegular}
+                            >
+                              +62 818 0313 3100
+                            </Text>
+                            <TouchableOpacity 
+                              className="absolute bottom-3 right-3 bg-green w-[104px] rounded-[20px] mt-3 p-2"
+                              activeOpacity={0.7}
+                              onPress={() => handlePartnerRegisAsDriver(orderWave.time_block_id)}
+                            >
+                              <Text className="text-white text-sm text-center" style={styles.montserratBold}>Register</Text>
+                            </TouchableOpacity>
+                          </View>
+                        )
+                      }
+                  })
+                }
+                
+              </View>
+            </ScrollView>
+            <View className="flex flex-col justify-start items-start px-4">
+              <Text
+                className="text-xl ml-2 mb-1"
+                style={styles.montserratSemiBold}
+              >
+                Your passengers this month
+              </Text>
+              <Text
+                className="text-base ml-2 mb-1"
+                style={styles.montserratMedium}
+              >
+                July 2024
               </Text>
             </View>
+            <ScrollView className="min-h-[365px] overflow-auto">
+              <View className="flex flex-col justify-start items-start px-4">
+
+                <View className="relative w-full h-28 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm">
+                  <View className="absolute top-4 left-4 w-14 h-14 bg-green rounded-full"></View>
+                  <Text
+                    className="absolute top-0 left-[70px] text-black text-lg p-4"
+                    style={styles.montserratSemiBold}
+                  >
+                    Max Quok
+                  </Text>
+                  <Text
+                    className="absolute top-7 left-[70px] text-black text-sm p-4"
+                    style={styles.montserratRegular}
+                  >
+                    +62 818 0313 3100
+                  </Text>
+                  <Text
+                    className="absolute top-12 left-[70px] text-black text-sm p-4"
+                    style={styles.montserratRegular}
+                  >
+                    Jl. Kendangsari 1 No. 5
+                  </Text>
+                </View>
+
+                <View className="relative w-full h-28 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm mt-3">
+                  <View className="absolute top-4 left-4 w-14 h-14 bg-green rounded-full"></View>
+                  <Text
+                    className="absolute top-0 left-[70px] text-black text-lg p-4"
+                    style={styles.montserratSemiBold}
+                  >
+                    Steven Halim
+                  </Text>
+                  <Text
+                    className="absolute top-7 left-[70px] text-black text-sm p-4"
+                    style={styles.montserratRegular}
+                  >
+                    +62 828 0316 2100
+                  </Text>
+                  <Text
+                    className="absolute top-12 left-[70px] text-black text-sm p-4"
+                    style={styles.montserratRegular}
+                  >
+                    Jl. Mulyosari 2 No. 3
+                  </Text>
+                </View>
+
+                <View className="relative w-full h-28 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm mt-3">
+                  <View className="absolute top-4 left-4 w-14 h-14 bg-green rounded-full"></View>
+                  <Text
+                    className="absolute top-0 left-[70px] text-black text-lg p-4"
+                    style={styles.montserratSemiBold}
+                  >
+                    Mike Angelo
+                  </Text>
+                  <Text
+                    className="absolute top-7 left-[70px] text-black text-sm p-4"
+                    style={styles.montserratRegular}
+                  >
+                    +62 828 0316 2100
+                  </Text>
+                  <Text
+                    className="absolute top-12 left-[70px] text-black text-sm p-4"
+                    style={styles.montserratRegular}
+                  >
+                    Jl. Galaxy Bumi Permai V No. 5
+                  </Text>
+                </View>
+              </View>
+            </ScrollView>
+            <View className="flex flex-col justify-start items-start px-4">
+              <Text
+                className="text-xl ml-2 mb-1 mt-3"
+                style={styles.montserratSemiBold}
+              >
+                Your order request this month
+              </Text>
+              <Text
+                className="text-base ml-2 mb-1"
+                style={styles.montserratMedium}
+              >
+                July 2024
+              </Text>
+            </View>
+            <ScrollView className="min-h-[365px] overflow-auto">
+              <View className="flex flex-col justify-center items-center px-4">
+                <Text
+                  className="text-sm text-black"
+                  style={styles.montserratRegular}
+                >
+                  No order request for this month
+                </Text>
+              </View>
+            </ScrollView>
           </ScrollView>
         </>
       ) : role == "ADMIN" ? (

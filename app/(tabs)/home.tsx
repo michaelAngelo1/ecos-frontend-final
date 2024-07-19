@@ -122,35 +122,13 @@ const Home = () => {
     }
   }
 
-  // DRIVER ORDER WAVE
-  const [orderWaveList, setOrderWaveList] = useState([{
-    time_block_id: '',
-    start_date: '',
-    end_date: '',
-    user: {
-      user_id: '',
-      email: '',
-      password: '',
-      role: '',
-      created_at: false,
-    }
-  }]);
-  const fetchOrderWave = async () => {
-    try {
-      let userToken = await getToken();
-      const response = await adminTimeBlockInstance(userToken!).get('',);
-      console.log('order wave available: ', response.data.response);
-      setOrderWaveList(response.data.response);
-    } catch (e) { 
-      console.log('error fetch order wave: ', e.response);
-    }
-  }
+  
 
   useEffect(() => {
     getUserData();
     getAllUsers();
     // fetchMonthlyJourney();
-    fetchOrderWave();
+    
     
     // if(role == 'ADMIN') {
     //   console.log('ALL FETCHED USERs', customers);
@@ -158,7 +136,7 @@ const Home = () => {
     // }
   }, [])
 
-  console.log('ORDER WAVE LIST: ', orderWaveList[0]);
+  // console.log('ORDER WAVE LIST: ', orderWaveList[0]);
   return (
     <SafeAreaView className='bg-[#fff] h-full'>
       <Modal

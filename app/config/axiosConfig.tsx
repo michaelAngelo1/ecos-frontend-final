@@ -45,7 +45,7 @@ export const customerDetailInstance = (token:string) => axios.create({
   }
 })
 
-export const adminSettleDriverOrderHeaderInstance = (token:string) => axios.create({
+export const driverOrderHeaderInstance = (token:string) => axios.create({
   baseURL: 'http://ecos.joheee.com:4040/driver-order-header',
   headers: {
     'accept': '*/*',

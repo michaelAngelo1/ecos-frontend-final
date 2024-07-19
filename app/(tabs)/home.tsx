@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { styles } from '../config/Fonts'
 import {  router } from 'expo-router'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { adminApprovalInstance, adminSettleDriverOrderHeaderInstance, userDetailInstance } from '../config/axiosConfig'
+import { adminApprovalInstance, adminSettleDriverOrderHeaderInstance, adminTimeBlockInstance, userDetailInstance } from '../config/axiosConfig'
 import { User } from '@/models/User'
 import { Image } from 'expo-image'
 import icons from '@/constants/icons'
@@ -122,17 +122,43 @@ const Home = () => {
     }
   }
 
+  // DRIVER ORDER WAVE
+  const [orderWaveList, setOrderWaveList] = useState([{
+    time_block_id: '',
+    start_date: '',
+    end_date: '',
+    user: {
+      user_id: '',
+      email: '',
+      password: '',
+      role: '',
+      created_at: false,
+    }
+  }]);
+  const fetchOrderWave = async () => {
+    try {
+      let userToken = await getToken();
+      const response = await adminTimeBlockInstance(userToken!).get('',);
+      console.log('order wave available: ', response.data.response);
+      setOrderWaveList(response.data.response);
+    } catch (e) { 
+      console.log('error fetch order wave: ', e.response);
+    }
+  }
+
   useEffect(() => {
     getUserData();
     getAllUsers();
-    fetchMonthlyJourney();
-  
+    // fetchMonthlyJourney();
+    fetchOrderWave();
+    
     // if(role == 'ADMIN') {
     //   console.log('ALL FETCHED USERs', customers);
     //   getAllUsers();
     // }
   }, [])
 
+  console.log('ORDER WAVE LIST: ', orderWaveList[0]);
   return (
     <SafeAreaView className='bg-[#fff] h-full'>
       <Modal
@@ -359,7 +385,7 @@ const Home = () => {
             <View className='flex flex-col justify-start items-start px-4'>
               <Text className='text-base ml-2 mb-1' style={styles.montserratSemiBold}>Passengers who need to be verified</Text>
               {
-                customers.length > 1 ?
+                customers.length > 0 ?
                   customers?.map((item, index) => {
                     return(
                       <View key={index} className='relative w-full h-32 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm mt-3'>

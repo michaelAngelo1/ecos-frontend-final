@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { styles } from '../config/Fonts'
 import {  router } from 'expo-router'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { adminApprovalInstance, adminSettleDriverOrderHeaderInstance, adminTimeBlockInstance, userDetailInstance } from '../config/axiosConfig'
+import { adminApprovalInstance, userDetailInstance } from '../config/axiosConfig'
 import { User } from '@/models/User'
 import { Image } from 'expo-image'
 import icons from '@/constants/icons'
@@ -112,15 +112,15 @@ const Home = () => {
     }
   }
 
-  const fetchMonthlyJourney = async () => {
-    try {
-      let userToken = await getToken();
-      const response = await adminSettleDriverOrderHeaderInstance(userToken!).get('',);
-      console.log('MONTHLY JOURNEY: ', response.data.response[0].user.user_detail);
-    } catch (e) {
-      console.log('error fetch monthly journey: ', e.response);
-    }
-  }
+  // const fetchMonthlyJourney = async () => {
+  //   try {
+  //     let userToken = await getToken();
+  //     const response = await adminSettleDriverOrderHeaderInstance(userToken!).get('',);
+  //     console.log('MONTHLY JOURNEY: ', response.data.response[0].user.user_detail);
+  //   } catch (e) {
+  //     console.log('error fetch monthly journey: ', e.response);
+  //   }
+  // }
 
   
 

@@ -54,6 +54,15 @@ export const driverOrderHeaderInstance = (token:string) => axios.create({
   }
 })
 
+export const driverOrderHeaderByIdInstance = (token:string, id: string) => axios.create({
+  baseURL: `http://ecos.joheee.com:4040/driver-order-header/${id}`,
+  headers: {
+    'accept': '*/*',
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`,
+  }
+})
+
 export const driverDetailInstance = (token:string) => axios.create({
   baseURL: 'http://ecos.joheee.com:4040/driver-vehicle-detail',
   headers: {

@@ -49,15 +49,13 @@ const HomePage = () => {
     <SafeAreaView className='bg-transparent h-full' >
       <ScrollView contentContainerStyle={{ height: '100%', flex: 1}}>
       <Image
-        source={images.backdrop}  // Replace with your image source
+        source={images.ecos_01}  // Replace with your image source
         style={{ width: '100%', height: '100%' }}  // Stretch image to fill container
       />
         <View className='absolute bottom-[400px] left-24'>
           {/* <Text className='text-4xl text-white' style={styles.montserratSemiBold}>ECOS</Text> */}
         </View>
         <View className='absolute bottom-0 left-0 right-0 p-4'>
-          <Image className='w-[200px] h-[100px]' source={images.logo_ecos}/>
-          <Text className='text-base text-white' style={styles.montserratMedium}>Eco Commute On-Sharing</Text>
           <CustomButton
             actionText="Discover more"
             textColor="text-green"

@@ -68,7 +68,7 @@ export const driverDetailInstance = (token:string) => axios.create({
   headers: {
     'accept': '*/*',
     'Content-Type': 'application/json',
-    'Authorization': `Bearer ${token}`,
+    'Authorization': `Bearer ${token}`, 
   }
 })
 

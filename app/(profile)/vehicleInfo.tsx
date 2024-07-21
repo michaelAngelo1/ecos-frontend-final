@@ -29,9 +29,9 @@ interface DriverDetailInterface {
 }
 
 const vehicleInfo = () => {
-  const [vehicleModel, setVehicleModel] = useState<string>("");
-  const [seatCapacity, setSeatCapacity] = useState<string>("");
-  const [numberPlate, setNumberPlate] = useState<string>("");
+  const [vehicle_model, setVehicleModel] = useState<string>("");
+  const [vehicle_capacity, setSeatCapacity] = useState<string>("");
+  const [vehicle_number_plate, setNumberPlate] = useState<string>("");
   const [data, setData] = useState<UserInterface | null>(null);
 
   useEffect(() => {
@@ -55,6 +55,25 @@ const vehicleInfo = () => {
     const driverDetail = await driverDetailInstance(token!!).get("");
     console.log(driverDetail.data.response);
     setData(driverDetail.data.response);
+    const driverData = driverDetail.data.response.driver_detail;
+    setData(driverDetail.data.response);
+    setVehicleModel(driverData.vehicle_model);
+    setSeatCapacity(driverData.vehicle_capacity.toString());
+    setNumberPlate(driverData.vehicle_number_plate);
+  }
+
+  async function handleUpdate() {
+    try {
+      const token = await getToken();
+      const driverDetail = await driverDetailInstance(token!!).patch("", {
+        vehicle_model: vehicle_model,
+        vehicle_capacity: parseInt(vehicle_capacity),
+        vehicle_number_plate: vehicle_number_plate,
+      });
+      console.log(driverDetail.data);
+    } catch (e) {
+      console.log(e.response);
+    }
   }
 
   if (!data) {
@@ -82,24 +101,31 @@ const vehicleInfo = () => {
 
           <FormField
             title="Vehicle Model"
-            value={data.driver_detail.vehicle_model}
+            value={vehicle_model}
             handleChangeText={setVehicleModel}
             otherStyles="mt-3"
-            keyboardType="name"
+            keyboardType="default"
           />
           <FormField
             title="Vehicle Capacity"
-            value={data.driver_detail.vehicle_capacity.toString()}
+            value={vehicle_capacity}
             handleChangeText={setSeatCapacity}
             otherStyles="mt-3"
-            keyboardType="phone"
+            keyboardType="numeric"
           />
           <FormField
             title="Vehicle Number Plate"
-            value={data.driver_detail.vehicle_number_plate}
+            value={vehicle_number_plate}
             handleChangeText={setNumberPlate}
             otherStyles="mt-3"
-            keyboardType="email"
+            keyboardType="default"
+          />
+
+          <CustomButton
+            actionText="Update"
+            textColor="text-white"
+            bgColor="bg-green"
+            handlePress={handleUpdate}
           />
 
           <CustomButton

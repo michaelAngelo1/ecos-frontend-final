@@ -1,23 +1,35 @@
-import { Platform, Pressable, SafeAreaView, ScrollView, Text, View, Image } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import CustomButton from '@/components/CustomButton'
-import { styles } from '../config/Fonts'
-import { router } from 'expo-router'
-import * as ImagePicker from 'expo-image-picker'
-import { uploadUserProfileInstance, userDetailInstance, userImageInstance } from '../config/axiosConfig'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import Snackbar from '@/components/Snackbar'
+import {
+  Platform,
+  Pressable,
+  SafeAreaView,
+  ScrollView,
+  Text,
+  View,
+  Image,
+} from "react-native";
+import React, { useEffect, useState } from "react";
+import CustomButton from "@/components/CustomButton";
+import { styles } from "../config/Fonts";
+import { router } from "expo-router";
+import * as ImagePicker from "expo-image-picker";
+import {
+  uploadUserProfileInstance,
+  userDetailInstance,
+  userImageInstance,
+} from "../config/axiosConfig";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Snackbar from "@/components/Snackbar";
 
 const AddProfPic = () => {
-
-  const [image, setImage] = useState('');
-  const [imageFile, setImageFile] = useState<ImagePicker.ImagePickerAsset | null>(null)
+  const [image, setImage] = useState("");
+  const [imageFile, setImageFile] =
+    useState<ImagePicker.ImagePickerAsset | null>(null);
 
   const [snackbarVisible, setSnackbarVisible] = useState(false);
 
   const getToken = async () => {
     try {
-      const userToken = await AsyncStorage.getItem("userToken")
+      const userToken = await AsyncStorage.getItem("userToken");
       if (userToken !== null) {
         console.log("User token read: ", userToken);
         return userToken;
@@ -25,26 +37,27 @@ const AddProfPic = () => {
     } catch (e) {
       console.log("Error reading JWT", e);
     }
-  }
-  
-  const [role, setRole] = useState('');
+  };
+
+  const [role, setRole] = useState("");
   const getUserData = async () => {
     let userToken = await getToken();
-    const response = await userDetailInstance(userToken!).get('', );
+    const response = await userDetailInstance(userToken!).get("");
     setRole(response.data.response.role);
-  }
+  };
 
   useEffect(() => {
     (async () => {
-      if (Platform.OS !== 'web') {
-        const libraryStatus = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (libraryStatus.status !== 'granted') {
-          alert('Sorry, we need camera roll permissions to make this work!');
+      if (Platform.OS !== "web") {
+        const libraryStatus =
+          await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (libraryStatus.status !== "granted") {
+          alert("Sorry, we need camera roll permissions to make this work!");
         }
 
         const cameraStatus = await ImagePicker.requestCameraPermissionsAsync();
-        if (cameraStatus.status !== 'granted') {
-          alert('Sorry, we need camera permissions to make this work!');
+        if (cameraStatus.status !== "granted") {
+          alert("Sorry, we need camera permissions to make this work!");
         }
       }
     })();
@@ -59,100 +72,123 @@ const AddProfPic = () => {
       quality: 1,
     });
 
-    console.log('UPLOADED IMAGE: ', result.assets![0]);
-    if(!result.canceled) {
-      setImageFile(result.assets[0])
-      setImage(result.assets[0].uri)
+    console.log("UPLOADED IMAGE: ", result.assets![0]);
+    if (!result.canceled) {
+      setImageFile(result.assets[0]);
+      setImage(result.assets[0].uri);
     }
   };
 
   const uploadImage = async () => {
     try {
-      console.log('upload image');
+      console.log("upload image");
       let userToken = await getToken();
 
       const formData = new FormData();
-      formData.append('profile_picture', {
+      formData.append("profile_picture", {
         uri: imageFile!.uri,
         name: imageFile!.fileName,
-        type: imageFile!.mimeType
+        type: imageFile!.mimeType,
       });
-      console.log('uri: ', imageFile!.uri);
+      console.log("uri: ", imageFile!.uri);
       console.log("name: ", imageFile!.fileName);
       console.log("type: ", imageFile!.mimeType);
-      const response = await uploadUserProfileInstance().post('', {
+      const response = await uploadUserProfileInstance().post("", {
         profile_image_file: formData,
       });
-      console.log('Success upload image: ', response);
+      console.log("Success upload image: ", response);
       // router.push('/pendingApproval');
     } catch (e) {
-      console.log('error upload image', e);
+      console.log("error upload image", e);
     }
-  }
+  };
 
   const handleSkipForNow = () => {
-    console.log('handle skip for now');
+    console.log("handle skip for now");
     console.log(role);
-    if(role == 'CUSTOMER') {
-      router.push('/pendingApproval');
-    } else if(role == 'DRIVER') {
-      console.log('router push vehicle info');
-      router.push('/vehicleInfo')
+    if (role == "CUSTOMER") {
+      router.push("/pendingApproval");
+    } else if (role == "DRIVER") {
+      console.log("router push vehicle info");
+      router.push("/vehicleInfo");
     }
-  }
+  };
 
   return (
-    <SafeAreaView className='bg-[#fff] h-full'>
+    <SafeAreaView className="bg-[#fff] h-full">
       <ScrollView>
-        <View className='flex flex-col min-h-[104vh] justify-center items-center px-4'>
-          <Text className='text-4xl text-green text-center' style={styles.montserratRegular}>Add a profile picture</Text>
-          <Text className='text-xl text-green text-center' style={styles.montserratRegular}>Show us your best smile!</Text>
-          {
-            image ? 
+        <View className="flex flex-col min-h-[104vh] justify-center items-center px-4">
+          <Text
+            className="text-4xl text-green text-center"
+            style={styles.montserratRegular}
+          >
+            Add a profile picture
+          </Text>
+          <Text
+            className="text-xl text-green text-center"
+            style={styles.montserratRegular}
+          >
+            Show us your best smile!
+          </Text>
+          {image ? (
             <>
-              <View className='flex-col gap-2 items-center'>
-                <Image source={{ uri: image }} className='w-32 h-32'/>
-                <Pressable onPress={pickImage} className="bg-white flex items-center justify-center">
-                  <Text className='text-sm text-green p-2' style={styles.montserratBold}>Not sure? Add another</Text>
+              <View className="flex-col gap-2 items-center">
+                <Image source={{ uri: image }} className="w-32 h-32" />
+                <Pressable
+                  onPress={pickImage}
+                  className="bg-white flex items-center justify-center"
+                >
+                  <Text
+                    className="text-sm text-green p-2"
+                    style={styles.montserratBold}
+                  >
+                    Not sure? Add another
+                  </Text>
                 </Pressable>
               </View>
             </>
-            :
+          ) : (
             <>
-              <Pressable onPress={pickImage} className="w-32 h-32 bg-white flex items-center justify-center">
-                <Text className='text-5xl text-green' style={styles.montserratBold}>+</Text>
+              <Pressable
+                onPress={pickImage}
+                className="w-32 h-32 bg-white flex items-center justify-center"
+              >
+                <Text
+                  className="text-5xl text-green"
+                  style={styles.montserratBold}
+                >
+                  +
+                </Text>
               </Pressable>
             </>
-          }
-          
+          )}
 
           <CustomButton
             actionText="Upload"
-            bgColor='bg-green'
-            textColor='text-white'
+            bgColor="bg-green"
+            textColor="text-white"
             handlePress={() => {
               uploadImage();
-            }
-            }
+            }}
           />
           <CustomButton
             actionText="Skip for now"
-            bgColor='bg-white'
-            textColor='text-green'
+            bgColor="bg-white"
+            textColor="text-green"
             handlePress={handleSkipForNow}
           />
-          { snackbarVisible && 
+          {snackbarVisible && (
             <Snackbar
               message="Your account has been verified! Let's sign in" // Update message if needed
               setVisible={setSnackbarVisible} // Pass the function to update visibility
               duration={3000}
-              bgColor='bg-blue'
+              bgColor="bg-blue"
             />
-          }
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>
-  )
-}
+  );
+};
 
-export default AddProfPic
+export default AddProfPic;

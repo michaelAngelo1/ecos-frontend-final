@@ -1,5 +1,5 @@
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React from 'react'
+import { Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import React, { useState } from 'react'
 import { router } from 'expo-router'
 import { styles } from '../config/Fonts'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -7,8 +7,44 @@ import icons from '@/constants/icons'
 import images from '@/constants/images';
 import { Image } from 'expo-image';
 import CustomButton from '@/components/CustomButton'
+import { useLocalSearchParams } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { customerOrderHeaderInstance } from '../config/axiosConfig'
 
 const driverDetail = () => {
+
+  const { userId, orderId, name, email, phone, street } = useLocalSearchParams();
+  
+  const getToken = async () => {
+    try {
+      const userToken = await AsyncStorage.getItem("userToken")
+      if (userToken !== null) {
+        console.log("User token read: ", userToken);
+        return userToken;
+      }
+    } catch (e) {
+      console.log("Error reading JWT", e);
+    }
+  }
+
+  const handleOrderFromCustomer = async (addNanny: number) => {
+    let userToken = await getToken();
+    try {
+      console.log('order_id: ', orderId, 'user_id: ', userId, 'extraPassenger: ', addNanny);
+      const response = await customerOrderHeaderInstance(userToken!).post('', {
+        order_id: orderId,
+        user_id: userId, 
+        extra_passenger: addNanny
+      });
+      console.log('response order customer: ', response);
+      router.push('/paymentProcess');
+    } catch (e) {
+      console.log('error handle order from customer: ', e.response);
+    }
+  }
+
+  const [isNannyAdded, setIsNannyAdded] = useState(false);
+
   return (
     <SafeAreaView className="bg-white h-full px-4 py-8">
       <Text className="text-2xl text-black" style={styles.montserratBold}>Driver Details</Text>
@@ -20,10 +56,10 @@ const driverDetail = () => {
             source={images.driver_dummy} // Replace with actual driver image
           />
           <View className='flex-row gap-1 items-center justify-center'>
-            <Text className="text-xl font-semibold text-black" style={styles.montserratSemiBold}>Pak Budi Santoso</Text>
+            <Text className="text-xl font-semibold text-black" style={styles.montserratSemiBold}>{name}</Text>
             <Image className='w-6 h-6' source={icons.verified_icon}/>
           </View>
-          <Text className="text-base text-black" style={styles.montserratRegular}>Jl. MH Thamrin No. 10, Jakarta Pusat</Text>
+          <Text className="text-base text-black" style={styles.montserratRegular}>{street}</Text>
 
           <View className='flex flex-col items-start'>
             <View className='flex-row gap-1 mt-2'>
@@ -36,11 +72,25 @@ const driverDetail = () => {
             </View>
             <View className='flex-row gap-1'>
               <Image className='w-6 h-6' source={icons.phone_icon}/>
-              <Text className="text-base text-black" style={styles.montserratMedium}>(+62) 818 0313 3100</Text>
+              <Text className="text-base text-black" style={styles.montserratMedium}>{phone}</Text>
             </View>
             <View className='flex-row gap-1'>
               <Image className='w-6 h-6' source={icons.payment_icon}/>
               <Text className="text-base text-black mt-2" style={styles.montserratMedium}>Rp1.200.000/month</Text>           
+            </View>
+            <View className='flex-row gap-1'>
+              <Text className="text-base text-black mt-2" style={styles.montserratMedium}>Add nanny: </Text>   
+              <Pressable
+                onPress={() => setIsNannyAdded(!isNannyAdded)}
+              >
+                {
+                  isNannyAdded ? 
+                    <Image className='w-6 h-6' source={icons.verified_icon}/>
+                  :
+                    <View className='w-6 h-6 rounded-full border border-1 border-green'></View>
+                }
+                
+              </Pressable>         
             </View>
           </View>
 
@@ -49,7 +99,7 @@ const driverDetail = () => {
             actionText='Order driver'
             textColor='text-white'
             bgColor='bg-green'
-            handlePress={() => router.push('/paymentProcess')}
+            handlePress={() => handleOrderFromCustomer(isNannyAdded ? 1 : 0)}
           />
         </View>
       </ScrollView>

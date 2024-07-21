@@ -105,5 +105,12 @@ export const uploadUserProfileInstance = () => axios.create({
   }
 })
 
-
+export const customerOrderHeaderInstance = (token:string) => axios.create({
+  baseURL: 'http://ecos.joheee.com:4040/customer-order-header',
+  headers: {
+    'accept': '*/*',
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`,
+  }
+})
 

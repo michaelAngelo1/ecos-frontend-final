@@ -65,14 +65,15 @@ const Home = () => {
   const [role, setRole] = useState('');
   const [user, setUser] = useState<User | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
-
+  const [userId, setUserId] = useState('');
   const getUserData = async () => {
     try {
       let userToken = await getToken();
       const response = await userDetailInstance(userToken!).get('', );
       setRole(response.data.response.role);
       setEmail(response.data.response.email);
-      console.log('USER DATA: ',response.data.response.email);
+      setUserId(response.data.response.user_detail.user_id)
+      console.log('USER DATA: ',response.data.response.user_detail.user_id);
       const user = new User(
         response.data.response.email,
         response.data.response.password,
@@ -284,13 +285,29 @@ const Home = () => {
                             >
                               {driver.user.user_detail.phone}
                             </Text>
+                            <Text
+                              className=" text-black text-sm"
+                              style={styles.montserratRegular}
+                            >
+                              {driver.user.user_detail.street}
+                            </Text>
   
                           </View>
                         </View>
                         <TouchableOpacity 
                           className="absolute bottom-3 right-3 bg-green w-[104px] rounded-[20px] mt-3 p-2"
                           activeOpacity={0.7}
-                          onPress={() => router.push('/driverDetail')}
+                          onPress={() => router.push({
+                            pathname: '/driverDetail',
+                            params: {
+                              name: driver.user.user_detail.name,
+                              email: driver.user.email,
+                              phone: driver.user.user_detail.phone,
+                              street: driver.user.user_detail.street,
+                              orderId: driver.order_id,
+                              userId: userId
+                            }
+                          })}
                         >
                           {
                             <Text className="text-white text-sm text-center" style={styles.montserratMedium}>Order</Text>

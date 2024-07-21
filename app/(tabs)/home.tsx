@@ -4,13 +4,51 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { styles } from '../config/Fonts'
 import {  router } from 'expo-router'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { adminApprovalInstance, userDetailInstance } from '../config/axiosConfig'
+import { adminApprovalInstance, driverOrderHeaderInstance, reverseGeocodeInstance, userDetailInstance } from '../config/axiosConfig'
 import { User } from '@/models/User'
 import { Image } from 'expo-image'
 import icons from '@/constants/icons'
 import images from '@/constants/images'
+import Maps from '@/components/Maps'
+import * as Location from 'expo-location';
+import { Float } from 'react-native/Libraries/Types/CodegenTypes'
 
 const Home = () => {
+
+  // LOCATION SERVICES
+  const [currLocation, setCurrLocation] = useState<Location.LocationObject | null>(null);
+  const [longitude, setLongitude] = useState<number>();
+  const [latitude, setLatitude] = useState<number>();
+  useEffect(() => {
+    (async () => {
+      
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        console.log('Permission for location denied');
+        return;
+      }
+      let location = await Location.getCurrentPositionAsync({});
+      console.log('Users current location: ', location);
+      setCurrLocation(location);
+      setLongitude(location.coords.longitude);
+      setLatitude(location.coords.latitude);
+      console.log('longitude disini: ', location.coords.longitude);
+      console.log('latitude disini: ', location.coords.latitude);
+    })();
+  }, []);
+
+  const getGeocodedAddress = async () => {
+    try {
+      console.log('LATITUDE: ', latitude);
+      console.log('LONGITUDE: ', longitude);
+      const response = await reverseGeocodeInstance(latitude!, longitude!).get('',);
+      console.log('geocoded address response: ', response);
+    } catch (e) { 
+      console.log('error reverse geocoding: ', e);
+    }
+  }
+  // END LOCATION SERVICES  
+
   const getToken = async () => {
     try {
       const userToken = await AsyncStorage.getItem("userToken")
@@ -112,24 +150,58 @@ const Home = () => {
     }
   }
 
-  // const fetchMonthlyJourney = async () => {
-  //   try {
-  //     let userToken = await getToken();
-  //     const response = await adminSettleDriverOrderHeaderInstance(userToken!).get('',);
-  //     console.log('MONTHLY JOURNEY: ', response.data.response[0].user.user_detail);
-  //   } catch (e) {
-  //     console.log('error fetch monthly journey: ', e.response);
-  //   }
-  // }
+  const [availableDrivers, setAvailableDrivers] = useState([{
+    order_id: '',
+    driver_id: '',
+    is_admin_approved: true,
+    user: {
+      user_id: '',
+      email: '',
+      role: '',
+      user_detail: {
+        profile_image: '',
+        phone: '',
+        name: '',
+        street: '',
+      }
+    },
+    admin_time_block: {
+      end_date: '',
+      start_date: '',
+      time_block_id: '',
+    },
+  }]);
+  const fetchAvailableDrivers = async () => {
+    try { 
+      const userToken = await getToken();
+      const response = await driverOrderHeaderInstance(userToken!).get('',);
+      console.log('response available drivers: ', response.data.response);
+      setAvailableDrivers(response.data.response);
+    } catch (e) { 
+      console.log('error fetch available drivers: ', e.response);
+    }
+  }
 
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const getCurrentDate = () => {
+    const date = new Date();
+    console.log('Date: ', date);
+    setCurrentDate(date);
+  }
+
+  function convertDateToIso(dateValue: string): Date {
+    const formattedDateString = dateValue.replace(/\//g, "-");
+    return new Date(formattedDateString);
+  }
   
 
   useEffect(() => {
+    getCurrentDate();
     getUserData();
     getAllUsers();
-    // fetchMonthlyJourney();
+    fetchAvailableDrivers();
     
-    
+    getGeocodedAddress();
     // if(role == 'ADMIN') {
     //   console.log('ALL FETCHED USERs', customers);
     //   getAllUsers();
@@ -175,7 +247,7 @@ const Home = () => {
               <Text className='text-xl' style={styles.montserratBold}>{user?.user_detail.street}</Text>
             </View>
             <View className='w-96 h-52 bg-white rounded-xl'>
-              <Image className='w-96 h-52 rounded-xl' source={images.dummy_maps}/>
+              <Maps/>
             </View>
             <View className='flex-row gap-2 mt-2 mb-2 items-center'>
               <Image className='w-6 h-6' source={icons.destination_icon}/>
@@ -185,6 +257,50 @@ const Home = () => {
           </View>
           <ScrollView>
             <View className='flex flex-col justify-start items-start px-4'>
+            {
+                availableDrivers.map((driver) => {
+                  const orderWaveEndDate: Date = convertDateToIso(driver.admin_time_block.end_date);
+                  if(currentDate < orderWaveEndDate) {
+                    return(
+                      <View key={driver.order_id} className="relative w-full h-32 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm mb-3 p-3">
+                        <View className="flex flex-row gap-3">
+                          <View className="w-16 h-16 bg-green rounded-full"></View>
+                          <View className="flex flex-col">
+                            <Text
+                              className="text-black text-lg"
+                              style={styles.montserratSemiBold}
+                            >
+                              {driver.user.user_detail.name}
+                            </Text>
+                            <Text
+                              className=" text-black text-sm"
+                              style={styles.montserratRegular}
+                            >
+                              {driver.user.email}
+                            </Text>
+                            <Text
+                              className=" text-black text-sm"
+                              style={styles.montserratRegular}
+                            >
+                              {driver.user.user_detail.phone}
+                            </Text>
+  
+                          </View>
+                        </View>
+                        <TouchableOpacity 
+                          className="absolute bottom-3 right-3 bg-green w-[104px] rounded-[20px] mt-3 p-2"
+                          activeOpacity={0.7}
+                          onPress={() => router.push('/driverDetail')}
+                        >
+                          {
+                            <Text className="text-white text-sm text-center" style={styles.montserratMedium}>Order</Text>
+                          }
+                        </TouchableOpacity>
+                      </View>
+                    )
+                  } 
+                })
+              }
               <View className='relative w-full h-32 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm'>
                 <View className='absolute top-4 left-4 w-14 h-14 bg-green rounded-full'></View>
                 <Image className='absolute top-4 left-4 w-14 h-14 rounded-full' source={images.driver_dummy4}/>

@@ -73,14 +73,14 @@ const VehicleInfo = () => {
         setSnackbarVisible(true);
         return;
       }
-      // const response = await driverDetailInstance(userToken!).patch('', {
-      //   vehicle_model: vehicleModel,
-      //   vehicle_capacity: seatCapacity,
-      //   vehicle_number_plate: numberPlate,
-      //   vehicle_category: 'MPV'
-      // });
-      // console.log('update role response: ', response.data.response.role);
-      router.push('/pendingApproval')
+      const response = await driverDetailInstance(userToken!).patch('', {
+        vehicle_model: vehicleModel,
+        vehicle_capacity: seatCapacity,
+        vehicle_number_plate: numberPlate,
+        vehicle_category: 'MPV'
+      });
+      console.log('update role response: ', response.data.response.role);
+      // router.push('/pendingApproval')
     } catch (e) {
       console.log('error vehicle info: ', e.response);
     }

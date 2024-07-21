@@ -81,3 +81,13 @@ export const adminTimeBlockInstance = (token:string) => axios.create({
   }
 })
 
+export const reverseGeocodeInstance = (latitude: number, longitude: number) => axios.create({
+  baseURL: `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=AIzaSyA7LQ6RG8Nc1D3Hkrs0bNMROKUhSpbvPfI`,
+  headers: {
+    'accept': 'application/json',
+    'Content-Type': 'application/json',
+  }
+})
+
+
+

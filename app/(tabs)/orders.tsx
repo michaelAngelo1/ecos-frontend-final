@@ -185,7 +185,7 @@ const Orders = () => {
       });
       console.log('response partner regis driver: ', response.data.response);
     } catch (e) {
-      console.log('error partner regis driver: ', e);
+      console.log('error partner regis driver: ', e.response);
     }
   }
 
@@ -213,10 +213,11 @@ const Orders = () => {
     try {
       let userToken = await getToken();
       const response = await driverOrderHeaderInstance(userToken!).get('',);
+      console.log("response baru: ", response.data.response);
       console.log('driver registration list: ', response.data.response[0]);
       setDriverRegistrationList(response.data.response);
     } catch (e) {
-      console.log('error fetch driver registration: ', e.response)
+      console.log('error fetch driver registration: ', e)
     }
   }
 
@@ -228,7 +229,7 @@ const Orders = () => {
         time_block_id: timeBlockId,
         is_admin_approved: isAdminApproved
       });
-      console.log('admin approve driver registration: ', response.dataS);
+      console.log('admin approve driver registration: ', response.data);
     } catch (e) {
       console.log('error approve driver registration: ', e.response);
     }
@@ -643,26 +644,59 @@ const Orders = () => {
                 {
                   driverRegistrationList.map((driverRegistration) => {
                     return(
-                      <View key={driverRegistration.order_id} className="relative w-full h-32 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm mb-3">
-                        <View className="absolute top-4 left-4 w-14 h-14 bg-green rounded-full"></View>
-                        <Text
-                          className="absolute top-0 left-[70px] text-black text-lg p-4"
-                          style={styles.montserratSemiBold}
-                        >
-                          {driverRegistration.user.user_detail.name}
-                        </Text>
-                        <Text
-                          className="absolute top-7 left-[70px] text-black text-sm p-4"
-                          style={styles.montserratRegular}
-                        >
-                          {driverRegistration.user.user_detail.phone}
-                        </Text>
+                      <View key={driverRegistration.order_id} className="relative w-full h-48 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm mb-3 p-3">
+                        <View className="flex flex-row gap-3">
+                          <View className="w-16 h-16 bg-green rounded-full"></View>
+                          <View className="flex flex-col">
+                            <Text
+                              className="text-black text-lg"
+                              style={styles.montserratSemiBold}
+                            >
+                              {driverRegistration.user.user_detail.name}
+                            </Text>
+                            <Text
+                              className=" text-black text-sm"
+                              style={styles.montserratRegular}
+                            >
+                              {driverRegistration.user.email}
+                            </Text>
+                            <Text
+                              className=" text-black text-sm"
+                              style={styles.montserratRegular}
+                            >
+                              {driverRegistration.user.user_detail.phone}
+                            </Text>
+                            <Text
+                              className=" text-black text-xs"
+                              style={styles.montserratRegular}
+                            >
+                              Requested registration as driver
+                            </Text>
+                            <Text
+                              className=" text-black text-xs"
+                              style={styles.montserratRegular}
+                            >
+                              On period: {driverRegistration.admin_time_block.start_date.substring(0, 10)} to {driverRegistration.admin_time_block.end_date.substring(0, 10)}
+                            </Text>
+
+                          </View>
+                        </View>
                         <TouchableOpacity 
                           className="absolute bottom-3 right-3 bg-green w-[104px] rounded-[20px] mt-3 p-2"
                           activeOpacity={0.7}
-                          onPress={() => handleAdminApproveDriverRegistration(driverRegistration.order_id, driverRegistration.driver_id, driverRegistration.admin_time_block.time_block_id, true)}
+                          disabled={driverRegistration.is_admin_approved ? true : false}
+                          onPress={() => {
+                              handleAdminApproveDriverRegistration(driverRegistration.order_id, driverRegistration.driver_id, driverRegistration.admin_time_block.time_block_id, true)
+                              fetchDriverRegistration();
+                            }
+                          }
                         >
-                          <Text className="text-white text-sm text-center" style={styles.montserratBold}>Approve</Text>
+                          {
+                            driverRegistration.is_admin_approved ?
+                              <Text className="text-white text-sm text-center" style={styles.montserratBold}>Approved</Text>
+                            :
+                              <Text className="text-white text-sm text-center" style={styles.montserratMedium}>Approve</Text>
+                          }
                         </TouchableOpacity>
                         <TouchableOpacity 
                           className="absolute bottom-3 right-32 bg-red-900 w-[104px] rounded-[20px] mt-3 p-2"

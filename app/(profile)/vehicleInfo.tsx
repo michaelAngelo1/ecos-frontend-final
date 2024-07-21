@@ -92,7 +92,8 @@ const vehicleInfo = () => {
         <View className="flex flex-col justify-center items-center px-4 mt-5">
           <Image
             className="w-40 h-40 rounded-full"
-            source={`http://ecos.joheee/com:4050/public/vehicle/${data.driver_detail.vehicle_image}`}
+            // source={`http://ecos.joheee/com:4050/public/vehicle/${data.driver_detail.vehicle_image}`}
+            source={`http://ecos.joheee.com:4050/public/user/dummy.png`}
           />
           <Text className="text-2xl mt-3" style={styles.montserratSemiBold}>
             Toyota Voxy

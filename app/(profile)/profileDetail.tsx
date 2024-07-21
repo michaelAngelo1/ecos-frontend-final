@@ -65,13 +65,12 @@ const profileDetail = () => {
   useEffect(() => {
     getUserData();
   }, []);
-console.log(`http://ecos.joheee.com:4040/public/user/${user?.user_detail.profile_image}`)
   return (
     <SafeAreaView className='bg-[#fff] h-full'>
       <Text className='text-2xl text-black mt-4 ml-5' style={styles.montserratBold}>Edit your profile</Text>
         <ScrollView>
           <View className='flex flex-col justify-center items-center px-4 mt-5'>
-            <Image className='w-40 h-40 rounded-full' source={`http://ecos.joheee.com:4040/public/user/${user?.user_detail.profile_image}`}/>
+            <Image className='w-40 h-40 rounded-full' source={`http://ecos.joheee.com:4050/public/user/${user?.user_detail.profile_image}`}/>
             <Text className='text-2xl mt-3' style={styles.montserratSemiBold}>{user?.user_detail.name}</Text>
             <Text className='text-lg' style={styles.montserratMedium}>{user?.user_detail.phone}</Text>
 

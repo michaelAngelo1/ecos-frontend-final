@@ -13,6 +13,7 @@ import { styles } from "../config/Fonts";
 import { router } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
 import {
+  uploadImageVehicleInstance,
   uploadUserProfileInstance,
   userDetailInstance,
   userImageInstance,
@@ -81,23 +82,23 @@ const AddProfPic = () => {
 
   const uploadImage = async () => {
     try {
-      console.log("upload image");
       let userToken = await getToken();
 
-      const formData = new FormData();
-      formData.append("profile_picture", {
-        uri: imageFile!.uri,
-        name: imageFile!.fileName,
-        type: imageFile!.mimeType,
-      });
-      console.log("uri: ", imageFile!.uri);
-      console.log("name: ", imageFile!.fileName);
-      console.log("type: ", imageFile!.mimeType);
-      const response = await uploadUserProfileInstance().post("", {
-        profile_image_file: formData,
-      });
-      console.log("Success upload image: ", response);
-      // router.push('/pendingApproval');
+      if (imageFile) {
+        const formData = new FormData();
+        formData.append("profile_image_file", {
+          uri: imageFile!.uri,
+          name: imageFile!.fileName,
+          type: imageFile!.mimeType,
+        });
+        const response = await uploadUserProfileInstance().post("", formData);
+        const imageName = response.data
+        const updateUserDetail = await userDetailInstance(userToken!).patch("", {
+          profile_image:imageName
+        }).then(() => {
+          router.push('/pendingApproval');
+        })
+      }
     } catch (e) {
       console.log("error upload image", e);
     }

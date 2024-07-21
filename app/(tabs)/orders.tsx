@@ -69,7 +69,10 @@ const Orders = () => {
       let userToken = await getToken();
       const response = await userDetailInstance(userToken!).get("");
       setRole(response.data.response.role);
-      console.log('USER DATA RESPONSE: ', response.data.response.user_detail.user_id);
+      console.log(
+        "USER DATA RESPONSE: ",
+        response.data.response.user_detail.user_id
+      );
       setUserId(response.data.response.user_detail.user_id);
       // setEmail(response.data.response.email);
       console.log("response", response.data.response.role);
@@ -124,12 +127,11 @@ const Orders = () => {
   const [startConfirmButton, setStartConfirmButton] = useState(false);
   const [endConfirmButton, setEndConfirmButton] = useState(false);
 
-
   const handleSubmitOrderWaveDate = async () => {
     const start_date: Date = convertDateToIso(startDate);
     const end_date: Date = convertDateToIso(endDate);
 
-    console.log(start_date, end_date);  
+    console.log(start_date, end_date);
 
     try {
       const userToken = await getToken();
@@ -138,7 +140,7 @@ const Orders = () => {
         end_date,
       });
       console.log("response submit date: ", response.data.response);
-      console.log('successfully created order wave')
+      console.log("successfully created order wave");
     } catch (e: any) {
       console.log("error submiting order wave date", e.response);
     }
@@ -148,92 +150,107 @@ const Orders = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const getCurrentDate = () => {
     const date = new Date();
-    console.log('Date: ', date);
+    console.log("Date: ", date);
     setCurrentDate(date);
-  }
+  };
 
-  const [orderWaveList, setOrderWaveList] = useState([{
-    time_block_id: '',
-    start_date: '',
-    end_date: '',
-    user: {
-      user_id: '',
-      email: '',
-      password: '',
-      role: '',
-      created_at: false,
-    }
-  }]);
+  const [orderWaveList, setOrderWaveList] = useState([
+    {
+      time_block_id: "",
+      start_date: "",
+      end_date: "",
+      user: {
+        user_id: "",
+        email: "",
+        password: "",
+        role: "",
+        created_at: false,
+      },
+    },
+  ]);
 
   const fetchOrderWave = async () => {
     try {
       let userToken = await getToken();
-      const response = await adminTimeBlockInstance(userToken!).get('',);
-      console.log('order wave available: ', response.data.response);
+      const response = await adminTimeBlockInstance(userToken!).get("");
+      console.log("order wave available: ", response.data.response);
       setOrderWaveList(response.data.response);
-    } catch (e) { 
-      console.log('error fetch order wave: ', e.response);
+    } catch (e) {
+      console.log("error fetch order wave: ", e.response);
     }
-  }
+  };
 
-  const handlePartnerRegisAsDriver = async (timeBlockId: string, driverId: string) => {
+  const handlePartnerRegisAsDriver = async (
+    timeBlockId: string,
+    driverId: string
+  ) => {
     try {
       let userToken = await getToken();
-      const response = await driverOrderHeaderInstance(userToken!).post('', {
+      const response = await driverOrderHeaderInstance(userToken!).post("", {
         driver_id: driverId,
-        time_block_id: timeBlockId
+        time_block_id: timeBlockId,
       });
-      console.log('response partner regis driver: ', response.data.response);
+      console.log("response partner regis driver: ", response.data.response);
     } catch (e) {
-      console.log('error partner regis driver: ', e.response);
+      console.log("error partner regis driver: ", e.response);
     }
-  }
+  };
 
   // ADMIN APPROVE DRIVER REGISTRATION
-  const [driverRegistrationList, setDriverRegistrationList] = useState([{
-    order_id: '',
-    driver_id: '',
-    is_admin_approved: false,
-    admin_time_block: {
-      end_date: '',
-      start_date: '',
-      time_block_id: '',
+  const [driverRegistrationList, setDriverRegistrationList] = useState([
+    {
+      order_id: "",
+      driver_id: "",
+      is_admin_approved: false,
+      admin_time_block: {
+        end_date: "",
+        start_date: "",
+        time_block_id: "",
+      },
+      user: {
+        email: "",
+        role: "",
+        user_detail: {
+          name: "",
+          phone: "",
+        },
+      },
     },
-    user: {
-      email: '',
-      role: '',
-      user_detail: {
-        name: '',
-        phone: '',
-      }
-    }
-  }]);
+  ]);
 
   const fetchDriverRegistration = async () => {
     try {
       let userToken = await getToken();
-      const response = await driverOrderHeaderInstance(userToken!).get('',);
+      const response = await driverOrderHeaderInstance(userToken!).get("");
       console.log("response baru: ", response.data.response);
-      console.log('driver registration list: ', response.data.response[0]);
+      console.log("driver registration list: ", response.data.response[0]);
       setDriverRegistrationList(response.data.response);
     } catch (e) {
-      console.log('error fetch driver registration: ', e)
+      console.log("error fetch driver registration: ", e);
     }
-  }
+  };
 
-  const handleAdminApproveDriverRegistration = async (orderId: string, driverId: string, timeBlockId: string, isAdminApproved: boolean) => {
+  const handleAdminApproveDriverRegistration = async (
+    orderId: string,
+    driverId: string,
+    timeBlockId: string,
+    isAdminApproved: boolean
+  ) => {
     try {
       let userToken = await getToken();
-      const response = await driverOrderHeaderByIdInstance(userToken!, orderId).patch('', {
+      const response = await driverOrderHeaderByIdInstance(
+        userToken!,
+        orderId
+      ).patch("", {
         driver_id: driverId,
         time_block_id: timeBlockId,
-        is_admin_approved: isAdminApproved
+        is_admin_approved: isAdminApproved,
       });
-      console.log('admin approve driver registration: ', response.data);
+      console.log("admin approve driver registration: ", response.data);
     } catch (e) {
-      console.log('error approve driver registration: ', e.response);
+      console.log("error approve driver registration: ", e.response);
     }
-  }
+  };
 
   const [loading, setLoading] = useState(true);
   useEffect(() => {
@@ -243,12 +260,10 @@ const Orders = () => {
   }, []);
 
   useEffect(() => {
-    if(orderWaveList) {
+    if (orderWaveList) {
       setLoading(false);
     }
-  }, [orderWaveList])
-  
-
+  }, [orderWaveList]);
 
   return (
     <SafeAreaView className="bg-[#fff] h-full">
@@ -370,55 +385,72 @@ const Orders = () => {
           </View>
           <ScrollView className="w-full h-screen">
             <Text
-                className="text-xl ml-2 mb-1 px-4"
-                style={styles.montserratSemiBold}
-              >
+              className="text-xl ml-2 mb-1 px-4"
+              style={styles.montserratSemiBold}
+            >
               Register as Driver in this period
             </Text>
-            
+
             <ScrollView className="min-h-[220px] overflow-auto">
               <View className="flex flex-col px-4">
-                {
-                  loading ?
-                  <ActivityIndicator className='mt-3 p-1' size="large" color="green" />
-                  :
+                {loading ? (
+                  <ActivityIndicator
+                    className="mt-3 p-1"
+                    size="large"
+                    color="green"
+                  />
+                ) : (
                   orderWaveList.map((orderWave) => {
-                      const orderWaveEndDate: Date = convertDateToIso(orderWave.end_date);
-                      if(currentDate < orderWaveEndDate) {
-                        return(
-                          <View key={orderWave.time_block_id} className="relative w-full h-28 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm mb-3">
-                            <View className="absolute top-4 left-4 w-14 h-14 bg-green rounded-full"></View>
+                    const orderWaveEndDate: Date = convertDateToIso(
+                      orderWave.end_date
+                    );
+                    if (currentDate < orderWaveEndDate) {
+                      return (
+                        <View
+                          key={orderWave.time_block_id}
+                          className="relative w-full h-28 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm mb-3"
+                        >
+                          <View className="absolute top-4 left-4 w-14 h-14 bg-green rounded-full"></View>
+                          <Text
+                            className="absolute top-0 left-[70px] text-black text-lg p-4"
+                            style={styles.montserratSemiBold}
+                          >
+                            {orderWave.start_date.substring(0, 10)}
+                          </Text>
+                          <Text
+                            className="absolute top-0 left-[200px] text-black text-lg p-4"
+                            style={styles.montserratSemiBold}
+                          >
+                            {orderWave.end_date.substring(0, 10)}
+                          </Text>
+                          <Text
+                            className="absolute top-7 left-[70px] text-black text-sm p-4"
+                            style={styles.montserratRegular}
+                          >
+                            +62 818 0313 3100
+                          </Text>
+                          <TouchableOpacity
+                            className="absolute bottom-3 right-3 bg-green w-[104px] rounded-[20px] mt-3 p-2"
+                            activeOpacity={0.7}
+                            onPress={() =>
+                              handlePartnerRegisAsDriver(
+                                orderWave.time_block_id,
+                                userId
+                              )
+                            }
+                          >
                             <Text
-                              className="absolute top-0 left-[70px] text-black text-lg p-4"
-                              style={styles.montserratSemiBold}
+                              className="text-white text-sm text-center"
+                              style={styles.montserratBold}
                             >
-                              {orderWave.start_date.substring(0, 10)}
+                              Register
                             </Text>
-                            <Text
-                              className="absolute top-0 left-[200px] text-black text-lg p-4"
-                              style={styles.montserratSemiBold}
-                            >
-                              {orderWave.end_date.substring(0, 10)}
-                            </Text>
-                            <Text
-                              className="absolute top-7 left-[70px] text-black text-sm p-4"
-                              style={styles.montserratRegular}
-                            >
-                              +62 818 0313 3100
-                            </Text>
-                            <TouchableOpacity 
-                              className="absolute bottom-3 right-3 bg-green w-[104px] rounded-[20px] mt-3 p-2"
-                              activeOpacity={0.7}
-                              onPress={() => handlePartnerRegisAsDriver(orderWave.time_block_id, userId)}
-                            >
-                              <Text className="text-white text-sm text-center" style={styles.montserratBold}>Register</Text>
-                            </TouchableOpacity>
-                          </View>
-                        )
-                      }
+                          </TouchableOpacity>
+                        </View>
+                      );
+                    }
                   })
-                }
-                
+                )}
               </View>
             </ScrollView>
             <View className="flex flex-col justify-start items-start px-4">
@@ -437,7 +469,6 @@ const Orders = () => {
             </View>
             <ScrollView className="min-h-[365px] overflow-auto">
               <View className="flex flex-col justify-start items-start px-4">
-
                 <View className="relative w-full h-28 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm">
                   <View className="absolute top-4 left-4 w-14 h-14 bg-green rounded-full"></View>
                   <Text
@@ -540,11 +571,12 @@ const Orders = () => {
           </View>
           <ScrollView>
             <View className="flex-col gap-1 px-4">
-              <Text className='text-base' style={styles.montserratBold}>
+              <Text className="text-base" style={styles.montserratBold}>
                 Set order wave
               </Text>
-              <Text className='mb-3' style={styles.montserratMedium}>
-                Set an order wave period where ECOS partners can register as drivers.
+              <Text className="mb-3" style={styles.montserratMedium}>
+                Set an order wave period where ECOS partners can register as
+                drivers.
               </Text>
               <Text style={styles.montserratMedium}>
                 Set start order wave date
@@ -641,77 +673,111 @@ const Orders = () => {
                 Approve or disapprove ECOS partners registration as drivers.
               </Text>
               <ScrollView className="min-h-[200px] overflow-auto">
-                {
-                  driverRegistrationList.map((driverRegistration) => {
-                    return(
-                      <View key={driverRegistration.order_id} className="relative w-full h-48 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm mb-3 p-3">
-                        <View className="flex flex-row gap-3">
-                          <View className="w-16 h-16 bg-green rounded-full"></View>
-                          <View className="flex flex-col">
-                            <Text
-                              className="text-black text-lg"
-                              style={styles.montserratSemiBold}
-                            >
-                              {driverRegistration.user.user_detail.name}
-                            </Text>
-                            <Text
-                              className=" text-black text-sm"
-                              style={styles.montserratRegular}
-                            >
-                              {driverRegistration.user.email}
-                            </Text>
-                            <Text
-                              className=" text-black text-sm"
-                              style={styles.montserratRegular}
-                            >
-                              {driverRegistration.user.user_detail.phone}
-                            </Text>
-                            <Text
-                              className=" text-black text-xs"
-                              style={styles.montserratRegular}
-                            >
-                              Requested registration as driver
-                            </Text>
-                            <Text
-                              className=" text-black text-xs"
-                              style={styles.montserratRegular}
-                            >
-                              On period: {driverRegistration.admin_time_block.start_date.substring(0, 10)} to {driverRegistration.admin_time_block.end_date.substring(0, 10)}
-                            </Text>
-
-                          </View>
+                {driverRegistrationList.map((driverRegistration) => {
+                  return (
+                    <View
+                      key={driverRegistration.order_id}
+                      className="relative w-full h-48 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm mb-3 p-3"
+                    >
+                      <View className="flex flex-row gap-3">
+                        <View className="w-16 h-16 bg-green rounded-full"></View>
+                        <View className="flex flex-col">
+                          <Text
+                            className="text-black text-lg"
+                            style={styles.montserratSemiBold}
+                          >
+                            {driverRegistration.user.user_detail.name}
+                          </Text>
+                          <Text
+                            className=" text-black text-sm"
+                            style={styles.montserratRegular}
+                          >
+                            {driverRegistration.user.email}
+                          </Text>
+                          <Text
+                            className=" text-black text-sm"
+                            style={styles.montserratRegular}
+                          >
+                            {driverRegistration.user.user_detail.phone}
+                          </Text>
+                          <Text
+                            className=" text-black text-xs"
+                            style={styles.montserratRegular}
+                          >
+                            Requested registration as driver
+                          </Text>
+                          <Text
+                            className=" text-black text-xs"
+                            style={styles.montserratRegular}
+                          >
+                            On period:{" "}
+                            {driverRegistration.admin_time_block.start_date.substring(
+                              0,
+                              10
+                            )}{" "}
+                            to{" "}
+                            {driverRegistration.admin_time_block.end_date.substring(
+                              0,
+                              10
+                            )}
+                          </Text>
                         </View>
-                        <TouchableOpacity 
-                          className="absolute bottom-3 right-3 bg-green w-[104px] rounded-[20px] mt-3 p-2"
-                          activeOpacity={0.7}
-                          disabled={driverRegistration.is_admin_approved ? true : false}
-                          onPress={() => {
-                              handleAdminApproveDriverRegistration(driverRegistration.order_id, driverRegistration.driver_id, driverRegistration.admin_time_block.time_block_id, true)
-                              fetchDriverRegistration();
-                            }
-                          }
-                        >
-                          {
-                            driverRegistration.is_admin_approved ?
-                              <Text className="text-white text-sm text-center" style={styles.montserratBold}>Approved</Text>
-                            :
-                              <Text className="text-white text-sm text-center" style={styles.montserratMedium}>Approve</Text>
-                          }
-                        </TouchableOpacity>
-                        <TouchableOpacity 
-                          className="absolute bottom-3 right-32 bg-red-900 w-[104px] rounded-[20px] mt-3 p-2"
-                          activeOpacity={0.7}
-                          onPress={() => handleAdminApproveDriverRegistration(driverRegistration.order_id, driverRegistration.driver_id, driverRegistration.admin_time_block.time_block_id, false)}
-                        >
-                          <Text className="text-white text-sm text-center" style={styles.montserratBold}>Reject</Text>
-                        </TouchableOpacity>
                       </View>
-                    )
-                  })
-                
-                }
+                      <TouchableOpacity
+                        className="absolute bottom-3 right-3 bg-green w-[104px] rounded-[20px] mt-3 p-2"
+                        activeOpacity={0.7}
+                        disabled={
+                          driverRegistration.is_admin_approved ? true : false
+                        }
+                        onPress={() => {
+                          handleAdminApproveDriverRegistration(
+                            driverRegistration.order_id,
+                            driverRegistration.driver_id,
+                            driverRegistration.admin_time_block.time_block_id,
+                            true
+                          );
+                          fetchDriverRegistration();
+                        }}
+                      >
+                        {driverRegistration.is_admin_approved ? (
+                          <Text
+                            className="text-white text-sm text-center"
+                            style={styles.montserratBold}
+                          >
+                            Approved
+                          </Text>
+                        ) : (
+                          <Text
+                            className="text-white text-sm text-center"
+                            style={styles.montserratMedium}
+                          >
+                            Approve
+                          </Text>
+                        )}
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        className="absolute bottom-3 right-32 bg-red-900 w-[104px] rounded-[20px] mt-3 p-2"
+                        activeOpacity={0.7}
+                        onPress={() =>
+                          handleAdminApproveDriverRegistration(
+                            driverRegistration.order_id,
+                            driverRegistration.driver_id,
+                            driverRegistration.admin_time_block.time_block_id,
+                            false
+                          )
+                        }
+                      >
+                        <Text
+                          className="text-white text-sm text-center"
+                          style={styles.montserratBold}
+                        >
+                          Reject
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  );
+                })}
               </ScrollView>
-
             </View>
           </ScrollView>
         </>

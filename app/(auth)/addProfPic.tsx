@@ -13,10 +13,8 @@ import { styles } from "../config/Fonts";
 import { router } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
 import {
-  uploadImageVehicleInstance,
   uploadUserProfileInstance,
   userDetailInstance,
-  userImageInstance,
 } from "../config/axiosConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Snackbar from "@/components/Snackbar";

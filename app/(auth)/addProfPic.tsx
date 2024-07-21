@@ -4,7 +4,7 @@ import CustomButton from '@/components/CustomButton'
 import { styles } from '../config/Fonts'
 import { router } from 'expo-router'
 import * as ImagePicker from 'expo-image-picker'
-import { userDetailInstance, userImageInstance } from '../config/axiosConfig'
+import { uploadUserProfileInstance, userDetailInstance, userImageInstance } from '../config/axiosConfig'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import Snackbar from '@/components/Snackbar'
 
@@ -72,28 +72,31 @@ const AddProfPic = () => {
       let userToken = await getToken();
 
       const formData = new FormData();
-      // formData.append('profile_picture', {
-      //   uri: imageFile!.uri,
-      //   name: imageFile!.fileName,
-      //   type: imageFile!.mimeType
-      // });
+      formData.append('profile_picture', {
+        uri: imageFile!.uri,
+        name: imageFile!.fileName,
+        type: imageFile!.mimeType
+      });
       console.log('uri: ', imageFile!.uri);
       console.log("name: ", imageFile!.fileName);
       console.log("type: ", imageFile!.mimeType);
-      const response = await userImageInstance(userToken!).patch('', {
+      const response = await uploadUserProfileInstance().post('', {
         profile_image_file: formData,
       });
-      console.log('Success: ', response);
-      router.push('/pendingApproval');
+      console.log('Success upload image: ', response);
+      // router.push('/pendingApproval');
     } catch (e) {
       console.log('error upload image', e);
     }
   }
 
   const handleSkipForNow = () => {
+    console.log('handle skip for now');
+    console.log(role);
     if(role == 'CUSTOMER') {
       router.push('/pendingApproval');
     } else if(role == 'DRIVER') {
+      console.log('router push vehicle info');
       router.push('/vehicleInfo')
     }
   }

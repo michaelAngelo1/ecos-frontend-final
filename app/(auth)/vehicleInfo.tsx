@@ -1,4 +1,4 @@
-import { Button, Platform, ScrollView, StyleSheet, Text, View } from 'react-native'
+import { Button, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import FormField from '@/components/FormField'
@@ -8,8 +8,9 @@ import { styles } from '../config/Fonts'
 import * as ImagePicker from 'expo-image-picker'
 import Snackbar from '@/components/Snackbar'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { driverDetailInstance } from '../config/axiosConfig'
+import { driverDetailInstance, uploadImageVehicleInstance } from '../config/axiosConfig'
 import { VehicleInfoProps } from '../config/Interface'
+import { Image } from 'expo-image';
 
 const VehicleInfo = () => {
 
@@ -18,10 +19,14 @@ const VehicleInfo = () => {
 
   const [form, setForm] = useState({
     vehicleModel: '',
+    vehicleCategory: '',
     seatCapacity: '',
     numberPlate: '',
     yearReleased: '',
   })
+
+  console.log('IMAGE UPLOADED: ', typeof image);
+
 
   useEffect(() => {
     (async () => {
@@ -38,7 +43,7 @@ const VehicleInfo = () => {
       }
     })();
   }, []);
-
+  const [fixImage, setFixImage] = useState<ImagePicker.ImagePickerAsset | null>(null)
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -47,10 +52,11 @@ const VehicleInfo = () => {
       quality: 1,
     });
 
-    console.log(result.assets);
+    console.log('image picked: ', result.assets[0]);
 
     if(!result.canceled) {
       setImage(result.assets[0].uri)
+      setFixImage(result.assets[0]);
     }
   };
 
@@ -66,20 +72,19 @@ const VehicleInfo = () => {
     }
   }
 
-  const handleSubmitVehicleInfo = async ({vehicleModel, seatCapacity, yearReleased, numberPlate} : VehicleInfoProps) => {
+  const handleSubmitVehicleInfo = async (vehicleModel: string, seatCapacity: string, numberPlate: string, yearReleased: string, image: ImagePicker.ImagePickerAsset) => {
     try {
       let userToken = await getToken();
       if(vehicleModel == '' || seatCapacity == '' || numberPlate == '' || yearReleased == '' || parseInt(yearReleased) < 2014) {
         setSnackbarVisible(true);
         return;
       }
-      const response = await driverDetailInstance(userToken!).patch('', {
-        vehicle_model: vehicleModel,
-        vehicle_capacity: seatCapacity,
-        vehicle_number_plate: numberPlate,
-        vehicle_category: 'MPV'
+      console.log('image: ', typeof image);
+      
+      const response = await uploadImageVehicleInstance().post('',{
+        vehicle_image_file: image
       });
-      console.log('update role response: ', response.data.response.role);
+      console.log('test upload image to API: ', response);
       // router.push('/pendingApproval')
     } catch (e) {
       console.log('error vehicle info: ', e.response);
@@ -91,7 +96,7 @@ const VehicleInfo = () => {
       <ScrollView>
         <View className='flex flex-col min-h-[100vh] justify-center items-center px-4'>
           <Text className='text-4xl text-green text-center' style={styles.montserratRegular}>Vehicle Information</Text>
-          {/* {image ?
+          {image ?
             <>
               <Image source={{ uri: image }} className='w-36 h-36'/>
               <View className='flex-row gap-1 w-screen px-4 mt-2'>
@@ -107,7 +112,7 @@ const VehicleInfo = () => {
                 <Text className='text-sm text-green p-2 border-2 border-green rounded-md' style={styles.montserratRegular}>Upload car picture</Text>
               </Pressable>
             </>
-          } */}
+          }
           
           
 
@@ -153,14 +158,15 @@ const VehicleInfo = () => {
             actionText="Submit"
             bgColor='bg-green'
             textColor='text-white'
-            handlePress={() => {
-              handleSubmitVehicleInfo({
-                vehicleModel: form.vehicleModel,
-                seatCapacity: form.seatCapacity,
-                numberPlate: form.numberPlate,
-                yearReleased: form.yearReleased
-              });
-            }}
+            handlePress={() => 
+              handleSubmitVehicleInfo(
+                form.vehicleModel,
+                form.seatCapacity,
+                form.numberPlate,
+                form.yearReleased,
+                fixImage!
+              )
+            }
           />
 
           <View className='justify-center pt-2 flex-row gap-2'>

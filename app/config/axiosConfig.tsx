@@ -89,5 +89,21 @@ export const reverseGeocodeInstance = (latitude: number, longitude: number) => a
   }
 })
 
+export const uploadImageVehicleInstance = () => axios.create({
+  baseURL: 'http://ecos.joheee.com:4050/upload-image/driver-detail',
+  headers: {
+    'accept': '*/*',
+    'Content-Type': 'multipart/form-data',
+  }
+})
+
+export const uploadUserProfileInstance = () => axios.create({
+  baseURL: 'http://ecos.joheee.com:4050/upload-image/user-detail',
+  headers: {
+    'accept': '*/*',
+    'Content-Type': 'multipart/form-data',
+  }
+})
+
 
 

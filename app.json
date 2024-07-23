@@ -20,7 +20,12 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.michaelangelo1.testbedapp"
+      "package": "com.michaelangelo1.testbedapp",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyDJU_vNepP-TIWLP7BVEb_tlQRZOigwoso"
+        }
+      }
     },
     "web": {
       "bundler": "metro",

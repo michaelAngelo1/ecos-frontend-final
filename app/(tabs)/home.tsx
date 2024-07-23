@@ -202,7 +202,7 @@ const Home = () => {
     getAllUsers();
     fetchAvailableDrivers();
     
-    getGeocodedAddress();
+    // getGeocodedAddress();
     // if(role == 'ADMIN') {
     //   console.log('ALL FETCHED USERs', customers);
     //   getAllUsers();
@@ -318,51 +318,6 @@ const Home = () => {
                   } 
                 })
               }
-              <View className='relative w-full h-32 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm'>
-                <View className='absolute top-4 left-4 w-14 h-14 bg-green rounded-full'></View>
-                <Image className='absolute top-4 left-4 w-14 h-14 rounded-full' source={images.driver_dummy4}/>
-                <Text className='absolute top-0 left-[70px] text-black text-lg p-4' style={styles.montserratSemiBold}>Bu Lily Halim</Text>
-                <Text className='absolute top-7 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>+62 818 0313 3100</Text>
-                <Image className='absolute top-16 left-[80px] w-6 h-6' source={icons.destination_icon}/>
-                <Text className='absolute top-12 left-[90px] text-black text-sm p-4' style={styles.montserratRegular}>3 km away</Text>
-                <Image className='absolute top-[85px] left-[80px] w-6 h-6' source={icons.passengers_icon}/>
-                <Text className='absolute top-[70px] left-[90px] text-black text-sm p-4' style={styles.montserratRegular}>3 persons</Text>
-                <Text className='absolute top-5 right-3 text-black text-base' style={styles.montserratRegular}>Rp 1.200.000</Text>
-                
-                <Text className="absolute bottom-14 right-7 text-blue text-sm text-center" style={styles.montserratRegular}>Matched</Text>
-                
-                <TouchableOpacity 
-                  className="absolute bottom-3 right-3 bg-green w-[104px] rounded-[20px] mt-3 p-2"
-                  activeOpacity={0.7}
-                  onPress={() => {
-                    router.push('/dailyTripDetail') // if ORDER matched  
-                    // router.push('/driverDetail') // if BELUM ORDER
-                  }}
-                >
-                  <Text className="text-white text-sm text-center" style={styles.montserratBold}>Track</Text>
-                </TouchableOpacity>
-              </View>
-
-              <View className='relative w-full h-32 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm mt-3'>
-                <View className='absolute top-4 left-4 w-14 h-14 bg-green rounded-full'></View>
-                <Image className='absolute top-4 left-4 w-14 h-14 rounded-full' source={images.driver_dummy}/>
-                <Text className='absolute top-0 left-[70px] text-black text-lg p-4' style={styles.montserratSemiBold}>Pak Budi</Text>
-                <Text className='absolute top-7 left-[70px] text-black text-sm p-4' style={styles.montserratRegular}>+62 818 0313 3200</Text>
-                <Image className='absolute top-16 left-[80px] w-6 h-6' source={icons.destination_icon}/>
-                <Text className='absolute top-12 left-[90px] text-black text-sm p-4' style={styles.montserratRegular}>3 km away</Text>
-                <Image className='absolute top-[85px] left-[80px] w-6 h-6' source={icons.passengers_icon}/>
-                <Text className='absolute top-[70px] left-[90px] text-black text-sm p-4' style={styles.montserratRegular}>5 persons</Text>
-
-
-                <Text className='absolute top-5 right-3 text-black text-base' style={styles.montserratRegular}>Rp 1.200.000</Text>
-                <TouchableOpacity 
-                  className="absolute bottom-3 right-3 bg-green w-[104px] rounded-[20px] mt-3 p-2"
-                  activeOpacity={0.7}
-                  onPress={() => router.push('/driverDetail')}
-                >
-                  <Text className="text-white text-sm text-center" style={styles.montserratBold}>Order</Text>
-                </TouchableOpacity>
-              </View>
 
               {/* <View className='relative w-full h-32 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm mt-3'>
                 <View className='absolute top-4 left-4 w-14 h-14 bg-green rounded-full'></View>

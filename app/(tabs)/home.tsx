@@ -16,37 +16,37 @@ import { Float } from 'react-native/Libraries/Types/CodegenTypes'
 const Home = () => {
 
   // LOCATION SERVICES
-  const [currLocation, setCurrLocation] = useState<Location.LocationObject | null>(null);
-  const [longitude, setLongitude] = useState<number>();
-  const [latitude, setLatitude] = useState<number>();
-  useEffect(() => {
-    (async () => {
+  // const [currLocation, setCurrLocation] = useState<Location.LocationObject | null>(null);
+  // const [longitude, setLongitude] = useState<number>();
+  // const [latitude, setLatitude] = useState<number>();
+  // useEffect(() => {
+  //   (async () => {
       
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        console.log('Permission for location denied');
-        return;
-      }
-      let location = await Location.getCurrentPositionAsync({});
-      console.log('Users current location: ', location);
-      setCurrLocation(location);
-      setLongitude(location.coords.longitude);
-      setLatitude(location.coords.latitude);
-      console.log('longitude disini: ', location.coords.longitude);
-      console.log('latitude disini: ', location.coords.latitude);
-    })();
-  }, []);
+  //     let { status } = await Location.requestForegroundPermissionsAsync();
+  //     if (status !== 'granted') {
+  //       console.log('Permission for location denied');
+  //       return;
+  //     }
+  //     let location = await Location.getCurrentPositionAsync({});
+  //     console.log('Users current location: ', location);
+  //     setCurrLocation(location);
+  //     setLongitude(location.coords.longitude);
+  //     setLatitude(location.coords.latitude);
+  //     console.log('longitude disini: ', location.coords.longitude);
+  //     console.log('latitude disini: ', location.coords.latitude);
+  //   })();
+  // }, []);
 
-  const getGeocodedAddress = async () => {
-    try {
-      console.log('LATITUDE: ', latitude);
-      console.log('LONGITUDE: ', longitude);
-      const response = await reverseGeocodeInstance(latitude!, longitude!).get('',);
-      console.log('geocoded address response: ', response);
-    } catch (e) { 
-      console.log('error reverse geocoding: ', e);
-    }
-  }
+  // const getGeocodedAddress = async () => {
+  //   try {
+  //     console.log('LATITUDE: ', latitude);
+  //     console.log('LONGITUDE: ', longitude);
+  //     const response = await reverseGeocodeInstance(latitude!, longitude!).get('',);
+  //     console.log('geocoded address response: ', response);
+  //   } catch (e) { 
+  //     console.log('error reverse geocoding: ', e);
+  //   }
+  // }
   // END LOCATION SERVICES  
 
   const getToken = async () => {

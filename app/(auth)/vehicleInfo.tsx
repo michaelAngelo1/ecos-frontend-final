@@ -79,7 +79,7 @@ const VehicleInfo = () => {
         setSnackbarVisible(true);
         return;
       }
-      console.log('image: ', typeof image);
+      console.log('image: ', typeof   image);
       
       const response = await uploadImageVehicleInstance().post('',{
         vehicle_image_file: image

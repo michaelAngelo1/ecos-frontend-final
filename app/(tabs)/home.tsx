@@ -14,16 +14,14 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   adminApprovalInstance,
   driverOrderHeaderInstance,
-  reverseGeocodeInstance,
   userDetailInstance,
 } from "../config/axiosConfig";
 import { User } from "@/models/User";
 import { Image } from "expo-image";
 import icons from "@/constants/icons";
-import images from "@/constants/images";
 import Maps from "@/components/Maps";
-import * as Location from "expo-location";
-import { Float } from "react-native/Libraries/Types/CodegenTypes";
+import HomeUserCard from "@/components/HomeUserCard";
+import { ModelUserInterface } from "../config/ModelInterface";
 
 const Home = () => {
   // LOCATION SERVICES
@@ -97,7 +95,7 @@ const Home = () => {
     }
   };
 
-  const [customers, setCustomers] = useState([
+  const [customers, setCustomers] = useState<ModelUserInterface[]>([
     {
       user_id: "",
       email: "",
@@ -109,14 +107,14 @@ const Home = () => {
         street: "",
         phone: "",
         is_admin_approved: false,
-        is_email_verified: "",
-        is_phone_verified: "",
+        is_email_verified: false,
+        is_phone_verified: false,
         profile_image: "",
       },
     },
   ]);
 
-  const [drivers, setDrivers] = useState([
+  const [drivers, setDrivers] = useState<ModelUserInterface[]>([
     {
       user_id: "",
       email: "",
@@ -128,8 +126,8 @@ const Home = () => {
         street: "",
         phone: "",
         is_admin_approved: false,
-        is_email_verified: "",
-        is_phone_verified: "",
+        is_email_verified: false,
+        is_phone_verified: false,
         profile_image: "",
       },
     },
@@ -650,65 +648,14 @@ const Home = () => {
                 Passengers who need to be verified
               </Text>
               {customers.length > 0 ? (
-                customers?.map((item, index) => {
-                  return (
-                    <View
-                      key={index}
-                      className="relative w-full h-32 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm mt-3"
-                    >
-                      <View className="absolute top-4 left-4 w-14 h-14 bg-green rounded-full"></View>
-                      <Image
-                        className="absolute top-4 left-4 w-14 h-14 rounded-full"
-                        source={{
-                          uri: `http://ecos.joheee.com:4050/public/user/${item.user_detail.profile_image}`,
-                        }}
-                      />
-                      <Text
-                        className="absolute top-0 left-[70px] text-black text-lg p-4"
-                        style={styles.montserratSemiBold}
-                      >
-                        {item.user_detail.name}
-                      </Text>
-                      <Text
-                        className="absolute top-7 left-[70px] text-black text-sm p-4"
-                        style={styles.montserratRegular}
-                      >
-                        {item.email}
-                      </Text>
-                      <TouchableOpacity
-                        className={`absolute bottom-3 right-3 ${
-                          item.user_detail.is_admin_approved
-                            ? "bg-green-50"
-                            : "bg-green"
-                        } w-[104px] rounded-[20px] mt-3 p-2`}
-                        activeOpacity={0.7}
-                        disabled={
-                          item.user_detail.is_admin_approved ? true : false
-                        }
-                        onPress={() => {
-                          verifyUser(item.user_id);
-                          getAllUsers();
-                        }}
-                      >
-                        {item.user_detail.is_admin_approved ? (
-                          <Text
-                            className="text-white text-sm text-center"
-                            style={styles.montserratBold}
-                          >
-                            Verified
-                          </Text>
-                        ) : (
-                          <Text
-                            className="text-white text-sm text-center"
-                            style={styles.montserratMedium}
-                          >
-                            Verify
-                          </Text>
-                        )}
-                      </TouchableOpacity>
-                    </View>
-                  );
-                })
+                customers?.map((item, index) => (
+                  <HomeUserCard
+                    user={item}
+                    getAllUsers={getAllUsers}
+                    verifyUser={verifyUser}
+                    key={index}
+                  />
+                ))
               ) : (
                 <View className="w-full h-14 justify-center items-center">
                   <Text style={styles.montserratRegular}>
@@ -722,66 +669,15 @@ const Home = () => {
               >
                 Partners who need to be verified
               </Text>
-              {drivers.length > 1 ? (
-                drivers?.map((item, index) => {
-                  return (
-                    <View
-                      key={index}
-                      className="relative w-full h-32 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm mt-3"
-                    >
-                      <View className="absolute top-4 left-4 w-14 h-14 bg-green rounded-full"></View>
-                      <Image
-                        className="absolute top-4 left-4 w-14 h-14 rounded-full"
-                        source={{
-                          uri: `http://ecos.joheee.com:4050/public/user/${item.user_detail.profile_image}`,
-                        }}
-                      />
-                      <Text
-                        className="absolute top-0 left-[70px] text-black text-lg p-4"
-                        style={styles.montserratSemiBold}
-                      >
-                        {item.user_detail.name}
-                      </Text>
-                      <Text
-                        className="absolute top-7 left-[70px] text-black text-sm p-4"
-                        style={styles.montserratRegular}
-                      >
-                        {item.email}
-                      </Text>
-                      <TouchableOpacity
-                        className={`absolute bottom-3 right-3 ${
-                          item.user_detail.is_admin_approved
-                            ? "bg-green-50"
-                            : "bg-green"
-                        } w-[104px] rounded-[20px] mt-3 p-2`}
-                        activeOpacity={0.7}
-                        disabled={
-                          item.user_detail.is_admin_approved ? true : false
-                        }
-                        onPress={() => {
-                          verifyUser(item.user_id);
-                          getAllUsers();
-                        }}
-                      >
-                        {item.user_detail.is_admin_approved ? (
-                          <Text
-                            className="text-white text-sm text-center"
-                            style={styles.montserratBold}
-                          >
-                            Verified
-                          </Text>
-                        ) : (
-                          <Text
-                            className="text-white text-sm text-center"
-                            style={styles.montserratMedium}
-                          >
-                            Verify
-                          </Text>
-                        )}
-                      </TouchableOpacity>
-                    </View>
-                  );
-                })
+              {drivers.length > 0 ? (
+                drivers?.map((item, index) => (
+                  <HomeUserCard
+                    user={item}
+                    getAllUsers={getAllUsers}
+                    verifyUser={verifyUser}
+                    key={index}
+                  />
+                ))
               ) : (
                 <View className="w-full h-14 justify-center items-center">
                   <Text style={styles.montserratRegular}>

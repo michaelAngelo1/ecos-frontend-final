@@ -1,32 +1,35 @@
-import { StyleSheet, Text, View, Image, ImageSourcePropType } from 'react-native'
-import React, { useState } from 'react'
-import { Tabs, Redirect } from 'expo-router'
-import  icons  from '../../constants/icons'
-import { styles } from '../config/Fonts'
-import { IconProps } from '../config/Interface'
-import { Stack } from 'expo-router'
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  ImageSourcePropType,
+} from "react-native";
+import React, { useState } from "react";
+import { Tabs, Redirect } from "expo-router";
+import icons from "../../constants/icons";
+import { styles } from "../config/Fonts";
+import { IconProps } from "../config/Interface";
+import { Stack } from "expo-router";
 
-const TabIcon = ({ icon, color, name, focused} : IconProps) => {
+const TabIcon = ({ icon, color, name, focused }: IconProps) => {
   return (
-    <View className='items-center justify-center gap-2'>
-      <Image
-        source={icon}
-        resizeMode="contain"
-        className="w-6 h-6"
-      />
-      {
-        focused ? 
-          <Text className='text-green' style={styles.montserratSemiBold}>{name}</Text>
-        : 
-          <Text className='text-black' style={styles.montserratSemiBold}>{name}</Text>
-      }
+    <View className="items-center justify-center gap-2">
+      <Image source={icon} resizeMode="contain" className="w-6 h-6" />
+      {focused ? (
+        <Text className="text-green" style={styles.montserratSemiBold}>
+          {name}
+        </Text>
+      ) : (
+        <Text className="text-black" style={styles.montserratSemiBold}>
+          {name}
+        </Text>
+      )}
     </View>
-  )
-}
-
+  );
+};
 
 const TabsLayout = () => {
-  
   const [selected, setSelected] = useState(true);
 
   return (
@@ -36,28 +39,28 @@ const TabsLayout = () => {
           tabBarShowLabel: false,
           tabBarStyle: {
             height: 85,
-          }
+          },
         }}
       >
         <Tabs.Screen
           name="home"
           options={{
             headerShown: false,
-            tabBarIcon: ({ color, focused}) => (
+            tabBarIcon: ({ color, focused }: any) => (
               <TabIcon
                 icon={focused ? icons.home_filled : icons.home_outlined}
-                name="Home" 
+                name="Home"
                 color={color}
                 focused={focused}
               />
-            )
+            ),
           }}
         />
         <Tabs.Screen
           name="orders"
           options={{
             headerShown: false,
-            tabBarIcon: ({ color, focused}) => (
+            tabBarIcon: ({ color, focused }: any) => (
               <TabIcon
                 icon={focused ? icons.orders_filled : icons.orders_outlined}
                 name="Orders"
@@ -71,21 +74,21 @@ const TabsLayout = () => {
           name="chats"
           options={{
             headerShown: false,
-            tabBarIcon: ({ color, focused}) => (
+            tabBarIcon: ({ color, focused }: any) => (
               <TabIcon
                 icon={focused ? icons.chat_filled : icons.chat_outlined}
                 name="Chats"
                 color={color}
                 focused={focused}
               />
-            )
+            ),
           }}
         />
         <Tabs.Screen
           name="profile"
           options={{
             headerShown: false,
-            tabBarIcon: ({ color, focused}) => (
+            tabBarIcon: ({ color, focused }: any) => (
               <TabIcon
                 icon={focused ? icons.profile_filled : icons.profile_outlined}
                 name="Profile"
@@ -97,7 +100,7 @@ const TabsLayout = () => {
         />
       </Tabs>
     </>
-  )
-}
+  );
+};
 
-export default TabsLayout
+export default TabsLayout;

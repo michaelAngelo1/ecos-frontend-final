@@ -664,7 +664,7 @@ const Home = () => {
                 </View>
               )}
               <Text
-                className="text-base ml-2 mb-1"
+                className="text-base mt-10 ml-2 mb-1"
                 style={styles.montserratSemiBold}
               >
                 Partners who need to be verified

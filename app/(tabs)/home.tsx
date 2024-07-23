@@ -22,7 +22,6 @@ import icons from "@/constants/icons";
 import Maps from "@/components/Maps";
 import HomeUserCard from "@/components/HomeUserCard";
 import { ModelUserInterface } from "../config/ModelInterface";
-import Loading from "@/components/Loading";
 import HomeLayout from "../layout/HomeLayout";
 
 const Home = () => {
@@ -153,7 +152,7 @@ const Home = () => {
     try {
       console.log("verify user");
       let userToken = await getToken();
-      const response = await adminApprovalInstance(userToken!)
+      await adminApprovalInstance(userToken!)
         .post("", {
           id: id,
         })

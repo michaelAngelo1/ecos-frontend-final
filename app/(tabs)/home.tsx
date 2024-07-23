@@ -55,6 +55,7 @@ const Home = () => {
   const { role, email, loading, user, userId } = useGetUserData(token);
   const { customers, drivers, refetch } = useGetAllUsers(token);
   const { availableDrivers } = useGetAvailableDrivers(token);
+  const [currentDate, setCurrentDate] = useState(new Date());
 
   const verifyUser = async (id: string) => {
     try {
@@ -72,17 +73,16 @@ const Home = () => {
     }
   };
 
-  const [currentDate, setCurrentDate] = useState(new Date());
+  function convertDateToIso(dateValue: string): Date {
+    const formattedDateString = dateValue.replace(/\//g, "-");
+    return new Date(formattedDateString);
+  }
+
   const getCurrentDate = () => {
     const date = new Date();
     console.log("Date: ", date);
     setCurrentDate(date);
   };
-
-  function convertDateToIso(dateValue: string): Date {
-    const formattedDateString = dateValue.replace(/\//g, "-");
-    return new Date(formattedDateString);
-  }
 
   useEffect(() => {
     getCurrentDate();
@@ -93,7 +93,6 @@ const Home = () => {
     //   getAllUsers();
     // }
   }, []);
-  // console.log('ORDER WAVE LIST: ', orderWaveList[0]);
 
   if (role === "CUSTOMER") {
     return (

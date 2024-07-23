@@ -1,15 +1,26 @@
 import { Text, TouchableOpacity, View } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import { styles } from "@/app/config/Fonts";
 import { Image } from "expo-image";
 import { ModelUserInterface } from "@/app/config/ModelInterface";
+import Loading from "./Loading";
 
 interface HomeUserCardInterface {
   user: ModelUserInterface;
-  getAllUsers: () => void;
+  getAllUsers: () => Promise<void>;
   verifyUser: (e: string) => Promise<void>;
 }
 export default function HomeUserCard(prop: HomeUserCardInterface) {
+  const [loading, setLoading] = useState<boolean>(false);
+  function handleVerify() {
+    setLoading(true);
+    prop.verifyUser(prop.user.user_id).then(() => {
+      prop.getAllUsers().then(() => {
+        setLoading(false);
+      });
+    });
+  }
+
   return (
     <View className="flex-col p-4 w-full bg-[#fff] rounded-2xl border border-gray-200 shadow-sm mt-3">
       <View className="flex-row gap-4 w-70">
@@ -49,15 +60,19 @@ export default function HomeUserCard(prop: HomeUserCardInterface) {
               Verified
             </Text>
           </TouchableOpacity>
+        ) : loading ? (
+          <TouchableOpacity
+            className="mt-4 bg-green w-[104px] rounded-[20px] p-2"
+            activeOpacity={0.7}
+            onPress={handleVerify}
+          >
+            <Loading color="white" />
+          </TouchableOpacity>
         ) : (
           <TouchableOpacity
             className="mt-4 bg-green w-[104px] rounded-[20px] p-2"
             activeOpacity={0.7}
-            onPress={() => {
-              prop.verifyUser(prop.user.user_id).then(() => {
-                prop.getAllUsers();
-              })
-            }}
+            onPress={handleVerify}
           >
             <Text
               className="text-white text-sm text-center"

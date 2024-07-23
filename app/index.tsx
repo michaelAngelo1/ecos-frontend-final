@@ -1,7 +1,6 @@
-import { ScrollView, StatusBar, Text, View } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import { ScrollView, StatusBar, View } from 'react-native'
+import React, { useEffect } from 'react'
 // import { Link } from 'expo-router'
-import { styles } from './config/Fonts'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router';
 import CustomButton from '@/components/CustomButton'

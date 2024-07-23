@@ -22,6 +22,7 @@ import icons from "@/constants/icons";
 import Maps from "@/components/Maps";
 import HomeUserCard from "@/components/HomeUserCard";
 import { ModelUserInterface } from "../config/ModelInterface";
+import Loading from "@/components/Loading";
 
 const Home = () => {
   // LOCATION SERVICES

@@ -5,7 +5,5 @@ interface LoadingInterface {
   color: string;
 }
 export default function Loading(prop: LoadingInterface) {
-  return (
-    <ActivityIndicator className="p-1" size="large" color={prop.color} />
-  );
+  return <ActivityIndicator size="small" color={prop.color} />;
 }

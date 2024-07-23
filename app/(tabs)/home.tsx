@@ -1,28 +1,19 @@
-import {
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-  Modal,
-  ActivityIndicator,
-} from "react-native";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import React, { useEffect, useState } from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { styles } from "../config/Fonts";
 import { router } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {
-  adminApprovalInstance,
-  driverOrderHeaderInstance,
-  userDetailInstance,
-} from "../config/axiosConfig";
-import { User } from "@/models/User";
+import { adminApprovalInstance } from "../config/axiosConfig";
 import { Image } from "expo-image";
 import icons from "@/constants/icons";
 import Maps from "@/components/Maps";
 import HomeUserCard from "@/components/HomeUserCard";
-import { ModelUserInterface } from "../config/ModelInterface";
 import HomeLayout from "../layout/HomeLayout";
+import OverlayLoading from "@/components/OverlayLoading";
+import useGetToken from "@/hooks/useGetToken";
+import useGetUserData from "@/hooks/useGetUserData";
+import useGetAllUsers from "@/hooks/useGetAllUsers";
+import useGetAvailableDrivers from "@/hooks/useGetAvailableDrivers";
 
 const Home = () => {
   // LOCATION SERVICES
@@ -59,100 +50,16 @@ const Home = () => {
   // }
   // END LOCATION SERVICES
 
-  const getToken = async () => {
-    try {
-      const userToken = await AsyncStorage.getItem("userToken");
-      if (userToken !== null) {
-        console.log("User token read: ", userToken);
-        return userToken;
-      }
-    } catch (e) {
-      console.log("Error reading JWT", e);
-    }
-  };
-
-  const [email, setEmail] = useState("");
-  const [role, setRole] = useState("");
-  const [user, setUser] = useState<User | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
-  const [userId, setUserId] = useState("");
-  const getUserData = async () => {
-    try {
-      let userToken = await getToken();
-      const response = await userDetailInstance(userToken!).get("");
-      setRole(response.data.response.role);
-      setEmail(response.data.response.email);
-      setUserId(response.data.response.user_detail.user_id);
-      console.log("USER DATA: ", response.data.response.user_detail.user_id);
-      const user = new User(
-        response.data.response.email,
-        response.data.response.password,
-        response.data.response.role,
-        response.data.response.user_detail
-      );
-      setUser(user);
-    } catch (e) {
-      console.log("error get user data: ", e);
-    }
-  };
-
-  const [customers, setCustomers] = useState<ModelUserInterface[]>([
-    {
-      user_id: "",
-      email: "",
-      password: "",
-      role: "",
-      user_detail: {
-        name: "",
-        grade: "",
-        street: "",
-        phone: "",
-        is_admin_approved: false,
-        is_email_verified: false,
-        is_phone_verified: false,
-        profile_image: "",
-      },
-    },
-  ]);
-
-  const [drivers, setDrivers] = useState<ModelUserInterface[]>([
-    {
-      user_id: "",
-      email: "",
-      password: "",
-      role: "",
-      user_detail: {
-        name: "",
-        grade: "",
-        street: "",
-        phone: "",
-        is_admin_approved: false,
-        is_email_verified: false,
-        is_phone_verified: false,
-        profile_image: "",
-      },
-    },
-  ]);
-
-  const getAllUsers = async () => {
-    try {
-      console.log("masuk get all user");
-      let userToken = await getToken();
-      const response = await adminApprovalInstance(userToken!).get("");
-      console.log(response.data.response.driver);
-      console.log(response.data.response.customer);
-      setDrivers(response.data.response.driver);
-      setCustomers(response.data.response.customer);
-    } catch (e) {
-      console.log("error fetch all users", e);
-    }
-  };
+  const { token } = useGetToken();
+  const { role, email, loading, user, userId } = useGetUserData(token);
+  const { customers, drivers, refetch } = useGetAllUsers(token);
+  const { availableDrivers } = useGetAvailableDrivers(token);
 
   const verifyUser = async (id: string) => {
     try {
       console.log("verify user");
-      let userToken = await getToken();
-      await adminApprovalInstance(userToken!)
+      await adminApprovalInstance(token!)
         .post("", {
           id: id,
         })
@@ -162,40 +69,6 @@ const Home = () => {
         });
     } catch (e) {
       console.log("error verify user", e);
-    }
-  };
-
-  const [availableDrivers, setAvailableDrivers] = useState([
-    {
-      order_id: "",
-      driver_id: "",
-      is_admin_approved: true,
-      user: {
-        user_id: "",
-        email: "",
-        role: "",
-        user_detail: {
-          profile_image: "",
-          phone: "",
-          name: "",
-          street: "",
-        },
-      },
-      admin_time_block: {
-        end_date: "",
-        start_date: "",
-        time_block_id: "",
-      },
-    },
-  ]);
-  const fetchAvailableDrivers = async () => {
-    try {
-      const userToken = await getToken();
-      const response = await driverOrderHeaderInstance(userToken!).get("");
-      console.log("response available drivers: ", response.data.response);
-      setAvailableDrivers(response.data.response);
-    } catch (e: any) {
-      console.log("error fetch available drivers: ", e.response);
     }
   };
 
@@ -213,9 +86,6 @@ const Home = () => {
 
   useEffect(() => {
     getCurrentDate();
-    getUserData();
-    getAllUsers();
-    fetchAvailableDrivers();
 
     // getGeocodedAddress();
     // if(role == 'ADMIN') {
@@ -624,7 +494,7 @@ const Home = () => {
               customers?.map((item, index) => (
                 <HomeUserCard
                   user={item}
-                  getAllUsers={getAllUsers}
+                  refetch={refetch}
                   verifyUser={verifyUser}
                   key={index}
                 />
@@ -646,7 +516,7 @@ const Home = () => {
               drivers?.map((item, index) => (
                 <HomeUserCard
                   user={item}
-                  getAllUsers={getAllUsers}
+                  refetch={refetch}
                   verifyUser={verifyUser}
                   key={index}
                 />
@@ -663,11 +533,7 @@ const Home = () => {
       </HomeLayout>
     );
   } else {
-    return (
-      <View className="w-full h-full items-center justify-center">
-        <ActivityIndicator size="large" color="green" />
-      </View>
-    );
+    return <OverlayLoading />;
   }
 };
 

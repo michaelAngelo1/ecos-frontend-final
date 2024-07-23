@@ -7,18 +7,16 @@ import Loading from "./Loading";
 
 interface HomeUserCardInterface {
   user: ModelUserInterface;
-  getAllUsers: () => Promise<void>;
+  refetch: () => Promise<void>;
   verifyUser: (e: string) => Promise<void>;
 }
 export default function HomeUserCard(prop: HomeUserCardInterface) {
   const [loading, setLoading] = useState<boolean>(false);
-  function handleVerify() {
+  async function handleVerify() {
     setLoading(true);
-    prop.verifyUser(prop.user.user_id).then(() => {
-      prop.getAllUsers().then(() => {
-        setLoading(false);
-      });
-    });
+    await prop.verifyUser(prop.user.user_id);
+    await prop.refetch();
+    setLoading(false);
   }
 
   return (

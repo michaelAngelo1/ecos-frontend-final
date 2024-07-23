@@ -9,6 +9,7 @@ import icons from "@/constants/icons";
 import { Image } from "expo-image";
 import useGetToken from "@/hooks/useGetToken";
 import useGetUserData from "@/hooks/useGetUserData";
+import OverlayLoading from "@/components/OverlayLoading";
 
 const Profile = () => {
   const { token, checkAuthToken } = useGetToken();
@@ -18,6 +19,8 @@ const Profile = () => {
     await AsyncStorage.removeItem("userToken");
     checkAuthToken();
   };
+
+  if (loading) return <OverlayLoading />;
 
   return (
     <SafeAreaView className="bg-[#fff] h-full">

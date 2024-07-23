@@ -11,55 +11,62 @@ interface HomeUserCardInterface {
 }
 export default function HomeUserCard(prop: HomeUserCardInterface) {
   return (
-    <View className="w-full h-32 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm mt-3">
-      <View className="relative w-14 h-14 bg-green rounded-full flex items-center justify-center">
-        <Image
-          className="w-12 h-12 rounded-full"
-          source={{
-            uri: `http://ecos.joheee.com:4050/public/user/${prop.user.user_detail.profile_image}`,
-          }}
-        />
+    <View className="flex-col p-4 w-full bg-[#fff] rounded-2xl border border-gray-200 shadow-sm mt-3">
+      <View className="flex-row gap-4 w-70">
+        <View className="w-14 h-14 bg-green rounded-full flex items-center justify-center">
+          <Image
+            className="w-12 h-12 rounded-full"
+            source={{
+              uri: `http://ecos.joheee.com:4050/public/user/${prop.user.user_detail.profile_image}`,
+            }}
+          />
+        </View>
+
+        <View className="w-60">
+          <Text
+            className="text-black text-lg"
+            style={styles.montserratSemiBold}
+          >
+            {prop.user.user_detail.name}
+          </Text>
+          <Text className="text-black text-sm" style={styles.montserratRegular}>
+            {prop.user.email}
+          </Text>
+        </View>
       </View>
 
-      <Text
-        className="absolute top-0 left-[70px] text-black text-lg p-4 truncate w-full"
-        style={styles.montserratSemiBold}
-      >
-        {prop.user.user_detail.name}
-      </Text>
-      <Text
-        className="absolute top-7 left-[70px] text-black text-sm p-4"
-        style={styles.montserratRegular}
-      >
-        {prop.user.email}
-      </Text>
-      <TouchableOpacity
-        className={`absolute bottom-3 right-3 ${
-          prop.user.user_detail.is_admin_approved ? "bg-green-50" : "bg-green"
-        } w-[104px] rounded-[20px] mt-3 p-2`}
-        activeOpacity={0.7}
-        disabled={prop.user.user_detail.is_admin_approved ? true : false}
-        onPress={() => {
-          prop.verifyUser(prop.user.user_id);
-          prop.getAllUsers();
-        }}
-      >
+      <View className="flex-col items-end">
         {prop.user.user_detail.is_admin_approved ? (
-          <Text
-            className="text-white text-sm text-center"
-            style={styles.montserratBold}
+          <TouchableOpacity
+            className="mt-4 bg-green-50 w-[104px] rounded-[20px] p-2"
+            activeOpacity={0.7}
+            disabled={true}
           >
-            Verified
-          </Text>
+            <Text
+              className="text-white text-sm text-center"
+              style={styles.montserratBold}
+            >
+              Verified
+            </Text>
+          </TouchableOpacity>
         ) : (
-          <Text
-            className="text-white text-sm text-center"
-            style={styles.montserratMedium}
+          <TouchableOpacity
+            className="mt-4 bg-green w-[104px] rounded-[20px] p-2"
+            activeOpacity={0.7}
+            onPress={() => {
+              prop.verifyUser(prop.user.user_id);
+              prop.getAllUsers();
+            }}
           >
-            Verify
-          </Text>
+            <Text
+              className="text-white text-sm text-center"
+              style={styles.montserratMedium}
+            >
+              Verify
+            </Text>
+          </TouchableOpacity>
         )}
-      </TouchableOpacity>
+      </View>
     </View>
   );
 }

@@ -7,7 +7,7 @@ import { ModelUserInterface } from "@/app/config/ModelInterface";
 interface HomeUserCardInterface {
   user: ModelUserInterface;
   getAllUsers: () => void;
-  verifyUser: (e: string) => void;
+  verifyUser: (e: string) => Promise<void>;
 }
 export default function HomeUserCard(prop: HomeUserCardInterface) {
   return (
@@ -54,8 +54,9 @@ export default function HomeUserCard(prop: HomeUserCardInterface) {
             className="mt-4 bg-green w-[104px] rounded-[20px] p-2"
             activeOpacity={0.7}
             onPress={() => {
-              prop.verifyUser(prop.user.user_id);
-              prop.getAllUsers();
+              prop.verifyUser(prop.user.user_id).then(() => {
+                prop.getAllUsers();
+              })
             }}
           >
             <Text

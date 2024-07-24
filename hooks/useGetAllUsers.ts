@@ -55,6 +55,7 @@ export default function useGetAllUsers(token: string | undefined) {
       setLoading(true);
     }
   };
+  
   useEffect(() => {
     refetch();
   }, [token]);

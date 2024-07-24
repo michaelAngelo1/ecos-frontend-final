@@ -1,5 +1,4 @@
-import { adminApprovalInstance, driverOrderHeaderByIdInstance, driverOrderHeaderInstance } from "@/app/config/axiosConfig";
-import { ModelUserInterface } from "@/app/config/ModelInterface";
+import { driverOrderHeaderInstance } from "@/app/config/axiosConfig";
 import { useEffect, useState } from "react";
 
 export default function useGetAllDriverRequests(token: string | undefined) {
@@ -30,17 +29,15 @@ export default function useGetAllDriverRequests(token: string | undefined) {
       if (!token) {
         throw new Error("Token is undefined");
       }
-      const response = await driverOrderHeaderInstance(
-        token!,
-      ).get("");
-      setDriverRegistrationList(response.data)
+      const response = await driverOrderHeaderInstance(token!).get("");
+      setDriverRegistrationList(response.data.response);
     } catch (e) {
       console.log("error fetch registrations driver", e);
     } finally {
       setLoading(true);
     }
   };
-  
+
   useEffect(() => {
     refetch();
   }, [token]);

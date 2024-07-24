@@ -1,63 +1,67 @@
-import { ScrollView, Text, View } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { styles } from './../config/Fonts';
-import FormField from '@/components/FormField';
-import CustomButton from '@/components/CustomButton';
-import { Link, router } from 'expo-router';
-import Snackbar from '@/components/Snackbar';
-import { authInstance, userDetailInstance } from '../config/axiosConfig';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { SignInProps } from '../config/Interface';
+import { ScrollView, Text, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { styles } from "./../config/Fonts";
+import FormField from "@/components/FormField";
+import CustomButton from "@/components/CustomButton";
+import { Link, router } from "expo-router";
+import Snackbar from "@/components/Snackbar";
+import { authInstance, userDetailInstance } from "../config/axiosConfig";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { SignInProps } from "../config/Interface";
+import ModalLoading from "@/components/ModalLoading";
 
 const SignIn: React.FC<SignInProps> = () => {
-
   const [form, setForm] = useState<SignInProps>({
-    email: '',
-    password: ''
+    email: "",
+    password: "",
   });
 
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isAdminApproved, setIsAdminApproved] = useState<boolean>();
 
   const checkAuthToken = async () => {
     try {
-      const token = await AsyncStorage.getItem('userToken');
-      console.log('TOKEN HERE: ', token);
+      const token = await AsyncStorage.getItem("userToken");
+      console.log("TOKEN HERE: ", token);
       if (token) {
         setIsAuthenticated(true);
-        console.log('masuk sini dong');
+        console.log("masuk sini dong");
         const isAdminApproved = await checkAdminVerification(token);
         if (isAdminApproved === false) {
-          router.replace('/pendingApproval');
+          router.replace("/pendingApproval");
         } else {
-          router.replace('/home');
+          router.replace("/home");
         }
-      } 
+      }
     } catch (error) {
-      console.error('Error checking stored token:', error);
+      console.error("Error checking stored token:", error);
     }
   };
 
   useEffect(() => {
-    checkAuthToken().catch(error => console.error('Error in checkAuthToken useEffect:', error));
+    checkAuthToken().catch((error) =>
+      console.error("Error in checkAuthToken useEffect:", error)
+    );
   }, []);
 
-  const checkAdminVerification = async (userToken: string): Promise<boolean> => {
+  const checkAdminVerification = async (
+    userToken: string
+  ): Promise<boolean> => {
     try {
-      const response = await userDetailInstance(userToken).get('');
+      const response = await userDetailInstance(userToken).get("");
       return response.data.response.user_detail.is_admin_approved;
     } catch (e) {
-      console.log('Error checking admin verification: ', e);
+      console.log("Error checking admin verification: ", e);
       return false;
     }
   };
 
+  const [loading, setLoading] = useState<boolean>(false);
   const handleSignIn = async ({ email, password }: SignInProps) => {
-    console.log('Handling sign in');
+    setLoading(true);
     try {
-      const response = await authInstance.post('', {
+      const response = await authInstance.post("", {
         email,
         password,
       });
@@ -65,28 +69,32 @@ const SignIn: React.FC<SignInProps> = () => {
       if (response && response.data) {
         await storeJWT(response.data["access_token"]);
         setIsAuthenticated(true);
-        const isAdminApproved = await checkAdminVerification(response.data['access_token']);
+        const isAdminApproved = await checkAdminVerification(
+          response.data["access_token"]
+        );
         console.log("is admin approved: ", isAdminApproved);
         if (!isAdminApproved) {
-          router.replace('/pendingApproval');
+          router.replace("/pendingApproval");
           return;
         }
-        console.log('is Admin approved: ', isAdminApproved);
-        router.replace('/home');
+        console.log("is Admin approved: ", isAdminApproved);
+        router.replace("/home");
       } else {
-        console.log('NO RESPONSE');
-        throw new Error('No response data');
+        console.log("NO RESPONSE");
+        throw new Error("No response data");
       }
     } catch (error: any) {
-      console.log('Error during sign in', error);
+      console.log("Error during sign in", error.response);
       // Show Snackbar on error
       setSnackbarVisible(true);
+    } finally {
+      setLoading(false);
     }
   };
 
   const storeJWT = async (token: string) => {
     try {
-      await AsyncStorage.setItem('userToken', token);
+      await AsyncStorage.setItem("userToken", token);
       console.log("Successful store JWT");
     } catch (e) {
       console.log("Failed to store JWT: ", e);
@@ -94,10 +102,16 @@ const SignIn: React.FC<SignInProps> = () => {
   };
 
   return (
-    <SafeAreaView className='bg-[#fff] h-full'>
+    <SafeAreaView className="bg-[#fff] h-full">
+      {loading ? <ModalLoading /> : null}
       <ScrollView>
-        <View className='flex flex-col min-h-[100vh] justify-center items-center px-4'>
-          <Text className='text-4xl text-green' style={styles.montserratRegular}>Sign in to ECOS</Text>
+        <View className="flex flex-col min-h-[100vh] justify-center items-center px-4">
+          <Text
+            className="text-4xl text-green"
+            style={styles.montserratRegular}
+          >
+            Sign in to ECOS
+          </Text>
           <FormField
             title="Enter your email"
             value={form.email}
@@ -110,41 +124,61 @@ const SignIn: React.FC<SignInProps> = () => {
             value={form.password}
             handleChangeText={(e: string) => setForm({ ...form, password: e })}
             otherStyles="mt-3"
-            keyboardType='password'
+            keyboardType="password"
           />
-          
+
           <CustomButton
             actionText="Log in"
-            bgColor='bg-green'
-            textColor='text-white'
+            bgColor="bg-green"
+            textColor="text-white"
             handlePress={() => {
               handleSignIn({
-                email: form.email, 
-                password: form.password
-              }).catch(error => console.error('Error during handleSignIn:', error));
+                email: form.email,
+                password: form.password,
+              }).catch((error) =>
+                console.error("Error during handleSignIn:", error)
+              );
             }}
           />
-          <View className='justify-center pt-2 flex-row gap-2'>
-            <Text className='text-sm text-green' style={styles.montserratRegular}>
+          <View className="justify-center pt-2 flex-row gap-2">
+            <Text
+              className="text-sm text-green"
+              style={styles.montserratRegular}
+            >
               Forgot password?
             </Text>
-            <Link href="/forgotPassword" className='text-sm text-green' style={styles.montserratMedium}>Click here</Link>
+            <Link
+              href="/forgotPassword"
+              className="text-sm text-green"
+              style={styles.montserratMedium}
+            >
+              Click here
+            </Link>
           </View>
-          <View className='justify-center pt-2 flex-row gap-2'>
-            <Text className='text-sm text-green' style={styles.montserratRegular}>
+          <View className="justify-center pt-2 flex-row gap-2">
+            <Text
+              className="text-sm text-green"
+              style={styles.montserratRegular}
+            >
               Don't have an account?
             </Text>
-            <Link href="/role" className='text-sm text-green' style={styles.montserratMedium}>Sign up</Link>
+            <Link
+              href="/role"
+              className="text-sm text-green"
+              style={styles.montserratMedium}
+            >
+              Sign up
+            </Link>
           </View>
-          
-          { snackbarVisible && 
+
+          {snackbarVisible && (
             <Snackbar
               message="Sign in failed. Check your username and password."
               setVisible={setSnackbarVisible}
               duration={3000}
-              bgColor='bg-red-900'
+              bgColor="bg-red-900"
             />
-          }
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>

@@ -18,16 +18,6 @@ export const userDetailInstance = (token: string) =>
     },
   });
 
-export const userImageInstance = (token: string) =>
-  axios.create({
-    baseURL: "http://ecos.joheee.com:4040/user-detail",
-    headers: {
-      accept: "*/*",
-      "Content-Type": "multipart/form-data",
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
 export const adminApprovalInstance = (token: string) =>
   axios.create({
     baseURL: "http://ecos.joheee.com:4040/admin-approval",

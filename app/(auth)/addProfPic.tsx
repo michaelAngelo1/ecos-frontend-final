@@ -16,8 +16,8 @@ import {
   uploadUserProfileInstance,
   userDetailInstance,
 } from "../config/axiosConfig";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import Snackbar from "@/components/Snackbar";
+import useGetToken from "@/hooks/useGetToken";
 
 const AddProfPic = () => {
   const [image, setImage] = useState("");
@@ -26,22 +26,11 @@ const AddProfPic = () => {
 
   const [snackbarVisible, setSnackbarVisible] = useState(false);
 
-  const getToken = async () => {
-    try {
-      const userToken = await AsyncStorage.getItem("userToken");
-      if (userToken !== null) {
-        console.log("User token read: ", userToken);
-        return userToken;
-      }
-    } catch (e) {
-      console.log("Error reading JWT", e);
-    }
-  };
+  const { token } = useGetToken();
 
   const [role, setRole] = useState("");
   const getUserData = async () => {
-    let userToken = await getToken();
-    const response = await userDetailInstance(userToken!).get("");
+    const response = await userDetailInstance(token!).get("");
     setRole(response.data.response.role);
   };
 
@@ -80,8 +69,6 @@ const AddProfPic = () => {
 
   const uploadImage = async () => {
     try {
-      let userToken = await getToken();
-
       if (imageFile) {
         const formData = new FormData();
         formData.append("profile_image_file", {
@@ -90,12 +77,14 @@ const AddProfPic = () => {
           type: imageFile!.mimeType,
         });
         const response = await uploadUserProfileInstance().post("", formData);
-        const imageName = response.data
-        const updateUserDetail = await userDetailInstance(userToken!).patch("", {
-          profile_image:imageName
-        }).then(() => {
-          router.push('/pendingApproval');
-        })
+        const imageName = response.data;
+        const updateUserDetail = await userDetailInstance(token!)
+          .patch("", {
+            profile_image: imageName,
+          })
+          .then(() => {
+            router.push("/pendingApproval");
+          });
       }
     } catch (e) {
       console.log("error upload image", e);

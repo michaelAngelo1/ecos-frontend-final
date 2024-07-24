@@ -117,7 +117,7 @@ const VehicleInfo = () => {
           
 
           <FormField
-            title="Vehicle Model"
+            title="Vehicle Model (ex: MPV)"
             value={form.vehicleModel}
             handleChangeText={(e: string) => setForm({ ...form, 
               vehicleModel: e

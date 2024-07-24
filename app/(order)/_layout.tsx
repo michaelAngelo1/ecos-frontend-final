@@ -43,6 +43,12 @@ const OrderLayout = () => {
             headerShown: false
           }}
         />
+        <Stack.Screen
+          name="locationDetail"
+          options={{
+            headerShown: false
+          }}
+        />
       </Stack>
     </>
   )

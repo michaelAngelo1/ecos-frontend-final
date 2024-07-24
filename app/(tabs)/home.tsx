@@ -1,9 +1,9 @@
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import React, { useEffect, useState } from "react";
 import { styles } from "../config/Fonts";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { adminApprovalInstance } from "../config/axiosConfig";
+import { adminApprovalInstance, reverseGeocodeInstance } from "../config/axiosConfig";
 import { Image } from "expo-image";
 import icons from "@/constants/icons";
 import Maps from "@/components/Maps";
@@ -16,39 +16,6 @@ import useGetAllUsers from "@/hooks/useGetAllUsers";
 import useGetAvailableDrivers from "@/hooks/useGetAvailableDrivers";
 
 const Home = () => {
-  // LOCATION SERVICES
-  // const [currLocation, setCurrLocation] = useState<Location.LocationObject | null>(null);
-  // const [longitude, setLongitude] = useState<number>();
-  // const [latitude, setLatitude] = useState<number>();
-  // useEffect(() => {
-  //   (async () => {
-
-  //     let { status } = await Location.requestForegroundPermissionsAsync();
-  //     if (status !== 'granted') {
-  //       console.log('Permission for location denied');
-  //       return;
-  //     }
-  //     let location = await Location.getCurrentPositionAsync({});
-  //     console.log('Users current location: ', location);
-  //     setCurrLocation(location);
-  //     setLongitude(location.coords.longitude);
-  //     setLatitude(location.coords.latitude);
-  //     console.log('longitude disini: ', location.coords.longitude);
-  //     console.log('latitude disini: ', location.coords.latitude);
-  //   })();
-  // }, []);
-
-  // const getGeocodedAddress = async () => {
-  //   try {
-  //     console.log('LATITUDE: ', latitude);
-  //     console.log('LONGITUDE: ', longitude);
-  //     const response = await reverseGeocodeInstance(latitude!, longitude!).get('',);
-  //     console.log('geocoded address response: ', response);
-  //   } catch (e) {
-  //     console.log('error reverse geocoding: ', e);
-  //   }
-  // }
-  // END LOCATION SERVICES
 
   const [modalVisible, setModalVisible] = useState(false);
   const { token } = useGetToken();
@@ -80,19 +47,19 @@ const Home = () => {
 
   const getCurrentDate = () => {
     const date = new Date();
-    console.log("Date: ", date);
+    // console.log("Date: ", date);
     setCurrentDate(date);
   };
 
+  const { precise_address, usePrecise } = useLocalSearchParams();
   useEffect(() => {
     getCurrentDate();
-
-    // getGeocodedAddress();
     // if(role == 'ADMIN') {
     //   console.log('ALL FETCHED USERs', customers);
     //   getAllUsers();
     // }
   }, []);
+  
 
   if (role === "CUSTOMER") {
     return (
@@ -115,11 +82,27 @@ const Home = () => {
           >
             Your current locations
           </Text>
-          <View className="flex-row gap-2 mb-2 items-center">
+          <View className="flex-row gap-2 mb-2 items-center p-2">
             <Image className="w-6 h-6" source={icons.mylocation_icon} />
-            <Text className="text-xl" style={styles.montserratBold}>
-              {user?.user_detail.street}
-            </Text>
+            <TouchableOpacity
+              onPress={() => router.push({
+                pathname: "/locationDetail",
+                params: {
+                  customer_address: user?.user_detail.street,
+                },
+              })}
+            >
+              {
+                usePrecise ?
+                  <Text className="text-xl" style={styles.montserratBold}>
+                    {precise_address}
+                  </Text>
+                :
+                  <Text className="text-xl" style={styles.montserratBold}>
+                    {user?.user_detail.street}
+                  </Text>
+              }
+            </TouchableOpacity>
           </View>
           <View className="w-96 h-52 bg-white rounded-xl">
             <Maps />

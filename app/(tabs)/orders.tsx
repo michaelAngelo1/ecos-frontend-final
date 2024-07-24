@@ -12,22 +12,21 @@ import {
 import React, { startTransition, useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { styles } from "../config/Fonts";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   adminTimeBlockInstance,
   driverOrderHeaderByIdInstance,
   driverOrderHeaderInstance,
-  userDetailInstance,
 } from "../config/axiosConfig";
 import { router } from "expo-router";
 import DatePicker from "react-native-modern-datepicker";
 import CustomButton from "@/components/CustomButton";
-import { parse } from "date-fns";
 import Snackbar from "@/components/Snackbar";
 import CustomModal from "@/components/CustomModal";
 import DriverRegisCard from "@/components/DriverRegisCard";
 import useGetAllDriverRequests from "@/hooks/useGetAllDriverRequests";
 import useGetToken from "@/hooks/useGetToken";
+import useGetUserData from "@/hooks/useGetUserData";
+import useGetOrderWave from "@/hooks/useGetOrderWave";
 
 class OrderHistory {
   driverName: string;
@@ -54,40 +53,24 @@ function convertDateToIso(dateValue: string): Date {
 }
 
 const Orders = () => {
-  const getToken = async () => {
-    try {
-      const userToken = await AsyncStorage.getItem("userToken");
-      if (userToken !== null) {
-        console.log("User token read: ", userToken);
-        return userToken;
-      }
-    } catch (e) {
-      console.log("Error reading JWT", e);
-    }
-  };
-
-  // const [email, setEmail] = useState('');
-  const [role, setRole] = useState("");
-  const [userId, setUserId] = useState("");
-  const getUserData = async () => {
-    try {
-      let userToken = await getToken();
-      const response = await userDetailInstance(userToken!).get("");
-      setRole(response.data.response.role);
-      console.log(
-        "USER DATA RESPONSE: ",
-        response.data.response.user_detail.user_id
-      );
-      setUserId(response.data.response.user_detail.user_id);
-      // setEmail(response.data.response.email);
-      console.log("response", response.data.response.role);
-    } catch (e) {
-      console.log("error get user data: ", e);
-    }
-  };
-
+  const [startDate, setStartDate] = useState<string>("");
+  const [endDate, setEndDate] = useState<string>("");
+  const [startDateVisible, setStartDateVisible] = useState(false);
+  const [endDateVisible, setEndDateVisible] = useState(false);
+  const [startConfirmButton, setStartConfirmButton] = useState(false);
+  const [endConfirmButton, setEndConfirmButton] = useState(false);
+  const [successOrderwave, setSuccessOrderwave] = useState<boolean>();
+  const [snackbarFailed, setSnackbarFailed] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [orderCategory, setOrderCategory] = useState("History");
   let orderCategories: string[] = ["History", "Ongoing"];
+
+  // custom hooks
+  const { token } = useGetToken();
+  const { role, userId } = useGetUserData(token);
+  const allDriver = useGetAllDriverRequests(token);
+  const { orderWaveList } = useGetOrderWave(token);
 
   let order2 = new OrderHistory(
     "Pak Haryanto",
@@ -108,7 +91,7 @@ const Orders = () => {
     true
   );
 
-  let orders: OrderHistory[] = [order2, order3, order4];
+  let orders: OrderHistory[] = [order2, order3];
 
   const handleCurrentOrder = () => {
     console.log("to current order page");
@@ -125,16 +108,6 @@ const Orders = () => {
   //   endDate: Date,
   // });
 
-  const [startDate, setStartDate] = useState<string>("");
-  const [endDate, setEndDate] = useState<string>("");
-  const [startDateVisible, setStartDateVisible] = useState(false);
-  const [endDateVisible, setEndDateVisible] = useState(false);
-  const [startConfirmButton, setStartConfirmButton] = useState(false);
-  const [endConfirmButton, setEndConfirmButton] = useState(false);
-
-  const [successOrderwave, setSuccessOrderwave] = useState<boolean>();
-  const [snackbarFailed, setSnackbarFailed] = useState(false);
-
   const handleSubmitOrderWaveDate = async () => {
     const start_date: Date = convertDateToIso(startDate);
     const end_date: Date = convertDateToIso(endDate);
@@ -142,8 +115,7 @@ const Orders = () => {
     console.log(start_date, end_date);
 
     try {
-      const userToken = await getToken();
-      const response = await adminTimeBlockInstance(userToken!).post("", {
+      const response = await adminTimeBlockInstance(token!).post("", {
         start_date,
         end_date,
       });
@@ -151,7 +123,7 @@ const Orders = () => {
       console.log("successfully created order wave");
 
       setSuccessOrderwave(true);
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      await new Promise((resolve) => setTimeout(resolve, 3000));
       setSuccessOrderwave(false);
     } catch (e: any) {
       console.log("error submiting order wave date", e.response);
@@ -167,88 +139,39 @@ const Orders = () => {
     setCurrentDate(date);
   };
 
-  const [orderWaveList, setOrderWaveList] = useState([
-    {
-      time_block_id: "",
-      start_date: "",
-      end_date: "",
-      driver_order_header: [],
-      user: {
-        user_id: "",
-        email: "",
-        password: "",
-        role: "",
-        created_at: false,
-      },
-    },
-  ]);
-
   const [hasRegistered, setHasRegistered] = useState(false);
-  const fetchOrderWave = async () => {
-    try {
-      let userToken = await getToken();
-      const response = await adminTimeBlockInstance(userToken!).get("");
-      console.log("order wave available: ", response.data.response);
-      setOrderWaveList(response.data.response);
-    } catch (e) {
-      console.log("error fetch order wave: ", e.response);
-    }
-  };
-
   const handlePartnerRegisAsDriver = async (
     timeBlockId: string,
     driverId: string
   ) => {
     try {
-      let userToken = await getToken();
-      const response = await driverOrderHeaderInstance(userToken!).post("", {
+      const response = await driverOrderHeaderInstance(token!).post("", {
         driver_id: driverId,
         time_block_id: timeBlockId,
       });
       console.log("response partner regis driver: ", response.data.response);
       setModalVisible(false);
-      
+
       setHasRegistered(true);
-    
-    } catch (e) {
+    } catch (e: any) {
       console.log("error partner regis driver: ", e.response);
     }
   };
 
   // ADMIN APPROVE DRIVER REGISTRATION
-
-  const { token } = useGetToken();
-  const { driverRegistrationList, refetch } = useGetAllDriverRequests(token)
-  const handleAdminApproveDriverRegistration = async (
-    orderId: string,
-    driverId: string,
-    timeBlockId: string,
-    isAdminApproved: boolean
-  ) => {
+  const handleAdminApproveDriverRegistration = async (orderId: string) => {
     try {
-      let userToken = await getToken();
       const response = await driverOrderHeaderByIdInstance(
-        userToken!,
+        token!,
         orderId
       ).patch("", {
-        driver_id: driverId,
-        time_block_id: timeBlockId,
-        is_admin_approved: isAdminApproved,
+        is_admin_approved: true,
       });
       console.log("admin approve driver registration: ", response.data);
-    } catch (e) {
+    } catch (e: any) {
       console.log("error approve driver registration: ", e.response);
     }
   };
-
-  const [modalVisible, setModalVisible] = useState(false);
-
-  const [loading, setLoading] = useState(true);
-  useEffect(() => {
-    getUserData();
-    fetchOrderWave();
-    
-  }, []);
 
   useEffect(() => {
     if (orderWaveList) {
@@ -423,26 +346,28 @@ const Orders = () => {
                           <TouchableOpacity
                             className="absolute bottom-3 right-3 bg-green w-[114px] rounded-[20px] mt-3 p-2"
                             activeOpacity={0.7}
-                            onPress={() =>
-                              setModalVisible(true)
-                            }
+                            onPress={() => setModalVisible(true)}
                           >
-                          <Text
-                            className="text-white text-sm text-center"
-                            style={styles.montserratBold}
-                          >
-                            Register
-                          </Text>
+                            <Text
+                              className="text-white text-sm text-center"
+                              style={styles.montserratBold}
+                            >
+                              Register
+                            </Text>
                           </TouchableOpacity>
-                          {
-                            modalVisible &&
-                              <CustomModal
-                                isVisible={true}
-                                message='Are you sure you want to register as driver to this order wave?'
-                                onPress={ () => handlePartnerRegisAsDriver(orderWave.time_block_id, userId)}
-                                onCancelPress={() => setModalVisible(false)}
-                              />
-                          }
+                          {modalVisible && (
+                            <CustomModal
+                              isVisible={true}
+                              message="Are you sure you want to register as driver to this order wave?"
+                              onPress={() =>
+                                handlePartnerRegisAsDriver(
+                                  orderWave.time_block_id,
+                                  userId
+                                )
+                              }
+                              onCancelPress={() => setModalVisible(false)}
+                            />
+                          )}
                         </View>
                       );
                     }
@@ -670,36 +595,39 @@ const Orders = () => {
                 Approve or disapprove ECOS partners registration as drivers.
               </Text>
               <ScrollView className="min-h-[200px] overflow-auto">
-                {driverRegistrationList.map((driverRegistration, index) => {
-                  return (
-                    <DriverRegisCard
-                      driver={driverRegistration}
-                      refetch={refetch}
-                      handleAdminApproveDriverRegistration={() => handleAdminApproveDriverRegistration(driverRegistration.order_id, driverRegistration.driver_id, driverRegistration.admin_time_block.time_block_id, driverRegistration.is_admin_approved)}
-                    />
-                  );
-                })}
+                {allDriver.driverRegistrationList.map(
+                  (driverRegistration, i) => {
+                    return (
+                      <DriverRegisCard
+                        key={i}
+                        driver={driverRegistration}
+                        refetch={allDriver.refetch}
+                        handleAdminApproveDriverRegistration={
+                          handleAdminApproveDriverRegistration
+                        }
+                      />
+                    );
+                  }
+                )}
               </ScrollView>
             </View>
           </ScrollView>
-          {
-            successOrderwave &&
+          {successOrderwave && (
             <Snackbar
-              message="Successfully created order wave" // Update message if needed
-              setVisible={() => true} // Pass the function to update visibility
+              message="Successfully created order wave"
+              setVisible={() => true}
               duration={3000}
-              bgColor='bg-blue'
+              bgColor="bg-blue"
             />
-          }
-          {
-            snackbarFailed && 
+          )}
+          {snackbarFailed && (
             <Snackbar
-              message="Failed creating order wave." // Update message if needed
-              setVisible={() => true} // Pass the function to update visibility
+              message="Failed creating order wave."
+              setVisible={() => true}
               duration={3000}
-              bgColor='bg-red-900'
+              bgColor="bg-red-900"
             />
-          }
+          )}
         </>
       ) : (
         <View className="w-full h-full items-center justify-center">

@@ -129,7 +129,7 @@ const SignUpCustomer = () => {
           </Text>
 
           <Text className="text-2xl text-green" style={styles.montserratRegular}>
-            as a Passenger
+            as a User
           </Text>
           <View className="w-full justify-center pt-2 flex-row">
             <View className="w-1/2 pr-3">

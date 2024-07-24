@@ -458,7 +458,7 @@ const Orders = () => {
                 className="text-xl ml-2 mb-1"
                 style={styles.montserratSemiBold}
               >
-                Your passengers this month
+                Your users this month
               </Text>
               <Text
                 className="text-base ml-2 mb-1"

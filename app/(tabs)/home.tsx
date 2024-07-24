@@ -259,7 +259,7 @@ const Home = () => {
               className="absolute top-7 left-[70px] text-black text-sm p-4"
               style={styles.montserratRegular}
             >
-              Passenger(s): 3 persons
+              User (s): 3 persons
             </Text>
             <Text
               className="absolute top-12 left-[70px] text-black text-sm p-4"
@@ -307,7 +307,7 @@ const Home = () => {
               className="absolute top-7 left-[70px] text-black text-sm p-4"
               style={styles.montserratRegular}
             >
-              Passenger(s): 3 persons
+              User (s): 3 persons
             </Text>
             <Text
               className="absolute top-12 left-[70px] text-black text-sm p-4"
@@ -345,7 +345,7 @@ const Home = () => {
               className="text-xl ml-2 mb-1"
               style={styles.montserratSemiBold}
             >
-              Your passengers this month
+              Your users this month
             </Text>
           </View>
           <ScrollView className="min-h-[365px] overflow-auto">
@@ -470,7 +470,7 @@ const Home = () => {
               className="text-base ml-2 mb-1"
               style={styles.montserratSemiBold}
             >
-              Passengers who need to be verified
+              Users who need to be verified
             </Text>
             {customers.length > 0 ? (
               customers?.map((item, index) => (
@@ -484,7 +484,7 @@ const Home = () => {
             ) : (
               <View className="w-full h-14 justify-center items-center">
                 <Text style={styles.montserratRegular}>
-                  No passengers need to be verified
+                  No users need to be verified
                 </Text>
               </View>
             )}

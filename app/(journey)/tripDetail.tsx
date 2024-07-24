@@ -30,7 +30,7 @@ const tripDetail = () => {
           </View>
         </View>
         <View className='px-4'>
-          <Text className='text-lg text-black' style={styles.montserratSemiBold}>Passenger(s)</Text>
+          <Text className='text-lg text-black' style={styles.montserratSemiBold}>User (s)</Text>
         </View>
         <View className='flex flex-col mt-3 px-4 mb-7'>
           <View className='w-full h-24 border-1 border-black px-4'>

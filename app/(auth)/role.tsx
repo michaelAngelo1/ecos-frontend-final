@@ -15,7 +15,7 @@ const Role = () => {
           <Text className='text-4xl text-green' style={styles.montserratRegular}>Save the future with ECOS</Text>
           {/* <Text className='text-3xl text-black'>Placeholder Asset</Text> */}
           <CustomButton
-            actionText="Passenger"
+            actionText="User"
             bgColor='bg-green'
             textColor='text-white'
             handlePress={() => router.push('/signUpCustomer')}

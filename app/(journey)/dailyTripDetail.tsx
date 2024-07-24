@@ -11,14 +11,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { userDetailInstance } from '../config/axiosConfig';
 
 const dailyTripDetail = () => {
-
-  /*
-    TODO: 
-    1. Get role partner / passenger
-    2. if role partner, ada Start Journey button dan Emergency Button
-    3. if role passenger, cuman ada Emergency Button
-    4. 
-  */ 
   
   const [role, setRole] = useState();
   const getToken = async () => {
@@ -70,7 +62,7 @@ const dailyTripDetail = () => {
           </View>
         </View>
         <View className='px-4'>
-          <Text className='text-lg text-black' style={styles.montserratSemiBold}>Passenger(s)</Text>
+          <Text className='text-lg text-black' style={styles.montserratSemiBold}>User (s)</Text>
         </View>
         <View className='flex flex-col mt-3 px-4 mb-7'>
           <View className='w-full h-24 border-1 border-black px-4'>
@@ -90,7 +82,7 @@ const dailyTripDetail = () => {
         </View>
 
         <View className='mt-3 px-4'>
-          <Text className='text-lg text-black' style={styles.montserratSemiBold}>Passenger Cancelation</Text>
+          <Text className='text-lg text-black' style={styles.montserratSemiBold}>User's Cancelation</Text>
         </View>
         <View className='flex flex-col mt-3 px-4'>
           <View className='w-full h-8 border-1 border-black px-4 items-center'>

@@ -98,7 +98,7 @@ const DriverRegisCard = (prop: DriverRegisCardInterface) => {
             className="mt-4 bg-green w-[104px] rounded-[20px] p-2"
             activeOpacity={0.7}
             onPress={() => handleApproveRegistration(true)}
-          >
+        >
             <Text
               className="text-white text-sm text-center"
               style={styles.montserratMedium}

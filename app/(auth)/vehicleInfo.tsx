@@ -8,7 +8,7 @@ import { styles } from '../config/Fonts'
 import * as ImagePicker from 'expo-image-picker'
 import Snackbar from '@/components/Snackbar'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { driverDetailInstance, uploadImageVehicleInstance } from '../config/axiosConfig'
+import { driverDetailInstance, uploadImageVehicleInstance, userDetailInstance } from '../config/axiosConfig'
 import { VehicleInfoProps } from '../config/Interface'
 import { Image } from 'expo-image';
 
@@ -43,7 +43,7 @@ const VehicleInfo = () => {
       }
     })();
   }, []);
-  const [fixImage, setFixImage] = useState<ImagePicker.ImagePickerAsset | null>(null)
+  const [imageFile, setImageFile] = useState<ImagePicker.ImagePickerAsset | null>(null)
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -56,7 +56,7 @@ const VehicleInfo = () => {
 
     if(!result.canceled) {
       setImage(result.assets[0].uri)
-      setFixImage(result.assets[0]);
+      setImageFile(result.assets[0]);
     }
   };
 
@@ -72,22 +72,46 @@ const VehicleInfo = () => {
     }
   }
 
-  const handleSubmitVehicleInfo = async (vehicleModel: string, seatCapacity: string, numberPlate: string, yearReleased: string, image: ImagePicker.ImagePickerAsset) => {
+  const handleSubmitVehicleInfo = async (vehicleCategory: string, vehicleModel: string, seatCapacity: string, numberPlate: string, yearReleased: string, image: ImagePicker.ImagePickerAsset) => {
     try {
       let userToken = await getToken();
+      console.log('STRING SEAT CAPACIY: ', seatCapacity);
+      const integerCapacity = parseInt(seatCapacity);
       if(vehicleModel == '' || seatCapacity == '' || numberPlate == '' || yearReleased == '' || parseInt(yearReleased) < 2014) {
         setSnackbarVisible(true);
         return;
       }
-      console.log('image: ', typeof   image);
-      
-      const response = await uploadImageVehicleInstance().post('',{
-        vehicle_image_file: image
-      });
-      console.log('test upload image to API: ', response);
+      console.log('TIPE IMAGE: ', typeof image);
+      console.log('SEAT CAPACITY: ', integerCapacity);
+      // mulai upload gambar
+      if(imageFile) {
+        const formData = new FormData();
+        formData.append('vehicle_image_file', {
+          uri: imageFile!.uri,
+          name: imageFile!.fileName,
+          type: imageFile!.mimeType
+        });
+        const response = await uploadImageVehicleInstance().post('', formData);
+        const imageName = response.data;
+        console.log('IMAGE NAME: ', imageName);
+        const updateDriverDetail = await driverDetailInstance(userToken!).post("", {
+          vehicle_image: imageName,
+          vehicle_model: vehicleModel,
+          vehicle_category: vehicleCategory,
+          vehicle_capacity: integerCapacity,
+          vehicle_number_plate: numberPlate
+        }).then(() => {
+          console.log('VEHICLE CAPACITY: ', integerCapacity);
+          router.push('/pendingApproval');
+        }).catch((e) => {
+          console.log("error update AUTH driver detaiL: ", e.response);
+        });
+      }
+
+      // console.log('test upload image to API: ', response);
       // router.push('/pendingApproval')
     } catch (e) {
-      console.log('error vehicle info: ', e.response);
+      console.log('error vehicle info: ', e);
     }
   }
 
@@ -117,10 +141,19 @@ const VehicleInfo = () => {
           
 
           <FormField
-            title="Vehicle Model (ex: MPV)"
+            title="Vehicle Model (ex: Toyota Innova)"
             value={form.vehicleModel}
             handleChangeText={(e: string) => setForm({ ...form, 
               vehicleModel: e
+            })}
+            otherStyles="mt-3"
+            keyboardType="vehicle-model"
+          />
+          <FormField
+            title="Vehicle Category (ex: SUV, MPV, ..)"
+            value={form.vehicleCategory}
+            handleChangeText={(e: string) => setForm({ ...form, 
+              vehicleCategory: e
             })}
             otherStyles="mt-3"
             keyboardType="vehicle-model"
@@ -160,11 +193,12 @@ const VehicleInfo = () => {
             textColor='text-white'
             handlePress={() => 
               handleSubmitVehicleInfo(
+                form.vehicleCategory,
                 form.vehicleModel,
                 form.seatCapacity,
                 form.numberPlate,
                 form.yearReleased,
-                fixImage!
+                imageFile!
               )
             }
           />

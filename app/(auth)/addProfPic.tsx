@@ -18,6 +18,7 @@ import {
 } from "../config/axiosConfig";
 import Snackbar from "@/components/Snackbar";
 import useGetToken from "@/hooks/useGetToken";
+import useGetUserData from "@/hooks/useGetUserData";
 
 const AddProfPic = () => {
   const [image, setImage] = useState("");
@@ -28,11 +29,7 @@ const AddProfPic = () => {
 
   const { token } = useGetToken();
 
-  const [role, setRole] = useState("");
-  const getUserData = async () => {
-    const response = await userDetailInstance(token!).get("");
-    setRole(response.data.response.role);
-  };
+  const { role } = useGetUserData(token);
 
   useEffect(() => {
     (async () => {
@@ -49,7 +46,6 @@ const AddProfPic = () => {
         }
       }
     })();
-    getUserData();
   }, []);
 
   const pickImage = async () => {
@@ -83,7 +79,12 @@ const AddProfPic = () => {
             profile_image: imageName,
           })
           .then(() => {
-            router.push("/pendingApproval");
+            console.log('role: ', role);
+            if(role == 'CUSTOMER') {
+              router.push('/pendingApproval');
+            } else {
+              router.push("/vehicleInfo");
+            }
           });
       }
     } catch (e) {

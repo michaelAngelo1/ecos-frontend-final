@@ -10,8 +10,10 @@ interface HomeUserCardInterface {
   refetch: () => Promise<void>;
   verifyUser: (e: string) => Promise<void>;
 }
+
 export default function HomeUserCard(prop: HomeUserCardInterface) {
   const [loading, setLoading] = useState<boolean>(false);
+
   async function handleVerify() {
     setLoading(true);
     await prop.verifyUser(prop.user.user_id);

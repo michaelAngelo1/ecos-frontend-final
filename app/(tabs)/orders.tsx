@@ -23,6 +23,11 @@ import { router } from "expo-router";
 import DatePicker from "react-native-modern-datepicker";
 import CustomButton from "@/components/CustomButton";
 import { parse } from "date-fns";
+import Snackbar from "@/components/Snackbar";
+import CustomModal from "@/components/CustomModal";
+import DriverRegisCard from "@/components/DriverRegisCard";
+import useGetAllDriverRequests from "@/hooks/useGetAllDriverRequests";
+import useGetToken from "@/hooks/useGetToken";
 
 class OrderHistory {
   driverName: string;
@@ -127,6 +132,9 @@ const Orders = () => {
   const [startConfirmButton, setStartConfirmButton] = useState(false);
   const [endConfirmButton, setEndConfirmButton] = useState(false);
 
+  const [successOrderwave, setSuccessOrderwave] = useState<boolean>();
+  const [snackbarFailed, setSnackbarFailed] = useState(false);
+
   const handleSubmitOrderWaveDate = async () => {
     const start_date: Date = convertDateToIso(startDate);
     const end_date: Date = convertDateToIso(endDate);
@@ -141,8 +149,13 @@ const Orders = () => {
       });
       console.log("response submit date: ", response.data.response);
       console.log("successfully created order wave");
+
+      setSuccessOrderwave(true);
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      setSuccessOrderwave(false);
     } catch (e: any) {
       console.log("error submiting order wave date", e.response);
+      setSnackbarFailed(true);
     }
   };
 
@@ -159,6 +172,7 @@ const Orders = () => {
       time_block_id: "",
       start_date: "",
       end_date: "",
+      driver_order_header: [],
       user: {
         user_id: "",
         email: "",
@@ -169,6 +183,7 @@ const Orders = () => {
     },
   ]);
 
+  const [hasRegistered, setHasRegistered] = useState(false);
   const fetchOrderWave = async () => {
     try {
       let userToken = await getToken();
@@ -191,45 +206,19 @@ const Orders = () => {
         time_block_id: timeBlockId,
       });
       console.log("response partner regis driver: ", response.data.response);
+      setModalVisible(false);
+      
+      setHasRegistered(true);
+    
     } catch (e) {
       console.log("error partner regis driver: ", e.response);
     }
   };
 
   // ADMIN APPROVE DRIVER REGISTRATION
-  const [driverRegistrationList, setDriverRegistrationList] = useState([
-    {
-      order_id: "",
-      driver_id: "",
-      is_admin_approved: false,
-      admin_time_block: {
-        end_date: "",
-        start_date: "",
-        time_block_id: "",
-      },
-      user: {
-        email: "",
-        role: "",
-        user_detail: {
-          name: "",
-          phone: "",
-        },
-      },
-    },
-  ]);
 
-  const fetchDriverRegistration = async () => {
-    try {
-      let userToken = await getToken();
-      const response = await driverOrderHeaderInstance(userToken!).get("");
-      console.log("response baru: ", response.data.response);
-      console.log("driver registration list: ", response.data.response[0]);
-      setDriverRegistrationList(response.data.response);
-    } catch (e) {
-      console.log("error fetch driver registration: ", e);
-    }
-  };
-
+  const { token } = useGetToken();
+  const { driverRegistrationList, refetch } = useGetAllDriverRequests(token)
   const handleAdminApproveDriverRegistration = async (
     orderId: string,
     driverId: string,
@@ -252,11 +241,13 @@ const Orders = () => {
     }
   };
 
+  const [modalVisible, setModalVisible] = useState(false);
+
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     getUserData();
     fetchOrderWave();
-    fetchDriverRegistration();
+    
   }, []);
 
   useEffect(() => {
@@ -427,25 +418,31 @@ const Orders = () => {
                             className="absolute top-7 left-[70px] text-black text-sm p-4"
                             style={styles.montserratRegular}
                           >
-                            +62 818 0313 3100
+                            {orderWave.time_block_id.substring(0, 8)}
                           </Text>
                           <TouchableOpacity
-                            className="absolute bottom-3 right-3 bg-green w-[104px] rounded-[20px] mt-3 p-2"
+                            className="absolute bottom-3 right-3 bg-green w-[114px] rounded-[20px] mt-3 p-2"
                             activeOpacity={0.7}
                             onPress={() =>
-                              handlePartnerRegisAsDriver(
-                                orderWave.time_block_id,
-                                userId
-                              )
+                              setModalVisible(true)
                             }
                           >
-                            <Text
-                              className="text-white text-sm text-center"
-                              style={styles.montserratBold}
-                            >
-                              Register
-                            </Text>
+                          <Text
+                            className="text-white text-sm text-center"
+                            style={styles.montserratBold}
+                          >
+                            Register
+                          </Text>
                           </TouchableOpacity>
+                          {
+                            modalVisible &&
+                              <CustomModal
+                                isVisible={true}
+                                message='Are you sure you want to register as driver to this order wave?'
+                                onPress={ () => handlePartnerRegisAsDriver(orderWave.time_block_id, userId)}
+                                onCancelPress={() => setModalVisible(false)}
+                              />
+                          }
                         </View>
                       );
                     }
@@ -673,113 +670,36 @@ const Orders = () => {
                 Approve or disapprove ECOS partners registration as drivers.
               </Text>
               <ScrollView className="min-h-[200px] overflow-auto">
-                {driverRegistrationList.map((driverRegistration) => {
+                {driverRegistrationList.map((driverRegistration, index) => {
                   return (
-                    <View
-                      key={driverRegistration.order_id}
-                      className="relative w-full h-48 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm mb-3 p-3"
-                    >
-                      <View className="flex flex-row gap-3">
-                        <View className="w-16 h-16 bg-green rounded-full"></View>
-                        <View className="flex flex-col">
-                          <Text
-                            className="text-black text-lg"
-                            style={styles.montserratSemiBold}
-                          >
-                            {driverRegistration.user.user_detail.name}
-                          </Text>
-                          <Text
-                            className=" text-black text-sm"
-                            style={styles.montserratRegular}
-                          >
-                            {driverRegistration.user.email}
-                          </Text>
-                          <Text
-                            className=" text-black text-sm"
-                            style={styles.montserratRegular}
-                          >
-                            {driverRegistration.user.user_detail.phone}
-                          </Text>
-                          <Text
-                            className=" text-black text-xs"
-                            style={styles.montserratRegular}
-                          >
-                            Requested registration as driver
-                          </Text>
-                          <Text
-                            className=" text-black text-xs"
-                            style={styles.montserratRegular}
-                          >
-                            On period:{" "}
-                            {driverRegistration.admin_time_block.start_date.substring(
-                              0,
-                              10
-                            )}{" "}
-                            to{" "}
-                            {driverRegistration.admin_time_block.end_date.substring(
-                              0,
-                              10
-                            )}
-                          </Text>
-                        </View>
-                      </View>
-                      <TouchableOpacity
-                        className="absolute bottom-3 right-3 bg-green w-[104px] rounded-[20px] mt-3 p-2"
-                        activeOpacity={0.7}
-                        disabled={
-                          driverRegistration.is_admin_approved ? true : false
-                        }
-                        onPress={() => {
-                          handleAdminApproveDriverRegistration(
-                            driverRegistration.order_id,
-                            driverRegistration.driver_id,
-                            driverRegistration.admin_time_block.time_block_id,
-                            true
-                          );
-                          fetchDriverRegistration();
-                        }}
-                      >
-                        {driverRegistration.is_admin_approved ? (
-                          <Text
-                            className="text-white text-sm text-center"
-                            style={styles.montserratBold}
-                          >
-                            Approved
-                          </Text>
-                        ) : (
-                          <Text
-                            className="text-white text-sm text-center"
-                            style={styles.montserratMedium}
-                          >
-                            Approve
-                          </Text>
-                        )}
-                      </TouchableOpacity>
-                      <TouchableOpacity
-                        className="absolute bottom-3 right-32 bg-red-900 w-[104px] rounded-[20px] mt-3 p-2"
-                        activeOpacity={0.7}
-                        onPress={() =>
-                          handleAdminApproveDriverRegistration(
-                            driverRegistration.order_id,
-                            driverRegistration.driver_id,
-                            driverRegistration.admin_time_block.time_block_id,
-                            false
-                          )
-                        }
-                      >
-                        <Text
-                          className="text-white text-sm text-center"
-                          style={styles.montserratBold}
-                        >
-                          Reject
-                        </Text>
-                      </TouchableOpacity>
-                    </View>
+                    <DriverRegisCard
+                      driver={driverRegistration}
+                      refetch={refetch}
+                      handleAdminApproveDriverRegistration={() => handleAdminApproveDriverRegistration(driverRegistration.order_id, driverRegistration.driver_id, driverRegistration.admin_time_block.time_block_id, driverRegistration.is_admin_approved)}
+                    />
                   );
                 })}
               </ScrollView>
             </View>
           </ScrollView>
+          {
+            successOrderwave &&
+            <Snackbar
+              message="Successfully created order wave" // Update message if needed
+              setVisible={() => true} // Pass the function to update visibility
+              duration={3000}
+              bgColor='bg-blue'
+            />
+          }
+          {
+            snackbarFailed && 
+            <Snackbar
+              message="Failed creating order wave." // Update message if needed
+              setVisible={() => true} // Pass the function to update visibility
+              duration={3000}
+              bgColor='bg-red-900'
+            />
+          }
         </>
       ) : (
         <View className="w-full h-full items-center justify-center">

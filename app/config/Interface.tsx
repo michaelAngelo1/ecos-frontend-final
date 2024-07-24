@@ -47,3 +47,22 @@ export interface VehicleInfoProps {
   numberPlate: string;
   yearReleased: string;
 }
+
+export interface DriverRegisInterface {
+  order_id: string
+  driver_id: string
+  is_admin_approved: boolean
+  admin_time_block: {
+    end_date: string
+    start_date: string
+    time_block_id: string
+  }
+  user: {
+    email: string
+    role: string
+    user_detail: {
+      name: string
+      phone: string
+    }
+  }
+}

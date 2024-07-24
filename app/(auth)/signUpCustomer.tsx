@@ -1,38 +1,79 @@
-import { Pressable, ScrollView, Text, TextInput, View } from 'react-native'
-import React, { useState } from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { styles } from './../config/Fonts'
-import FormField from '@/components/FormField'
-import CustomButton from '@/components/CustomButton'
-import { Link, router } from 'expo-router'
-import { SignUpCustomerProps } from '../config/Interface'
-import { authInstance, customerDetailInstance, userDetailInstance } from '../config/axiosConfig'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import axios from 'axios'
-import icons from '@/constants/icons'
-import { Image } from 'expo-image';
+import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import React, { useState } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { styles } from "./../config/Fonts";
+import FormField from "@/components/FormField";
+import CustomButton from "@/components/CustomButton";
+import { Link, router } from "expo-router";
+import { SignUpCustomerProps } from "../config/Interface";
+import {
+  authInstance,
+  customerDetailInstance,
+  userDetailInstance,
+} from "../config/axiosConfig";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import icons from "@/constants/icons";
+import { Image } from "expo-image";
+import ModalLoading from "@/components/ModalLoading";
+import Snackbar from "@/components/Snackbar";
 
 const SignUpCustomer = () => {
   const [form, setForm] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phoneNumber: '',
-    pickUpAddress: '',
-    password: '',
-    grade: '',
-    binusianId: '',
-    parentsPhone: '',
+    firstName: "",
+    email: "",
+    phoneNumber: "",
+    pickUpAddress: "",
+    password: "",
+    grade: "",
+    binusianId: "",
+    parentsPhone: "",
   });
 
-  let role = 'CUSTOMER';
-  const [signUpToken, setSignUpToken] = useState('');
+  let role = "CUSTOMER";
+  const [termsConditions, setTermsConditions] = useState(false);
+  const [snackbarVisible, setSnackbarVisible] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
 
-  const handleSignUpCustomer = async ({ firstName, lastName, email, phoneNumber, pickUpAddress, grade, password, binusianId, parentsPhone }: SignUpCustomerProps) => {
+  const handleSignUpCustomer = async ({
+    firstName,
+    email,
+    phoneNumber,
+    pickUpAddress,
+    grade,
+    password,
+    binusianId,
+    parentsPhone,
+  }: SignUpCustomerProps) => {
     try {
+      setLoading(true);
+      const phoneNumberRegex = /^\d+$/;
+      const binusianIdRegex = /^\d+$/;
+
+      if (!phoneNumberRegex.test(phoneNumber)) {
+        setError("Phone number must be numeric");
+        setSnackbarVisible(true);
+        setLoading(false);
+        return;
+      }
+
+      if (!binusianIdRegex.test(binusianId)) {
+        setError("Binusian ID must be numeric");
+        setSnackbarVisible(true);
+        setLoading(false);
+        return;
+      }
+
+      if (!termsConditions) {
+        setError("Check the terms and conditions!");
+        setSnackbarVisible(true);
+        setLoading(false);
+        return;
+      }
+
       let gradeInt = parseInt(grade);
-      const response = await authInstance.patch('', {
-        name: firstName + " " + lastName,
+      const response = await authInstance.patch("", {
+        name: firstName,
         email: email,
         phone: phoneNumber,
         street: pickUpAddress,
@@ -40,124 +81,70 @@ const SignUpCustomer = () => {
         grade: gradeInt,
       });
 
-      console.log(response.data['access_token']);
-
-      // Update the state and wait for it to be set before proceeding
-      setSignUpToken(response.data['access_token']);
-      handleNextSteps(response.data['access_token'], email, binusianId, parentsPhone);
-      // router.push('/addProfPic');
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error('Axios error:', error.message);
-        if (error.response) {
-          console.error('Response data:', error.response.data);
-          console.error('Response status:', error.response.status);
-          console.error('Response headers:', error.response.headers);
-        } else if (error.request) {
-          console.error('Request data:', error.request);
-        } else {
-          console.error('Error message:', error.message);
-        }
-      }
-    }
-  };
-
-  const handleNextSteps = async (token: string, email: string, binusianId: string, parentsPhone: string) => {
-    try {
-      await handleUpdateRole(token);
-      const updatedToken = await getUpdatedToken(email);
-      console.log('updated token next steps: ', updatedToken);
-      const response = await customerDetailInstance(updatedToken).post('',
-        {
-          binusian_id: binusianId,
-          parent_phone: parentsPhone
-        }
-      );
-      console.log('respons handlenextsteps: ', response);
-      await storeJWT(updatedToken);
-      router.push('/addProfPic');
-    } catch (error) {
-      console.error('Error in next steps:', error.response);
-    }
-  };
-
-  const handleUpdateRole = async (token: string) => {
-    try {
-      console.log('sign up token: ', token);
-      const response = await userDetailInstance(token).patch('', {
+      let token = response.data["access_token"];
+      // update role
+      await userDetailInstance(token).patch("", {
         role: role,
       });
-      console.log('update role response: ', response.data.response.role);
-    } catch (e) {
-      console.log('error update role: ', e.response);
-    }
-  };
-
-  const getUpdatedToken = async (email: string) => {
-    try {
-      console.log(email);
-      console.log(form.password);
-      const response = await authInstance.post('', {
+      // get new token
+      const res = await authInstance.post("", {
         email: email,
         password: form.password,
       });
-      return response.data['access_token'];
-    } catch (e) {
-      console.log('error getting update token: ', e.response);
+      let newToken = res.data["access_token"];
+      // create new customer detail
+      await customerDetailInstance(newToken).post("", {
+        binusian_id: binusianId,
+        parent_phone: parentsPhone,
+      });
+      // store usertoken
+      await AsyncStorage.setItem("userToken", newToken);
+      router.push("/addProfPic");
+    } catch (error: any) {
+      const errorMessage = error.response.data.message;
+      if (Array.isArray(errorMessage)) {
+        setError(errorMessage[0]);
+      } else {
+        setError(errorMessage);
+      }
+      console.log(errorMessage);
+      setSnackbarVisible(true);
+    } finally {
+      setLoading(false);
     }
   };
-
-  const storeJWT = async (token: string) => {
-    try {
-      await AsyncStorage.setItem('userToken', token);
-      console.log('Successful store JWT: ', token);
-    } catch (e) {
-      console.log('Failed to store JWT: ', e);
-    }
-  };
-
-
-  // DUMMY TERMS & CONDITIONS STATE
-  const [termsConditions, setTermsConditions] = useState(false);
 
   return (
     <SafeAreaView className="bg-[#fff] h-full">
+      {loading ? <ModalLoading /> : null}
+      {snackbarVisible && (
+        <Snackbar
+          message={error}
+          setVisible={setSnackbarVisible}
+          duration={3000}
+          bgColor="bg-red-900"
+        />
+      )}
       <ScrollView>
         <View className="flex flex-col min-h-[100vh] justify-center items-center px-4">
           <Text className="text-4xl text-green" style={styles.montserratMedium}>
             Sign up to ECOS
           </Text>
 
-          <Text className="text-2xl text-green" style={styles.montserratRegular}>
+          <Text
+            className="text-2xl text-green"
+            style={styles.montserratRegular}
+          >
             as a User
           </Text>
-          <View className="w-full justify-center pt-2 flex-row">
-            <View className="w-1/2 pr-3">
-              <View className="h-14 bg-white rounded-lg">
-                <TextInput
-                  className="flex-1 p-4 text-green text-base opacity-80"
-                  style={styles.montserratRegular}
-                  value={form.firstName}
-                  placeholder="First name"
-                  placeholderTextColor="#387d4e"
-                  onChangeText={(e: string) => setForm({ ...form, firstName: e })}
-                />
-              </View>
-            </View>
-            <View className="w-1/2">
-              <View className="h-14 bg-white px-4 rounded-lg">
-                <TextInput
-                  className="flex-1 text-green text-base opacity-80"
-                  style={styles.montserratRegular}
-                  value={form.lastName}
-                  placeholder="Last name"
-                  placeholderTextColor="#387d4e"
-                  onChangeText={(e: string) => setForm({ ...form, lastName: e })}
-                />
-              </View>
-            </View>
-          </View>
 
+          <FormField
+            title="Full Name"
+            value={form.firstName}
+            handleChangeText={(e: string) => setForm({ ...form, firstName: e })}
+            otherStyles="mt-3"
+            keyboardType="full-name"
+          />
           <FormField
             title="Email"
             value={form.email}
@@ -168,21 +155,27 @@ const SignUpCustomer = () => {
           <FormField
             title="Active phone number"
             value={form.phoneNumber}
-            handleChangeText={(e: string) => setForm({ ...form, phoneNumber: e })}
+            handleChangeText={(e: string) =>
+              setForm({ ...form, phoneNumber: e })
+            }
             otherStyles="mt-3"
             keyboardType="phoneNumber"
           />
           <FormField
             title="Active parents' phone number"
             value={form.parentsPhone}
-            handleChangeText={(e: string) => setForm({ ...form, parentsPhone: e })}
+            handleChangeText={(e: string) =>
+              setForm({ ...form, parentsPhone: e })
+            }
             otherStyles="mt-3"
             keyboardType="phoneNumber"
           />
           <FormField
             title="Pick-up Address"
             value={form.pickUpAddress}
-            handleChangeText={(e: string) => setForm({ ...form, pickUpAddress: e })}
+            handleChangeText={(e: string) =>
+              setForm({ ...form, pickUpAddress: e })
+            }
             otherStyles="mt-3"
             keyboardType="pickUpAddress"
           />
@@ -196,7 +189,9 @@ const SignUpCustomer = () => {
           <FormField
             title="Enter your Binusian ID"
             value={form.binusianId}
-            handleChangeText={(e: string) => setForm({ ...form, binusianId: e })}
+            handleChangeText={(e: string) =>
+              setForm({ ...form, binusianId: e })
+            }
             otherStyles="mt-3"
             keyboardType="grade"
           />
@@ -207,19 +202,20 @@ const SignUpCustomer = () => {
             otherStyles="mt-3"
             keyboardType="grade"
           />
-          <View className='flex-row gap-1 items-center mt-1'>
-            <Pressable
-              onPress={() => setTermsConditions(!termsConditions)}
-            >
-              {
-                termsConditions ? 
-                  <Image className='w-6 h-6' source={icons.verified_icon}/>
-                :
-                  <View className='w-6 h-6 rounded-full border border-1 border-green'></View>
-              }
-              
+          <View className="flex-row gap-1 items-center mt-1">
+            <Pressable onPress={() => setTermsConditions(!termsConditions)}>
+              {termsConditions ? (
+                <Image className="w-6 h-6" source={icons.verified_icon} />
+              ) : (
+                <View className="w-6 h-6 rounded-full border border-1 border-green"></View>
+              )}
             </Pressable>
-            <Text className='text-sm text-green' style={styles.montserratRegular}>I agree to terms and conditions</Text>
+            <Text
+              className="text-sm text-green"
+              style={styles.montserratRegular}
+            >
+              I agree to terms and conditions
+            </Text>
           </View>
           <CustomButton
             actionText="Next up"
@@ -228,23 +224,29 @@ const SignUpCustomer = () => {
             handlePress={() =>
               handleSignUpCustomer({
                 firstName: form.firstName,
-                lastName: form.lastName,
                 email: form.email,
                 phoneNumber: form.phoneNumber,
                 pickUpAddress: form.pickUpAddress,
                 grade: form.grade,
                 password: form.password,
                 binusianId: form.binusianId,
-                parentsPhone: form.parentsPhone
+                parentsPhone: form.parentsPhone,
               })
             }
           />
 
           <View className="justify-center pt-2 flex-row gap-2">
-            <Text className="text-sm text-green" style={styles.montserratRegular}>
+            <Text
+              className="text-sm text-green"
+              style={styles.montserratRegular}
+            >
               Already have an account?
             </Text>
-            <Link href="/signIn" className="text-sm text-green" style={styles.montserratMedium}>
+            <Link
+              href="/signIn"
+              className="text-sm text-green"
+              style={styles.montserratMedium}
+            >
               Sign in
             </Link>
           </View>

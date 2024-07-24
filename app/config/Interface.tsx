@@ -16,7 +16,6 @@ export interface CustomButtonProps {
 
 export interface SignUpCustomerProps {
   firstName: string;
-  lastName: string;
   email: string;
   phoneNumber: string;
   pickUpAddress: string;
@@ -28,7 +27,6 @@ export interface SignUpCustomerProps {
 
 export interface SignUpDriverProps {
   firstName: string;
-  lastName: string;
   email: string;
   phoneNumber: string;
   pickUpAddress: string;

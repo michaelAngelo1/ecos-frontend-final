@@ -1,9 +1,18 @@
-import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import {
+  ActivityIndicator,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import React, { useEffect, useState } from "react";
 import { styles } from "../config/Fonts";
 import { router, useLocalSearchParams } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { adminApprovalInstance, reverseGeocodeInstance } from "../config/axiosConfig";
+import {
+  adminApprovalInstance,
+  reverseGeocodeInstance,
+} from "../config/axiosConfig";
 import { Image } from "expo-image";
 import icons from "@/constants/icons";
 import Maps from "@/components/Maps";
@@ -14,31 +23,17 @@ import useGetToken from "@/hooks/useGetToken";
 import useGetUserData from "@/hooks/useGetUserData";
 import useGetAllUsers from "@/hooks/useGetAllUsers";
 import useGetAvailableDrivers from "@/hooks/useGetAvailableDrivers";
+import AdminHome from "../home/AdminHome";
 
 const Home = () => {
-
   const [modalVisible, setModalVisible] = useState(false);
   const { token } = useGetToken();
-  const { role, email, loading, user, userId } = useGetUserData(token);
+  const { role, user, userId } = useGetUserData(token);
   const { customers, drivers, refetch } = useGetAllUsers(token);
   const { availableDrivers } = useGetAvailableDrivers(token);
   const [currentDate, setCurrentDate] = useState(new Date());
 
-  const verifyUser = async (id: string) => {
-    try {
-      console.log("verify user");
-      await adminApprovalInstance(token!)
-        .post("", {
-          id: id,
-        })
-        .then((res) => {
-          console.log("USER EMAIL VERIFIED: ", res.data.response.name);
-          console.log("VERIF RESPONSE: ", res.data.response.is_admin_approved);
-        });
-    } catch (e) {
-      console.log("error verify user", e);
-    }
-  };
+
 
   function convertDateToIso(dateValue: string): Date {
     const formattedDateString = dateValue.replace(/\//g, "-");
@@ -59,7 +54,6 @@ const Home = () => {
     //   getAllUsers();
     // }
   }, []);
-  
 
   if (role === "CUSTOMER") {
     return (
@@ -85,23 +79,24 @@ const Home = () => {
           <View className="flex-row gap-2 mb-2 items-center p-2">
             <Image className="w-6 h-6" source={icons.mylocation_icon} />
             <TouchableOpacity
-              onPress={() => router.push({
-                pathname: "/locationDetail",
-                params: {
-                  customer_address: user?.user_detail.street,
-                },
-              })}
-            >
-              {
-                usePrecise ?
-                  <Text className="text-xl" style={styles.montserratBold}>
-                    {precise_address}
-                  </Text>
-                :
-                  <Text className="text-xl" style={styles.montserratBold}>
-                    {user?.user_detail.street}
-                  </Text>
+              onPress={() =>
+                router.push({
+                  pathname: "/locationDetail",
+                  params: {
+                    customer_address: user?.user_detail.street,
+                  },
+                })
               }
+            >
+              {usePrecise ? (
+                <Text className="text-xl" style={styles.montserratBold}>
+                  {precise_address}
+                </Text>
+              ) : (
+                <Text className="text-xl" style={styles.montserratBold}>
+                  {user?.user_detail.street}
+                </Text>
+              )}
             </TouchableOpacity>
           </View>
           <View className="w-96 h-52 bg-white rounded-xl">
@@ -453,65 +448,7 @@ const Home = () => {
   } else if (role === "ADMIN") {
     return (
       <HomeLayout modalVisible={modalVisible} setModalVisible={setModalVisible}>
-        <View className="flex-row gap-1 mt-4 ml-5 mb-4">
-          <Text
-            className="text-2xl text-black"
-            style={styles.montserratRegular}
-          >
-            Welcome,{" "}
-          </Text>
-          <Text className="text-2xl text-black" style={styles.montserratBold}>
-            {user?.user_detail.name.split(" ")[0]}
-          </Text>
-        </View>
-        <ScrollView>
-          <View className="flex flex-col justify-start items-start px-4">
-            <Text
-              className="text-base ml-2 mb-1"
-              style={styles.montserratSemiBold}
-            >
-              Users who need to be verified
-            </Text>
-            {customers.length > 0 ? (
-              customers?.map((item, index) => (
-                <HomeUserCard
-                  user={item}
-                  refetch={refetch}
-                  verifyUser={verifyUser}
-                  key={index}
-                />
-              ))
-            ) : (
-              <View className="w-full h-14 justify-center items-center">
-                <Text style={styles.montserratRegular}>
-                  No users need to be verified
-                </Text>
-              </View>
-            )}
-            <Text
-              className="text-base mt-10 ml-2 mb-1"
-              style={styles.montserratSemiBold}
-            >
-              Partners who need to be verified
-            </Text>
-            {drivers.length > 0 ? (
-              drivers?.map((item, index) => (
-                <HomeUserCard
-                  user={item}
-                  refetch={refetch}
-                  verifyUser={verifyUser}
-                  key={index}
-                />
-              ))
-            ) : (
-              <View className="w-full h-14 justify-center items-center">
-                <Text style={styles.montserratRegular}>
-                  No partners need to be verified
-                </Text>
-              </View>
-            )}
-          </View>
-        </ScrollView>
+        <AdminHome />
       </HomeLayout>
     );
   } else {

@@ -1,26 +1,26 @@
-import { TextInput, TouchableOpacity, View } from "react-native";
+import { TextInput, TouchableOpacity, View, Text } from "react-native";
 import React, { useState } from "react";
+import { Ionicons } from "@expo/vector-icons";
 import { styles } from "@/app/config/Fonts";
 
-interface FormFieldProps {
+interface PasswordFieldProps {
   title: string;
-  value: string | undefined;
+  value: string;
   handleChangeText: (e: string) => void;
   otherStyles: string;
-  keyboardType: string;
 }
 
-const FormField = ({
+const PasswordField = ({
   title,
   value,
   handleChangeText,
   otherStyles,
-}: FormFieldProps) => {
+}: PasswordFieldProps) => {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
     <View className={`w-full space-y-2 ${otherStyles}`}>
-      <View className="w-full h-14 bg-white px-4 rounded-lg">
+      <View className="w-full h-14 bg-white px-4 rounded-lg flex-row items-center">
         <TextInput
           className="flex-1 text-green text-base opacity-80"
           style={styles.montserratRegular}
@@ -28,17 +28,18 @@ const FormField = ({
           placeholder={title}
           placeholderTextColor="#387d4e"
           onChangeText={handleChangeText}
-          secureTextEntry={title.includes("password") && !showPassword}
+          secureTextEntry={!showPassword}
         />
-
-        {title === "Enter your password" && (
-          <TouchableOpacity
-            onPress={() => setShowPassword(!showPassword)}
-          ></TouchableOpacity>
-        )}
+        <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+          <Ionicons
+            name={showPassword ? "eye-off" : "eye"}
+            size={24}
+            color="gray"
+          />
+        </TouchableOpacity>
       </View>
     </View>
   );
 };
 
-export default FormField;
+export default PasswordField;

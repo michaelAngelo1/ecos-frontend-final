@@ -1,5 +1,5 @@
 import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { styles } from "./../config/Fonts";
 import FormField from "@/components/FormField";
@@ -16,6 +16,8 @@ import icons from "@/constants/icons";
 import { Image } from "expo-image";
 import ModalLoading from "@/components/ModalLoading";
 import Snackbar from "@/components/Snackbar";
+import PasswordField from "@/components/PasswordField";
+import TermsAndConditionsModal from "@/components/TermsAndConditionsModal";
 
 const SignUpCustomer = () => {
   const [form, setForm] = useState({
@@ -34,6 +36,7 @@ const SignUpCustomer = () => {
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
+  const [termsModal, settermsModal] = useState(false);
 
   const handleSignUpCustomer = async ({
     firstName,
@@ -117,6 +120,11 @@ const SignUpCustomer = () => {
   return (
     <SafeAreaView className="bg-[#fff] h-full">
       {loading ? <ModalLoading /> : null}
+      <TermsAndConditionsModal
+        onClose={() => settermsModal(false)}
+        visible={termsModal}
+        onConfirm={() => settermsModal(false)}
+      />
       {snackbarVisible && (
         <Snackbar
           message={error}
@@ -179,12 +187,11 @@ const SignUpCustomer = () => {
             otherStyles="mt-3"
             keyboardType="pickUpAddress"
           />
-          <FormField
+          <PasswordField
             title="Enter your password"
             value={form.password}
             handleChangeText={(e: string) => setForm({ ...form, password: e })}
             otherStyles="mt-3"
-            keyboardType="password"
           />
           <FormField
             title="Enter your Binusian ID"
@@ -203,7 +210,12 @@ const SignUpCustomer = () => {
             keyboardType="grade"
           />
           <View className="flex-row gap-1 items-center mt-1">
-            <Pressable onPress={() => setTermsConditions(!termsConditions)}>
+            <Pressable
+              onPress={() => {
+                settermsModal(!termsConditions);
+                setTermsConditions(!termsConditions);
+              }}
+            >
               {termsConditions ? (
                 <Image className="w-6 h-6" source={icons.verified_icon} />
               ) : (

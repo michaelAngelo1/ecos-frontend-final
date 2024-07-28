@@ -10,6 +10,7 @@ import { authInstance, userDetailInstance } from "../config/axiosConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SignInProps } from "../config/Interface";
 import ModalLoading from "@/components/ModalLoading";
+import PasswordField from "@/components/PasswordField";
 
 const SignIn: React.FC<SignInProps> = () => {
   const [form, setForm] = useState<SignInProps>({
@@ -119,12 +120,11 @@ const SignIn: React.FC<SignInProps> = () => {
             otherStyles="mt-4"
             keyboardType="email-address"
           />
-          <FormField
+          <PasswordField
             title="Enter your password"
             value={form.password}
             handleChangeText={(e: string) => setForm({ ...form, password: e })}
             otherStyles="mt-3"
-            keyboardType="password"
           />
 
           <CustomButton

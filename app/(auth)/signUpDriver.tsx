@@ -12,6 +12,7 @@ import icons from "@/constants/icons";
 import { Image } from "expo-image";
 import ModalLoading from "@/components/ModalLoading";
 import Snackbar from "@/components/Snackbar";
+import PasswordField from "@/components/PasswordField";
 
 const SignUpDriver = () => {
   const [form, setForm] = useState({
@@ -164,12 +165,11 @@ const SignUpDriver = () => {
             otherStyles="mt-3"
             keyboardType="grade"
           />
-          <FormField
+          <PasswordField
             title="Enter your password"
             value={form.password}
             handleChangeText={(e: string) => setForm({ ...form, password: e })}
             otherStyles="mt-3"
-            keyboardType="password"
           />
           <View className="flex-row gap-1 items-center mt-1">
             <Pressable onPress={() => setTermsConditions(!termsConditions)}>

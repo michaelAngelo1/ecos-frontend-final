@@ -13,6 +13,7 @@ import useGetUserData from "@/hooks/useGetUserData";
 import useChangePassword from "@/hooks/useChangePassword";
 import { authInstance } from "../config/axiosConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import PasswordField from "@/components/PasswordField";
 
 export default function changePassword() {
   const [snackbarVisible, setSnackbarVisible] = useState(false);
@@ -55,7 +56,7 @@ export default function changePassword() {
         password,
       });
       await AsyncStorage.setItem("userToken", response.data["access_token"]);
-      router.replace('(tabs)/profile')
+      router.replace("(tabs)/profile");
     } catch (error) {
       handleErrorMessage("last password is invalid!");
     } finally {
@@ -74,32 +75,26 @@ export default function changePassword() {
           >
             Change Password
           </Text>
-          <FormField
+          <PasswordField
             title="Enter your last password"
             value={lastPass}
-            handleChangeText={(e: string) => setLastPass(e)}
+            handleChangeText={(e) => setLastPass(e)}
             otherStyles="mt-3"
-            keyboardType="password"
           />
-
-          <FormField
+          <PasswordField
             title="Enter your new password"
             value={password}
-            handleChangeText={(e: string) => setPassword(e)}
+            handleChangeText={(e) => setPassword(e)}
             otherStyles="mt-3"
-            keyboardType="password"
           />
-
-          <FormField
+          <PasswordField
             title="Confirm your new password"
             value={conPas}
-            handleChangeText={(e: string) => setConPas(e)}
+            handleChangeText={(e) => setConPas(e)}
             otherStyles="mt-3"
-            keyboardType="password"
           />
-
           <CustomButton
-            actionText="Log in"
+            actionText="Update"
             bgColor="bg-green"
             textColor="text-white"
             handlePress={handleChangePassword}

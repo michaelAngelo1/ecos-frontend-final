@@ -16,6 +16,7 @@ import icons from "@/constants/icons";
 import { Image } from "expo-image";
 import ModalLoading from "@/components/ModalLoading";
 import Snackbar from "@/components/Snackbar";
+import PasswordField from "@/components/PasswordField";
 
 const SignUpCustomer = () => {
   const [form, setForm] = useState({
@@ -179,12 +180,11 @@ const SignUpCustomer = () => {
             otherStyles="mt-3"
             keyboardType="pickUpAddress"
           />
-          <FormField
+          <PasswordField
             title="Enter your password"
             value={form.password}
             handleChangeText={(e: string) => setForm({ ...form, password: e })}
             otherStyles="mt-3"
-            keyboardType="password"
           />
           <FormField
             title="Enter your Binusian ID"

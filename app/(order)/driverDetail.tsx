@@ -36,15 +36,15 @@ const driverDetail = () => {
 
   const handleOrderFromCustomer = async (addNanny: number) => {
     let userToken = await getToken();
+    console.log(
+      "order_id: ",
+      orderId,
+      "user_id: ",
+      userId,
+      "extraPassenger: ",
+      addNanny
+    );
     try {
-      console.log(
-        "order_id: ",
-        orderId,
-        "user_id: ",
-        userId,
-        "extraPassenger: ",
-        addNanny
-      );
       const response = await customerOrderHeaderInstance(userToken!).post("", {
         order_id: orderId,
         user_id: userId,

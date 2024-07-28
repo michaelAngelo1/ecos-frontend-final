@@ -30,6 +30,9 @@ export default function CustomerHome() {
     getCurrentDate();
   }, []);
 
+  console.log('USER ID ON CUST HOME: ', userId);
+  console.log('USER ON USEGETUSERDATA: ', user);
+
   return (
     <>
       <View className="flex-row gap-1 mt-4 ml-5 mb-4">

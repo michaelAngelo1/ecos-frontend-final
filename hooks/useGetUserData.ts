@@ -20,6 +20,7 @@ export default function useGetUserData(token: string | undefined) {
 
       setRole(userData.role);
       setEmail(userData.email);
+      setUserId(userData.user_id);
 
       const user = new User(
         userData.email,

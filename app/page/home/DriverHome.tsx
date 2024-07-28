@@ -3,6 +3,7 @@ import { styles } from "../../config/Fonts";
 import { router } from "expo-router";
 import useGetToken from "@/hooks/useGetToken";
 import useGetUserData from "@/hooks/useGetUserData";
+import DriverTripCard from "@/components/DriverTripCard";
 
 export default function DriverHome() {
   const { token } = useGetToken();
@@ -24,45 +25,8 @@ export default function DriverHome() {
             Your trip this month
           </Text>
         </View>
-        <View className="w-fit h-36 bg-[#fff] rounded-2xl border border-gray-200 justify-start items-start mx-4 mb-3">
-          <View className="absolute top-4 left-4 w-14 h-14 bg-green rounded-full"></View>
-          <Text
-            className="absolute top-0 left-[70px] text-black text-lg p-4"
-            style={styles.montserratSemiBold}
-          >
-            Trip #243881D
-          </Text>
-          <Text
-            className="absolute top-1 left-[274px] text-black text-sm p-4"
-            style={styles.montserratMedium}
-          >
-            July 2024
-          </Text>
-          <Text
-            className="absolute top-7 left-[70px] text-black text-sm p-4"
-            style={styles.montserratRegular}
-          >
-            User (s): 3 persons
-          </Text>
-          <Text
-            className="absolute top-12 left-[70px] text-black text-sm p-4"
-            style={styles.montserratRegular}
-          >
-            To: Binus School Bekasi
-          </Text>
-          <TouchableOpacity
-            className="absolute bottom-3 right-3 bg-green w-[104px] rounded-[20px] mt-3 p-2"
-            activeOpacity={0.7}
-            onPress={() => router.push("/tripDetail")}
-          >
-            <Text
-              className="text-white text-sm text-center"
-              style={styles.montserratBold}
-            >
-              Details
-            </Text>
-          </TouchableOpacity>
-        </View>
+
+        <DriverTripCard/>
 
         <View className="flex flex-col justify-start items-start px-4">
           <Text className="text-xl ml-2 mb-1" style={styles.montserratSemiBold}>

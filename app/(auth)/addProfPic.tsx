@@ -19,6 +19,7 @@ import {
 import Snackbar from "@/components/Snackbar";
 import useGetToken from "@/hooks/useGetToken";
 import useGetUserData from "@/hooks/useGetUserData";
+import ModalLoading from "@/components/ModalLoading";
 
 const AddProfPic = () => {
   const [image, setImage] = useState("");
@@ -26,9 +27,7 @@ const AddProfPic = () => {
     useState<ImagePicker.ImagePickerAsset | null>(null);
 
   const [snackbarVisible, setSnackbarVisible] = useState(false);
-
   const { token } = useGetToken();
-
   const { role } = useGetUserData(token);
 
   useEffect(() => {
@@ -63,7 +62,9 @@ const AddProfPic = () => {
     }
   };
 
+  const [loading, setLoading] = useState<boolean>(false);
   const uploadImage = async () => {
+    setLoading(true);
     try {
       if (imageFile) {
         const formData = new FormData();
@@ -74,14 +75,14 @@ const AddProfPic = () => {
         });
         const response = await uploadUserProfileInstance().post("", formData);
         const imageName = response.data;
-        const updateUserDetail = await userDetailInstance(token!)
+        await userDetailInstance(token!)
           .patch("", {
             profile_image: imageName,
           })
           .then(() => {
-            console.log('role: ', role);
-            if(role == 'CUSTOMER') {
-              router.push('/pendingApproval');
+            console.log("role: ", role);
+            if (role == "CUSTOMER") {
+              router.push("/pendingApproval");
             } else {
               router.push("/vehicleInfo");
             }
@@ -89,6 +90,8 @@ const AddProfPic = () => {
       }
     } catch (e) {
       console.log("error upload image", e);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -105,6 +108,7 @@ const AddProfPic = () => {
 
   return (
     <SafeAreaView className="bg-[#fff] h-full">
+      {loading ? <ModalLoading /> : null}
       <ScrollView>
         <View className="flex flex-col min-h-[104vh] justify-center items-center px-4">
           <Text

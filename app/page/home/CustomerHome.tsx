@@ -96,7 +96,14 @@ export default function CustomerHome() {
                   className="relative w-full h-32 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm mb-3 p-3"
                 >
                   <View className="flex flex-row gap-3">
-                    <View className="w-16 h-16 bg-green rounded-full"></View>
+                    <View className="w-14 h-14 bg-green rounded-full flex items-center justify-center">
+                      <Image
+                        className="w-12 h-12 rounded-full"
+                        source={{
+                          uri: `http://ecos.joheee.com:4050/public/user/${driver.user.user_detail.profile_image}`,
+                        }}
+                      />
+                    </View>
                     <View className="flex flex-col">
                       <Text
                         className="text-black text-lg"

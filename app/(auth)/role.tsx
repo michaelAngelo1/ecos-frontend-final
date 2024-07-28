@@ -23,7 +23,7 @@ const Role = () => {
           <CustomButton
             actionText="Partner"
             bgColor='bg-white'
-            textColor='text-green'
+            textColor='text-green' 
             handlePress={() => router.push('/signUpDriver')}
           />
 

@@ -50,7 +50,10 @@ const driverDetail = () => {
         user_id: userId,
         extra_passenger: addNanny,
       });
-      console.log("response order customer: ", response.data.response.customer_order_id);
+      console.log(
+        "response order customer: ",
+        response.data.response.customer_order_id
+      );
       router.replace({
         pathname: "/paymentProcess",
         params: {

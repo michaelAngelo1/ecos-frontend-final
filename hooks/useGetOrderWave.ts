@@ -17,6 +17,7 @@ export default function useGetOrderWave(token: string | undefined) {
       },
     },
   ]);
+  const [loading, setLoading] = useState(true);
 
   const refetch = async () => {
     try {
@@ -25,6 +26,8 @@ export default function useGetOrderWave(token: string | undefined) {
       setOrderWaveList(response.data.response);
     } catch (e: any) {
       console.log("error fetch order wave: ", e.response);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -32,5 +35,5 @@ export default function useGetOrderWave(token: string | undefined) {
     refetch();
   }, []);
 
-  return { orderWaveList, refetch };
+  return { orderWaveList, refetch, loading };
 }

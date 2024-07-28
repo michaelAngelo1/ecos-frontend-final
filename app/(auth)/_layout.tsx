@@ -10,72 +10,78 @@ const AuthLayout = () => {
         <Stack.Screen
           name="signIn"
           options={{
-            headerShown: false
+            headerShown: false,
           }}
         />
         <Stack.Screen
           name="signUpCustomer"
           options={{
-            headerShown: false
+            headerShown: false,
           }}
         />
         <Stack.Screen
           name="signUpDriver"
           options={{
-            headerShown: false
+            headerShown: false,
           }}
         />
         <Stack.Screen
           name="role"
           options={{
-            headerShown: false
+            headerShown: false,
           }}
         />
         <Stack.Screen
           name="verifCustomer"
           options={{
-            headerShown: false
+            headerShown: false,
           }}
         />
         <Stack.Screen
           name="verifDriver"
           options={{
-            headerShown: false
+            headerShown: false,
           }}
         />
         <Stack.Screen
           name="vehicleInfo"
           options={{
-            headerShown: false
+            headerShown: false,
           }}
         />
         <Stack.Screen
           name="addProfPic"
           options={{
-            headerShown: false
+            headerShown: false,
           }}
         />
         <Stack.Screen
           name="forgotPassword"
           options={{
-            headerShown: false
+            headerShown: false,
           }}
         />
         <Stack.Screen
           name="pendingApproval"
           options={{
-            headerShown: false
+            headerShown: false,
           }}
         />
         <Stack.Screen
           name="documentVerif"
           options={{
-            headerShown: false
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="changePassword"
+          options={{
+            headerShown: false,
           }}
         />
       </Stack>
     </>
-  )
+  );
 }
 
 export default AuthLayout

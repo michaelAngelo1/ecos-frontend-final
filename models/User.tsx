@@ -48,12 +48,20 @@ class UserDetail {
 }
 
 export class User {
+  user_id: string;
   email: string;
   password: string;
   role: string;
   user_detail: UserDetail;
 
-  constructor(email: string, password: string, role: string, user_detail: UserDetail) {
+  constructor(
+    user_id: string,
+    email: string,
+    password: string,
+    role: string,
+    user_detail: UserDetail
+  ) {
+    this.user_id = user_id;
     this.email = email;
     this.password = password;
     this.role = role;

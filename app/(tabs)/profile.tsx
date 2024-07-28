@@ -100,8 +100,7 @@ const Profile = () => {
           <TouchableOpacity
             className="bg-white w-full h-12 rounded-[8px] mt-3 p-2 justify-center"
             activeOpacity={0.7}
-            disabled={true}
-            onPress={() => router.push("/changePassword")}
+            onPress={() => router.push("(auth)/changePassword")}
           >
             <View className="flex-row items-center justify-between">
               <View className="flex-row gap-1">

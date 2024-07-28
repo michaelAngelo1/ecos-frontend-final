@@ -1,6 +1,6 @@
 import { ScrollView, Text, View } from "react-native";
-import { styles } from "../config/Fonts";
-import { adminApprovalInstance } from "../config/axiosConfig";
+import { styles } from "../../config/Fonts";
+import { adminApprovalInstance } from "../../config/axiosConfig";
 import useGetToken from "@/hooks/useGetToken";
 import useGetUserData from "@/hooks/useGetUserData";
 import useGetAllUsers from "@/hooks/useGetAllUsers";

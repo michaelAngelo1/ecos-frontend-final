@@ -1,5 +1,5 @@
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
-import { styles } from "../config/Fonts";
+import { styles } from "../../config/Fonts";
 import { router } from "expo-router";
 import useGetToken from "@/hooks/useGetToken";
 import useGetUserData from "@/hooks/useGetUserData";

@@ -84,11 +84,13 @@ export default function DriverHome() {
             </Text>
           </TouchableOpacity>
         </View>
+
         <View className="flex flex-col justify-start items-start px-4">
           <Text className="text-xl ml-2 mb-1" style={styles.montserratSemiBold}>
             Your users this month
           </Text>
         </View>
+
         <ScrollView className="min-h-[365px] overflow-auto">
           <View className="flex flex-col justify-start items-start px-4">
             <View className="relative w-full h-28 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm">
@@ -112,50 +114,9 @@ export default function DriverHome() {
                 Jl. Kendangsari 1 No. 5
               </Text>
             </View>
+           
 
-            <View className="relative w-full h-28 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm mt-3">
-              <View className="absolute top-4 left-4 w-14 h-14 bg-green rounded-full"></View>
-              <Text
-                className="absolute top-0 left-[70px] text-black text-lg p-4"
-                style={styles.montserratSemiBold}
-              >
-                Steven Halim
-              </Text>
-              <Text
-                className="absolute top-7 left-[70px] text-black text-sm p-4"
-                style={styles.montserratRegular}
-              >
-                +62 828 0316 2100
-              </Text>
-              <Text
-                className="absolute top-12 left-[70px] text-black text-sm p-4"
-                style={styles.montserratRegular}
-              >
-                Jl. Mulyosari 2 No. 3
-              </Text>
-            </View>
-
-            <View className="relative w-full h-28 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm mt-3">
-              <View className="absolute top-4 left-4 w-14 h-14 bg-green rounded-full"></View>
-              <Text
-                className="absolute top-0 left-[70px] text-black text-lg p-4"
-                style={styles.montserratSemiBold}
-              >
-                Mike Angelo
-              </Text>
-              <Text
-                className="absolute top-7 left-[70px] text-black text-sm p-4"
-                style={styles.montserratRegular}
-              >
-                +62 828 0316 2100
-              </Text>
-              <Text
-                className="absolute top-12 left-[70px] text-black text-sm p-4"
-                style={styles.montserratRegular}
-              >
-                Jl. Galaxy Bumi Permai V No. 5
-              </Text>
-            </View>
+            
           </View>
         </ScrollView>
         <View className="flex flex-col justify-start items-start px-4">

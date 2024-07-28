@@ -81,11 +81,12 @@ const paymentProcess = () => {
           .post("", {
             customer_order_id,
             payment_proof_image,
-            payment_total: 1000000,
+            payment_total: 1000000, 
           })
           .then(() => {
             router.push("/pendingApproval");
           });
+        console.log('PAYMENT RESPONSE: ', newPaymentHeader);
       }
     } catch (e) {
       console.log("error upload image", e);

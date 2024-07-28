@@ -29,6 +29,7 @@ const RootLayout = () => {
       <Stack.Screen name="(order)" options={{ headerShown: false }}/>
       <Stack.Screen name="(profile)" options={{ headerShown: false }}/>
       <Stack.Screen name="(journey)" options={{ headerShown: false }}/>
+      <Stack.Screen name="(admin)" options={{ headerShown: false }}/>
     </Stack>
   )
 }

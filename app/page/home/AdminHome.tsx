@@ -1,10 +1,11 @@
-import { ScrollView, Text, View } from "react-native";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { styles } from "../../config/Fonts";
 import { adminApprovalInstance } from "../../config/axiosConfig";
 import useGetToken from "@/hooks/useGetToken";
 import useGetUserData from "@/hooks/useGetUserData";
 import useGetAllUsers from "@/hooks/useGetAllUsers";
 import HomeUserCard from "@/components/HomeUserCard";
+import { router } from "expo-router";
 
 export default function AdminHome() {
   const { token } = useGetToken();
@@ -37,54 +38,68 @@ export default function AdminHome() {
           {user?.user_detail.name.split(" ")[0]}
         </Text>
       </View>
-      <ScrollView>
-        <View className="flex flex-col justify-start items-start px-4">
-          <Text
-            className="text-base ml-2 mb-1"
-            style={styles.montserratSemiBold}
+        <View className="flex flex-col justify-center space-y-3 mx-4">
+          
+          <TouchableOpacity
+            className='w-full h-40 items-center justify-center bg-green rounded-2xl p-3'
+            activeOpacity={0.7}
+            onPress={() => router.push('/usersVerification')}
           >
-            Users who need to be verified
-          </Text>
-          {customers.length > 0 ? (
-            customers?.map((item, index) => (
-              <HomeUserCard
-                user={item}
-                refetch={refetch}
-                verifyUser={verifyUser}
-                key={index}
-              />
-            ))
-          ) : (
-            <View className="w-full h-14 justify-center items-center">
-              <Text style={styles.montserratRegular}>
-                No users need to be verified
-              </Text>
-            </View>
-          )}
-          <Text
-            className="text-base mt-10 ml-2 mb-1"
-            style={styles.montserratSemiBold}
+            <Text
+              className="text-base ml-2 mb-1 text-white"
+              style={styles.montserratSemiBold}
+            >
+              Verify users registration
+            </Text>
+            <Text
+              className="text-xs ml-2 mb-1 text-white text-center"
+              style={styles.montserratRegular}
+            >
+              New users will be displayed here. Admin needs to verify whether the user is a legitimate student of Binus School.
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            className='w-full h-40 items-center justify-center bg-blue rounded-2xl p-3'
+            activeOpacity={0.7}
+            onPress={() => router.push('/driversVerification')}
           >
-            Partners who need to be verified
-          </Text>
-          {drivers.length > 0 ? (
-            drivers?.map((item, index) => (
-              <HomeUserCard
-                user={item}
-                refetch={refetch}
-                verifyUser={verifyUser}
-                key={index}
-              />
-            ))
-          ) : (
-            <View className="w-full h-14 justify-center items-center">
-              <Text style={styles.montserratRegular}>
-                No partners need to be verified
-              </Text>
-            </View>
-          )}
+            <Text
+              className="text-base ml-2 mb-1 text-white"
+              style={styles.montserratSemiBold}
+            >
+              Verify partners registration
+            </Text>
+            <Text
+              className="text-xs ml-2 mb-1 text-white text-center"
+              style={styles.montserratRegular}
+            >
+              New users will be displayed here. Admin needs to verify whether the user is a legitimate parents of student of Binus School.
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            className='w-full h-40 items-center justify-center bg-amber-900 rounded-2xl p-3'
+            activeOpacity={0.7}
+            onPress={() => router.push('/orderPaymentVerification')}
+          >
+            <Text
+              className="text-base ml-2 mb-1 text-white"
+              style={styles.montserratSemiBold}
+            >
+              Verify payment orders
+            </Text>
+            <Text
+              className="text-xs ml-2 mb-1 text-white text-center"
+              style={styles.montserratRegular}
+            >
+              Unapproved orders will be displayed here. Admin needs to approve or reject user's order request of a partner by verifying the payment proof.
+            </Text>
+          </TouchableOpacity>
+          
+          
+          
         </View>
-      </ScrollView>
     </>
   );
 }

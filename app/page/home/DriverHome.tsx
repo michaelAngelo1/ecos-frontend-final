@@ -7,6 +7,7 @@ import useGetUserData from "@/hooks/useGetUserData";
 export default function DriverHome() {
   const { token } = useGetToken();
   const { user } = useGetUserData(token);
+
   return (
     <>
       <View className="flex-row gap-1 mt-4 ml-5 mb-4">

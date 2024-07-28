@@ -9,7 +9,6 @@ import { useEffect, useState } from "react";
 import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 
 export default function CustomerHome() {
-  const [modalVisible, setModalVisible] = useState(false);
   const { token } = useGetToken();
   const { user, userId } = useGetUserData(token);
   const { availableDrivers } = useGetAvailableDrivers(token);
@@ -29,10 +28,6 @@ export default function CustomerHome() {
   const { precise_address, usePrecise } = useLocalSearchParams();
   useEffect(() => {
     getCurrentDate();
-    // if(role == 'ADMIN') {
-    //   console.log('ALL FETCHED USERs', customers);
-    //   getAllUsers();
-    // }
   }, []);
 
   return (

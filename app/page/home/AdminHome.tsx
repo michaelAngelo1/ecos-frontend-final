@@ -74,7 +74,7 @@ export default function AdminHome() {
               className="text-xs ml-2 mb-1 text-white text-center"
               style={styles.montserratRegular}
             >
-              New users will be displayed here. Admin needs to verify whether the user is a legitimate parents of student of Binus School.
+              New partners will be displayed here. Admin needs to verify whether the user is a legitimate parents of student of Binus School.
             </Text>
           </TouchableOpacity>
 

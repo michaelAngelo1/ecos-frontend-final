@@ -134,6 +134,16 @@ export const paymentHeaderInstance = (token: string) =>
     },
   });
 
+export const paymentHeaderByIdInstance = (token: string, id: string) =>
+  axios.create({
+    baseURL: `http://ecos.joheee.com:4040/customer-payment-header/${id}`,
+    headers: {
+      accept: "*/*",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
 export const customerOrderHeaderInstance = (token: string) =>
   axios.create({
     baseURL: "http://ecos.joheee.com:4040/customer-order-header",

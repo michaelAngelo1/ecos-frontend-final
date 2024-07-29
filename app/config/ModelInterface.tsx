@@ -8,7 +8,7 @@ export interface ModelUserInterface {
 
 export interface ModelUserDetailInterface {
   name: string;
-  grade: string;
+  grade: number;
   street: string;
   phone: string;
   is_admin_approved: boolean;

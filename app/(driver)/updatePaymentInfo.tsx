@@ -5,20 +5,27 @@ import { styles } from "../config/Fonts";
 import FormField from "@/components/FormField";
 import CustomButton from "@/components/CustomButton";
 import Snackbar from "@/components/Snackbar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import useRegisterPaymentInfo from "@/hooks/usePaymentInfo";
 import useGetToken from "@/hooks/useGetToken";
 import useErrorMessage from "@/hooks/useErrorMessage";
 import { router } from "expo-router";
 import { paymentInstance } from "../config/axiosConfig";
-import usePaymentInfo from "@/hooks/usePaymentInfo";
 
-export default function RegisterPaymentInfo() {
+export default function UpdatePaymentInfo() {
   const [loading, setLoading] = useState<boolean>(false);
   const { token } = useGetToken();
-  const { name, setName, account_number, set_account_number } =
-    usePaymentInfo();
+  const { name, setName, account_number, set_account_number, data } =
+    useRegisterPaymentInfo();
   const { error, handleErrorMessage, setSnackbarVisible, snackbarVisible } =
     useErrorMessage();
+
+  useEffect(() => {
+    if (data) {
+      setName(data.name);
+      set_account_number(data.account_number);
+    }
+  }, [data]);
 
   async function handlePayment() {
     setLoading(true);
@@ -34,12 +41,13 @@ export default function RegisterPaymentInfo() {
         handleErrorMessage("Bank account number must be numeric!");
         return;
       }
-      await paymentInstance(token!).post("", {
+      await paymentInstance(token!).patch("", {
         name,
         account_number,
       });
-      router.push("/pendingApproval");
-    } catch (error) {
+      router.push("(tabs)/profile");
+    } catch (error:any) {
+      console.log(error.response)
     } finally {
       setLoading(false);
     }
@@ -73,7 +81,7 @@ export default function RegisterPaymentInfo() {
           />
 
           <CustomButton
-            actionText="Submit"
+            actionText="Update"
             bgColor="bg-green"
             textColor="text-white"
             handlePress={handlePayment}

@@ -1,6 +1,6 @@
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Modal } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { paymentHeaderInstance } from '../config/axiosConfig'
+import { paymentHeaderByIdInstance, paymentHeaderInstance } from '../config/axiosConfig'
 import useGetToken from '@/hooks/useGetToken';
 import HomeLayout from '../layout/HomeLayout';
 import { styles } from '../config/Fonts';
@@ -32,6 +32,7 @@ const orderPaymentVerification = () => {
         }
       }
     },
+    is_admin_approved: false,
     customer_payment_id: '',
     payment_proof_image: '',
     payment_total: 0,
@@ -54,6 +55,31 @@ const orderPaymentVerification = () => {
   // Image Path
   const [proofPath, setProofPath] = useState('');
   console.log('PROOF PATH: ', proofPath);
+
+  // Pop-up Confirmation
+  const [paymentModalConfirmation, setPaymentModalConfirmation] = useState(false);
+
+  // Customer Order ID and Payment ID
+  const [customerOrderID, setCustomerOrderID] = useState('');
+  const [paymentID, setPaymentID] = useState('');
+
+  // Admin approve payment confirmation
+  // disable approve payment after approval
+  const [paymentConfirmed, setPaymentConfirmed] = useState(false);
+
+  const handleApprovePaymentConfirmation = async (payment_id: string) => {
+    try {
+      console.log('masuk fungsi');
+      const response = await paymentHeaderByIdInstance(token!, payment_id).patch('', {
+        is_admin_approved: true
+      })
+      console.log('PAYMENT APPROVED RESPONSE: ', response);
+      setPaymentModalConfirmation(false);
+      setPaymentConfirmed(true);
+    } catch (e) {
+      console.log('error approve payment confirmation: ', e.response);
+    }
+  }
 
   useEffect(() => {
     fetchCustomerPaymentProof();
@@ -94,6 +120,23 @@ const orderPaymentVerification = () => {
                 >
                   <Text className='text-blue underline'>Check payment proof</Text>
                 </TouchableOpacity>
+                <TouchableOpacity
+                  activeOpacity={0.7}
+                  disabled={proof.is_admin_approved}
+                  className='m-2 p-3 bg-green items-center justify-center'
+                  onPress={() => {
+                    setPaymentModalConfirmation(true);
+                    setCustomerOrderID(proof.customer_order_header.customer_order_id);
+                    setPaymentID(proof.customer_payment_id);
+                  }}
+                >
+                  {
+                    proof.is_admin_approved ?
+                      <Text className='text-white' style={styles.montserratMedium}>Payment Approved</Text>
+                    :
+                      <Text className='text-white' style={styles.montserratSemiBold}>Approve Payment</Text>
+                  }
+                </TouchableOpacity>
               </View>
             ))
           ) : (
@@ -106,7 +149,37 @@ const orderPaymentVerification = () => {
         </View>
       </ScrollView>
       <Modal
-        animationType="slide"
+        animationType='fade'
+        transparent={true}
+        visible={paymentModalConfirmation}
+        onRequestClose={() => {
+          setPaymentModalConfirmation(false);
+        }}
+      >
+        <View className='flex-1 items-center justify-center'>
+          <View className='flex flex-col items-center p-4 bg-white'>
+            <Text className='text-base text-center' style={styles.montserratSemiBold}>Are you sure you want to approve this payment?</Text>
+            <Text className='text-sm text-center'>Order ID: {customerOrderID}</Text>
+            <Text className='text-sm text-center'>Payment ID: {paymentID}</Text>
+            <View className='flex flex-row space-x-2 mt-3'>
+              <TouchableOpacity
+                className='p-3 bg-blue'
+                onPress={() => handleApprovePaymentConfirmation(paymentID)}
+              >
+                <Text className='text-white' style={styles.montserratSemiBold}>Approve</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                className='p-3 bg-red-900'
+                onPress={() => setPaymentModalConfirmation(false)}
+              >
+                <Text className='text-white' style={styles.montserratRegular}>Cancel</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+      <Modal
+        animationType="fade"
         transparent={true}
         visible={proofVisible}
         onRequestClose={() => {
@@ -141,10 +214,12 @@ const modalStyles = StyleSheet.create({
     marginTop: 22,
   },
   modalView: {
-    margin: 20,
+    width: 325,
+    height: 520,
+    margin: 10,
     backgroundColor: 'white',
     borderRadius: 20,
-    padding: 35,
+    padding: 15,
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {
@@ -174,7 +249,7 @@ const modalStyles = StyleSheet.create({
   },
   image: {
     width: 300,
-    height: 200,
+    height: 400,
     marginBottom: 15,
   }
 });

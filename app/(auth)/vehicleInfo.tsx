@@ -14,13 +14,15 @@ import {
 import { Image } from "expo-image";
 import useGetToken from "@/hooks/useGetToken";
 import ModalLoading from "@/components/ModalLoading";
+import useErrorMessage from "@/hooks/useErrorMessage";
 
 const VehicleInfo = () => {
   const [image, setImage] = useState("");
-  const [snackbarVisible, setSnackbarVisible] = useState(false);
   const { token } = useGetToken();
   const [imageFile, setImageFile] =
     useState<ImagePicker.ImagePickerAsset | null>(null);
+  const { error, handleErrorMessage, setSnackbarVisible, snackbarVisible } =
+    useErrorMessage();
 
   const [form, setForm] = useState({
     vehicleModel: "",
@@ -72,7 +74,6 @@ const VehicleInfo = () => {
   ) => {
     setLoading(true);
     try {
-      console.log("STRING SEAT CAPACIY: ", seatCapacity);
       const integerCapacity = parseInt(seatCapacity);
       if (
         vehicleModel == "" ||
@@ -81,38 +82,38 @@ const VehicleInfo = () => {
         yearReleased == "" ||
         parseInt(yearReleased) < 2014
       ) {
-        setSnackbarVisible(true);
+        handleErrorMessage("all field must be filled!");
         return;
       }
-      console.log("TIPE IMAGE: ", typeof image);
-      console.log("SEAT CAPACITY: ", integerCapacity);
       // mulai upload gambar
-      if (imageFile) {
-        const formData = new FormData();
-        formData.append("vehicle_image_file", {
-          uri: imageFile!.uri,
-          name: imageFile!.fileName,
-          type: imageFile!.mimeType,
-        });
-        const response = await uploadImageVehicleInstance().post("", formData);
-        const imageName = response.data;
-        console.log("IMAGE NAME: ", imageName);
-        await driverDetailInstance(token!)
-          .post("", {
-            vehicle_image: imageName,
-            vehicle_model: vehicleModel,
-            vehicle_category: vehicleCategory,
-            vehicle_capacity: integerCapacity,
-            vehicle_number_plate: numberPlate,
-          })
-          .then(() => {
-            // console.log("VEHICLE CAPACITY: ", integerCapacity);
-            router.push("(driver)/registerPaymentInfo");
-          })
-          .catch((e) => {
-            console.log("error update AUTH driver detaiL: ", e.response);
-          });
+      if (!imageFile) {
+        handleErrorMessage("You must upload the vehicle image!");
+        return;
       }
+      const formData = new FormData();
+      formData.append("vehicle_image_file", {
+        uri: imageFile!.uri,
+        name: imageFile!.fileName,
+        type: imageFile!.mimeType,
+      });
+      const response = await uploadImageVehicleInstance().post("", formData);
+      const imageName = response.data;
+      console.log("IMAGE NAME: ", imageName);
+      await driverDetailInstance(token!)
+        .post("", {
+          vehicle_image: imageName,
+          vehicle_model: vehicleModel,
+          vehicle_category: vehicleCategory,
+          vehicle_capacity: integerCapacity,
+          vehicle_number_plate: numberPlate,
+        })
+        .then(() => {
+          // console.log("VEHICLE CAPACITY: ", integerCapacity);
+          router.push("(driver)/registerPaymentInfo");
+        })
+        .catch((e) => {
+          console.log("error update AUTH driver detaiL: ", e.response);
+        });
     } catch (e) {
       console.log("error vehicle info: ", e);
     } finally {
@@ -229,7 +230,7 @@ const VehicleInfo = () => {
           <View className="justify-center pt-2 flex-row gap-2"></View>
           {snackbarVisible && (
             <Snackbar
-              message="Please fill your vehicle information. Make sure your vehicle release year is >= 2014" // Update message if needed
+              message={error}
               setVisible={setSnackbarVisible}
               duration={3000}
               bgColor="bg-red-900"

@@ -6,17 +6,17 @@ import FormField from "@/components/FormField";
 import CustomButton from "@/components/CustomButton";
 import Snackbar from "@/components/Snackbar";
 import { useState } from "react";
-import useRegisterPaymentInfo from "@/hooks/useRegisterPaymentInfo";
 import useGetToken from "@/hooks/useGetToken";
 import useErrorMessage from "@/hooks/useErrorMessage";
 import { router } from "expo-router";
 import { paymentInstance } from "../config/axiosConfig";
+import usePaymentInfo from "@/hooks/usePaymentInfo";
 
 export default function RegisterPaymentInfo() {
   const [loading, setLoading] = useState<boolean>(false);
   const { token } = useGetToken();
   const { name, setName, account_number, set_account_number } =
-    useRegisterPaymentInfo();
+    usePaymentInfo();
   const { error, handleErrorMessage, setSnackbarVisible, snackbarVisible } =
     useErrorMessage();
 

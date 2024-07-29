@@ -45,7 +45,7 @@ export default function UpdatePaymentInfo() {
         name,
         account_number,
       });
-      router.push("(profile)/profileDetail");
+      router.push("(tabs)/profile");
     } catch (error:any) {
       console.log(error.response)
     } finally {

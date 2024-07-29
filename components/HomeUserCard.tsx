@@ -49,9 +49,14 @@ export default function HomeUserCard(prop: HomeUserCardInterface) {
           <Text className="text-black text-sm" style={styles.montserratRegular}>
             {prop.user.user_detail.street}
           </Text>
-          <Text className="text-black text-sm" style={styles.montserratRegular}>
-            Grade: {prop.user.user_detail.grade}
-          </Text>
+          {prop.user.user_detail.grade === 0 ? null : (
+            <Text
+              className="text-black text-sm"
+              style={styles.montserratRegular}
+            >
+              Grade: {prop.user.user_detail.grade}
+            </Text>
+          )}
         </View>
       </View>
 

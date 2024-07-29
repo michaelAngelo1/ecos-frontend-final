@@ -12,6 +12,14 @@ const DriverLayout = () => {
           }}
         />
       </Stack>
+      <Stack>
+        <Stack.Screen
+          name="updatePaymentInfo"
+          options={{
+            headerShown: false,
+          }}
+        />
+      </Stack>
     </>
   );
 };

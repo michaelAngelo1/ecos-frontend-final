@@ -68,6 +68,16 @@ export const driverDetailInstance = (token: string) =>
     },
   });
 
+export const paymentInstance = (token: string) =>
+  axios.create({
+    baseURL: "http://ecos.joheee.com:4040/payment",
+    headers: {
+      accept: "*/*",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
 export const adminTimeBlockInstance = (token: string) =>
   axios.create({
     baseURL: "http://ecos.joheee.com:4040/admin-time-block",
@@ -133,5 +143,3 @@ export const customerOrderHeaderInstance = (token: string) =>
       Authorization: `Bearer ${token}`,
     },
   });
-
-

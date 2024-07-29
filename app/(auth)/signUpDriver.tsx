@@ -24,6 +24,8 @@ const SignUpDriver = () => {
     password: "",
     grade: "",
     binusianId: "",
+    payment_name: "",
+    payment_account_number: "",
   });
   const [termsConditions, setTermsConditions] = useState(false);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
@@ -40,21 +42,37 @@ const SignUpDriver = () => {
     pickUpAddress,
     password,
     binusianId,
+    payment_name,
+    payment_account_number,
   }: SignUpDriverProps) => {
     try {
       setLoading(true);
       const phoneNumberRegex = /^\d+$/;
       const binusianIdRegex = /^\d+$/;
 
+      if (payment_name === "") {
+        setError("All field must be filled!");
+        setSnackbarVisible(true);
+        setLoading(false);
+        return;
+      }
+
       if (!phoneNumberRegex.test(phoneNumber)) {
-        setError("Phone number must be numeric");
+        setError("Phone number must be numeric!");
+        setSnackbarVisible(true);
+        setLoading(false);
+        return;
+      }
+
+      if (!phoneNumberRegex.test(payment_account_number)) {
+        setError("Bank account number must be numeric!");
         setSnackbarVisible(true);
         setLoading(false);
         return;
       }
 
       if (!binusianIdRegex.test(binusianId)) {
-        setError("Binusian ID must be numeric");
+        setError("Binusian ID must be numeric!");
         setSnackbarVisible(true);
         setLoading(false);
         return;
@@ -67,8 +85,6 @@ const SignUpDriver = () => {
         return;
       }
 
-      console.log(firstName, phoneNumber);
-      console.log(typeof firstName, typeof phoneNumber);
       const response = await authInstance.patch("", {
         email: email,
         name: firstName,
@@ -164,6 +180,24 @@ const SignUpDriver = () => {
             keyboardType="pickUpAddress"
           />
           <FormField
+            title="Enter bank name"
+            value={form.payment_name}
+            handleChangeText={(e: string) =>
+              setForm({ ...form, payment_name: e })
+            }
+            otherStyles="mt-3"
+            keyboardType="pickUpAddress"
+          />
+          <FormField
+            title="Enter bank account number"
+            value={form.payment_account_number}
+            handleChangeText={(e: string) =>
+              setForm({ ...form, payment_account_number: e })
+            }
+            otherStyles="mt-3"
+            keyboardType="pickUpAddress"
+          />
+          <FormField
             title="Enter your child's Binusian ID"
             value={form.binusianId}
             handleChangeText={(e: string) =>
@@ -212,6 +246,8 @@ const SignUpDriver = () => {
                 password: form.password,
                 binusianId: "2413",
                 parentsPhone: "3824",
+                payment_account_number: form.payment_account_number,
+                payment_name: form.payment_name,
               })
             }
           />

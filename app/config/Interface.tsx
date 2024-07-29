@@ -34,6 +34,8 @@ export interface SignUpDriverProps {
   grade: string;
   binusianId: string;
   parentsPhone: string;
+  payment_name: string;
+  payment_account_number: string;
 }
 
 export interface SignInProps {

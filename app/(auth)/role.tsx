@@ -6,8 +6,6 @@ import CustomButton from '@/components/CustomButton'
 
 const Role = () => {
 
-  
-
   return (
     <SafeAreaView className='bg-[#fff] h-full'>
       <ScrollView>

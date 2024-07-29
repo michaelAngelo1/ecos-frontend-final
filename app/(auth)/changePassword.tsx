@@ -14,21 +14,16 @@ import useChangePassword from "@/hooks/useChangePassword";
 import { authInstance } from "../config/axiosConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import PasswordField from "@/components/PasswordField";
+import useErrorMessage from "@/hooks/useErrorMessage";
 
 export default function changePassword() {
-  const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string>("");
-
   const { token } = useGetToken();
   const { user } = useGetUserData(token);
   const { lastPass, setLastPass, password, setPassword, conPas, setConPas } =
     useChangePassword();
-
-  function handleErrorMessage(message: string) {
-    setSnackbarVisible(true);
-    setError(message);
-  }
+  const { error, setSnackbarVisible, snackbarVisible, handleErrorMessage } =
+    useErrorMessage();
   async function handleChangePassword() {
     setLoading(true);
     try {

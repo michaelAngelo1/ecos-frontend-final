@@ -106,8 +106,8 @@ const VehicleInfo = () => {
             vehicle_number_plate: numberPlate,
           })
           .then(() => {
-            console.log("VEHICLE CAPACITY: ", integerCapacity);
-            router.push("/pendingApproval");
+            // console.log("VEHICLE CAPACITY: ", integerCapacity);
+            router.push("(driver)/registerPaymentInfo");
           })
           .catch((e) => {
             console.log("error update AUTH driver detaiL: ", e.response);
@@ -211,7 +211,7 @@ const VehicleInfo = () => {
           />
 
           <CustomButton
-            actionText="Submit"
+            actionText="Next"
             bgColor="bg-green"
             textColor="text-white"
             handlePress={() =>

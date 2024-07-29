@@ -14,6 +14,7 @@ import ModalLoading from "@/components/ModalLoading";
 import Snackbar from "@/components/Snackbar";
 import PasswordField from "@/components/PasswordField";
 import TermsAndConditionsModal from "@/components/TermsAndConditionsModal";
+import useErrorMessage from "@/hooks/useErrorMessage";
 
 const SignUpDriver = () => {
   const [form, setForm] = useState({
@@ -24,14 +25,12 @@ const SignUpDriver = () => {
     password: "",
     grade: "",
     binusianId: "",
-    payment_name: "",
-    payment_account_number: "",
   });
   const [termsConditions, setTermsConditions] = useState(false);
-  const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string>("");
   const [termsModal, settermsModal] = useState(false);
+  const { error, handleErrorMessage, setSnackbarVisible, snackbarVisible } =
+    useErrorMessage();
 
   let role = "DRIVER";
   // DUMMY TERMS & CONDITIONS STATE
@@ -42,50 +41,29 @@ const SignUpDriver = () => {
     pickUpAddress,
     password,
     binusianId,
-    payment_name,
-    payment_account_number,
   }: SignUpDriverProps) => {
     try {
       setLoading(true);
       const phoneNumberRegex = /^\d+$/;
       const binusianIdRegex = /^\d+$/;
 
-      if (payment_name === "") {
-        setError("All field must be filled!");
-        setSnackbarVisible(true);
-        setLoading(false);
-        return;
-      }
-
       if (!phoneNumberRegex.test(phoneNumber)) {
-        setError("Phone number must be numeric!");
-        setSnackbarVisible(true);
-        setLoading(false);
-        return;
-      }
-
-      if (!phoneNumberRegex.test(payment_account_number)) {
-        setError("Bank account number must be numeric!");
-        setSnackbarVisible(true);
-        setLoading(false);
+        handleErrorMessage("Phone number must be numeric!");
         return;
       }
 
       if (!binusianIdRegex.test(binusianId)) {
-        setError("Binusian ID must be numeric!");
-        setSnackbarVisible(true);
-        setLoading(false);
+        handleErrorMessage("Binusian ID must be numeric!");
         return;
       }
 
       if (!termsConditions) {
-        setError("Check the terms and conditions!");
-        setSnackbarVisible(true);
-        setLoading(false);
+        handleErrorMessage("Check the terms and conditions!");
         return;
       }
 
-      const response = await authInstance.patch("", {
+      // register driver
+      const firstLogin = await authInstance.patch("", {
         email: email,
         name: firstName,
         phone: phoneNumber,
@@ -95,25 +73,29 @@ const SignUpDriver = () => {
         grade: 0,
       });
 
-      let token = response.data["access_token"];
+      // gain access token for update role
+      let token = firstLogin.data["access_token"];
       await userDetailInstance(token).patch("", {
         role,
       });
-      await authInstance.post("", {
+
+      // gain latest update token with the updated role
+      let secondLogin = await authInstance.post("", {
         email: email,
         password: form.password,
       });
-      await AsyncStorage.setItem("userToken", response.data["access_token"]);
+
+      let latestToken = secondLogin.data["access_token"];
+      // store the latest token
+      await AsyncStorage.setItem("userToken", latestToken);
       router.push("/addProfPic");
     } catch (error: any) {
       const errorMessage = error.response.data.message;
       if (Array.isArray(errorMessage)) {
-        setError(errorMessage[0]);
+        handleErrorMessage(errorMessage[0]);
       } else {
-        setError(errorMessage);
+        handleErrorMessage(errorMessage);
       }
-      console.log(errorMessage);
-      setSnackbarVisible(true);
     } finally {
       setLoading(false);
     }
@@ -148,14 +130,14 @@ const SignUpDriver = () => {
           </Text>
 
           <FormField
-            title="Enter Fullname"
+            title="Fullname"
             value={form.firstName}
             handleChangeText={(e: string) => setForm({ ...form, firstName: e })}
             otherStyles="mt-3"
             keyboardType="full-name"
           />
           <FormField
-            title="Enter email"
+            title="email"
             value={form.email}
             handleChangeText={(e: string) => setForm({ ...form, email: e })}
             otherStyles="mt-3"
@@ -171,7 +153,7 @@ const SignUpDriver = () => {
             keyboardType="numeric"
           />
           <FormField
-            title="Enter your address"
+            title="your address"
             value={form.pickUpAddress}
             handleChangeText={(e: string) =>
               setForm({ ...form, pickUpAddress: e })
@@ -180,25 +162,7 @@ const SignUpDriver = () => {
             keyboardType="pickUpAddress"
           />
           <FormField
-            title="Enter bank name"
-            value={form.payment_name}
-            handleChangeText={(e: string) =>
-              setForm({ ...form, payment_name: e })
-            }
-            otherStyles="mt-3"
-            keyboardType="pickUpAddress"
-          />
-          <FormField
-            title="Enter bank account number"
-            value={form.payment_account_number}
-            handleChangeText={(e: string) =>
-              setForm({ ...form, payment_account_number: e })
-            }
-            otherStyles="mt-3"
-            keyboardType="pickUpAddress"
-          />
-          <FormField
-            title="Enter your child's Binusian ID"
+            title="your child's Binusian ID"
             value={form.binusianId}
             handleChangeText={(e: string) =>
               setForm({ ...form, binusianId: e })
@@ -207,7 +171,7 @@ const SignUpDriver = () => {
             keyboardType="grade"
           />
           <PasswordField
-            title="Enter your password"
+            title="your password"
             value={form.password}
             handleChangeText={(e: string) => setForm({ ...form, password: e })}
             otherStyles="mt-3"
@@ -246,8 +210,6 @@ const SignUpDriver = () => {
                 password: form.password,
                 binusianId: "2413",
                 parentsPhone: "3824",
-                payment_account_number: form.payment_account_number,
-                payment_name: form.payment_name,
               })
             }
           />

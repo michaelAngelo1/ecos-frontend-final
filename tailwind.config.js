@@ -8,6 +8,10 @@ module.exports = {
           DEFAULT: "#387d4e",
           50: "#387d4e80",
         },
+        chat: {
+          self: "#20A090",
+          other: "#F2F7FB",
+        },
         orange: "#81cd2d",
         blue: "#0057ff",
         white: "#f1f1f1",

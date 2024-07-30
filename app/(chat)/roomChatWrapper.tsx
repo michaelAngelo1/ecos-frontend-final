@@ -15,8 +15,8 @@ export default function RoomChatWrapper(prop: RoomChatWrapperInterface) {
       >
         {prop.title }
       </Text>
-      <ScrollView>
-        <View className="flex flex-col min-h-[100vh] justify-start items-start px-4">
+      <ScrollView className="w-full">
+        <View className="flex flex-col min-h-[100vh] w-full justify-start items-center px-4">
           {prop.children}
         </View>
       </ScrollView>

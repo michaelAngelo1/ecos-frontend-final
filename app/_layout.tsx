@@ -31,6 +31,7 @@ const RootLayout = () => {
       <Stack.Screen name="(journey)" options={{ headerShown: false }} />
       <Stack.Screen name="(admin)" options={{ headerShown: false }} />
       <Stack.Screen name="(driver)" options={{ headerShown: false }} />
+      <Stack.Screen name="(chat)" options={{ headerShown: false }} />
     </Stack>
   );
 }

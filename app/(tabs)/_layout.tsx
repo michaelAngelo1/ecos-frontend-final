@@ -30,7 +30,6 @@ const TabIcon = ({ icon, color, name, focused }: IconProps) => {
 };
 
 const TabsLayout = () => {
-  const [selected, setSelected] = useState(true);
 
   return (
     <>

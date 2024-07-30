@@ -35,6 +35,12 @@ const ChatLayout = () => {
             headerShown: false,
           }}
         />
+        <Stack.Screen
+          name="chatMessageWrapper"
+          options={{
+            headerShown: false,
+          }}
+        />
       </Stack>
     </>
   );

@@ -83,15 +83,21 @@ const paymentProcess = () => {
             payment_proof_image,
             payment_total: 1000000, 
           })
-          .then(() => {
-            router.push("/pendingApproval");
+          .then((res) => {
+            console.log('CUSTOMER PAYMENT ID: ', res.data.response.customer_payment_id);
+            router.replace({
+              pathname: "/pendingPaymentVerif",
+              params: {
+                customer_order_id: customer_order_id,
+                customer_payment_id: res.data.response.customer_payment_id
+              },
+            });
           });
-        console.log('PAYMENT RESPONSE: ', newPaymentHeader);
       }
     } catch (e) {
       console.log("error upload image", e);
     }
-    router.push("/pendingPaymentVerif");
+    // router.push("/pendingPaymentVerif");
   };
 
   useEffect(() => {

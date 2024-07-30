@@ -1,4 +1,6 @@
+import { customerOrderHeaderByUserIdInstance, driverOrderHeaderByIdInstance } from "@/app/config/axiosConfig";
 import { styles } from "@/app/config/Fonts";
+import CustomButton from "@/components/CustomButton";
 import Maps from "@/components/Maps";
 import icons from "@/constants/icons";
 import useGetAvailableDrivers from "@/hooks/useGetAvailableDrivers";
@@ -7,6 +9,11 @@ import useGetUserData from "@/hooks/useGetUserData";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { Marker } from "react-native-maps";
+
+interface CustomerOrderIdProp {
+  customerOrderId: string
+}
 
 export default function CustomerHome() {
   const { token } = useGetToken();
@@ -25,13 +32,57 @@ export default function CustomerHome() {
     setCurrentDate(date);
   };
 
+  const [driverOrderId, setDriverOrderId] = useState<string>();
+  const [hasOrdered, setHasOrdered] = useState<boolean>(false);
+  const [chosenDriver, setChosenDriver] = useState({
+    driver_id: '',
+    order_id: '',
+    user: {
+      email: '',
+      user_detail: {
+        name: '',
+        phone: '',
+        street: '',
+        profile_image: '',
+      }
+    }
+  })
+  const fetchChosenDriver = async () => {
+    try {
+      console.log('masuk fetch chosen driver');
+      const response = await customerOrderHeaderByUserIdInstance(token!, userId).get('')
+        .then(async (res) => {
+          if(res.data.response.customer_order_header.length > 0) {
+            console.log('masuk if');
+
+            setHasOrdered(true);
+            console.log('RESPONSE ORDER ID: ', res.data.response.customer_order_header[0].driver_order_header);
+            const order_id = res.data.response.customer_order_header[0].driver_order_header.order_id;
+            const chosenDriver = await driverOrderHeaderByIdInstance(token!, order_id).get('');
+            console.log('CHOSEN DRIVER: ', chosenDriver.data.response);
+            setChosenDriver(chosenDriver.data.response);
+          } else { 
+            console.log('masuk else');
+            setHasOrdered(false);
+          }
+        })
+      // console.log('RESPONSE FETCH CHOSEN DRIVER: ', response.data.response.customer_order_header[0].driver_order_header.order_id);
+      // console.log('fetched order id: ', response.data.response.driver_order_header);
+      // setDriverOrderId(response.data.response.customer_order_header[0].driver_order_header.order_id);
+    } catch (e) {
+      console.log('error fetch chosen driver: ', e);
+    }
+  }
+
   const { precise_address, usePrecise } = useLocalSearchParams();
   useEffect(() => {
+    fetchChosenDriver();
     getCurrentDate();
-  }, []);
+  }, [token, userId]);
 
   console.log('USER ID ON CUST HOME: ', userId);
   console.log('USER ON USEGETUSERDATA: ', user);
+  console.log('AVAILABLE DRIVERS: ', availableDrivers);
 
   return (
     <>
@@ -88,7 +139,53 @@ export default function CustomerHome() {
       </View>
       <ScrollView>
         <View className="flex flex-col justify-start items-start px-4">
-          {availableDrivers.map((driver) => {
+          {
+          hasOrdered ?
+          <>
+            <Text className="text-sm mb-1" style={styles.montserratRegular}>You ordered this driver</Text>
+            <View className="w-full h-40 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm mb-3 p-3">
+              <View className="flex flex-col space-x-2">
+                <View className="flex flex-row space-x-3">
+                  <View className="w-16 h-16 rounded-full">
+                    <Image
+                      className="w-full h-full rounded-full"
+                      source={{
+                        uri: `http://ecos.joheee.com:4050/public/user/${chosenDriver.user.user_detail.profile_image}`,
+                      }}
+                    />
+                  </View>
+                  <View className="flex flex-col">
+                    <Text className="text-black text-lg" style={styles.montserratBold}>{chosenDriver.user.user_detail.name}</Text>
+                    <Text className='text-black text-sm' style={styles.montserratRegular}>{chosenDriver.user.email}</Text>
+                    <Text className='text-black text-sm' style={styles.montserratRegular}>{chosenDriver.user.user_detail.phone}</Text>
+                    <Text className='text-black text-sm' style={styles.montserratRegular}>{chosenDriver.user.user_detail.street}</Text>
+                  </View>
+                </View>
+                <View className="flex-row space-x-3">
+                  <View className="w-1/3"></View>
+                  <View className="w-1/3"></View>
+                  <TouchableOpacity
+                    activeOpacity={0.6}
+                    className="px-3 py-2 bg-green rounded-2xl items-center justify-center"
+                    onPress={() => router.push({
+                      pathname: '/chosenDriverDetail',
+                      params: {
+                        driver_name: chosenDriver.user.user_detail.name,
+                        driver_email: chosenDriver.user.email,
+                        driver_phone: chosenDriver.user.user_detail.phone,
+                        driver_street: chosenDriver.user.user_detail.street
+                      }
+                    })}
+                  >
+                    <Text style={styles.montserratSemiBold} className="text-white">Details</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </>
+
+          :
+          availableDrivers.map((driver) => {
             const orderWaveEndDate: Date = convertDateToIso(
               driver.admin_time_block.end_date
             );

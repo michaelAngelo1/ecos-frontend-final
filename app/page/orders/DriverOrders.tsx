@@ -81,7 +81,7 @@ export default function DriverOrders() {
                 const orderWaveEndDate: Date = convertDateToIso(
                   orderWave.end_date
                 );
-                if (currentDate < orderWaveEndDate) {
+                if (currentDate <= orderWaveEndDate) {
                   return (
                     <View
                       key={orderWave.time_block_id}

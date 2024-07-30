@@ -34,6 +34,7 @@ const driverDetail = () => {
     }
   };
 
+  const [customerOrderId, setCustomerOrderId] = useState('');
   const handleOrderFromCustomer = async (addNanny: number) => {
     let userToken = await getToken();
     console.log(
@@ -54,6 +55,7 @@ const driverDetail = () => {
         "response order customer: ",
         response.data.response.customer_order_id
       );
+      setCustomerOrderId(response.data.response.customer_order_id);
       router.replace({
         pathname: "/paymentProcess",
         params: {
@@ -67,8 +69,10 @@ const driverDetail = () => {
 
   const [isNannyAdded, setIsNannyAdded] = useState(false);
 
+  console.log('CUSTOMER_ORDER_ID: ', customerOrderId);
+
   return (
-    <SafeAreaView className="bg-white h-full px-4 py-8">
+    <SafeAreaView className="bg-[#fff] h-full px-4 py-8">
       <Text className="text-2xl text-black" style={styles.montserratBold}>
         Driver Details
       </Text>
@@ -154,6 +158,12 @@ const driverDetail = () => {
             textColor="text-white"
             bgColor="bg-green"
             handlePress={() => handleOrderFromCustomer(isNannyAdded ? 1 : 0)}
+          />
+          <CustomButton
+            actionText="Back"
+            textColor="text-green"
+            bgColor="bg-white"
+            handlePress={() => router.push('/home')}
           />
         </View>
       </ScrollView>

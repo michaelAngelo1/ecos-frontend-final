@@ -153,3 +153,13 @@ export const customerOrderHeaderInstance = (token: string) =>
       Authorization: `Bearer ${token}`,
     },
   });
+
+  export const customerOrderHeaderByUserIdInstance = (token: string, id: string) =>
+    axios.create({
+      baseURL: `http://ecos.joheee.com:4040/customer-order-header/user/${id}`,
+      headers: {
+        accept: "*/*",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });

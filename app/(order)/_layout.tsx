@@ -49,6 +49,12 @@ const OrderLayout = () => {
             headerShown: false
           }}
         />
+        <Stack.Screen
+          name="chosenDriverDetail"
+          options={{
+            headerShown: false
+          }}
+        />
       </Stack>
     </>
   )

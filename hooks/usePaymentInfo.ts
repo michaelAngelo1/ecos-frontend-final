@@ -16,14 +16,17 @@ export default function usePaymentInfo() {
   const { token } = useGetToken();
 
   const [data, setData] = useState<PaymentInterface | null>(null);
+  const [loading, setLoading] = useState<boolean>(true)
   async function refetch() {
+    setLoading(true)
     const res = await paymentInstance(token!).get("");
     setData(res.data.response);
+    setLoading(false)
   }
 
   useEffect(() => {
     refetch();
   }, [token]);
 
-  return { name, setName, account_number, set_account_number, refetch, data };
+  return { name, setName, account_number, set_account_number, refetch, data, loading };
 }

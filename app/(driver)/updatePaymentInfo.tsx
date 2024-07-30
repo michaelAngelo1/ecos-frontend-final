@@ -11,11 +11,12 @@ import useGetToken from "@/hooks/useGetToken";
 import useErrorMessage from "@/hooks/useErrorMessage";
 import { router } from "expo-router";
 import { paymentInstance } from "../config/axiosConfig";
+import OverlayLoading from "@/components/OverlayLoading";
 
 export default function UpdatePaymentInfo() {
-  const [loading, setLoading] = useState<boolean>(false);
+  const [globalLoading, setLoading] = useState<boolean>(false);
   const { token } = useGetToken();
-  const { name, setName, account_number, set_account_number, data } =
+  const { name, setName, account_number, set_account_number, data, loading } =
     useRegisterPaymentInfo();
   const { error, handleErrorMessage, setSnackbarVisible, snackbarVisible } =
     useErrorMessage();
@@ -46,8 +47,7 @@ export default function UpdatePaymentInfo() {
         account_number,
       });
       router.push("(tabs)/profile");
-    } catch (error:any) {
-      console.log(error.response)
+    } catch (error: any) {
     } finally {
       setLoading(false);
     }
@@ -55,14 +55,15 @@ export default function UpdatePaymentInfo() {
 
   return (
     <SafeAreaView className="bg-[#fff] h-full">
-      {loading ? <ModalLoading /> : null}
+      {globalLoading ? <ModalLoading /> : null}
+      {loading ? <OverlayLoading /> : null}
       <ScrollView>
         <View className="flex flex-col min-h-[100vh] justify-center items-center px-4">
           <Text
             className="text-4xl text-green text-center"
             style={styles.montserratRegular}
           >
-            Vehicle Information
+            Update Payment Information
           </Text>
 
           <FormField

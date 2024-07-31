@@ -21,6 +21,8 @@ export default function DriverOrders() {
   const { userId } = useGetUserData(token);
   const { orderWaveList, loading } = useGetOrderWave(token);
 
+  console.log('USER ID ON CUSTOMER ORDERS: ', userId);
+  
   function convertDateToIso(dateValue: string): Date {
     const formattedDateString = dateValue.replace(/\//g, "-");
     return new Date(formattedDateString);
@@ -53,6 +55,8 @@ export default function DriverOrders() {
     }
   };
 
+  console.log('ORDERWAVE LIST: ', orderWaveList);
+
   return (
     <>
       <View className="flex-row gap-1 mt-4 ml-5 mb-4">
@@ -81,6 +85,8 @@ export default function DriverOrders() {
                 const orderWaveEndDate: Date = convertDateToIso(
                   orderWave.end_date
                 );
+                console.log('current date: ', currentDate);
+                console.log('orderwave enddate: ', orderWaveEndDate);
                 if (currentDate <= orderWaveEndDate) {
                   return (
                     <View
@@ -138,6 +144,7 @@ export default function DriverOrders() {
             )}
           </View>
         </ScrollView>
+
         <View className="flex flex-col justify-start items-start px-4">
           <Text className="text-xl ml-2 mb-1" style={styles.montserratSemiBold}>
             Your users this month
@@ -146,6 +153,7 @@ export default function DriverOrders() {
             July 2024
           </Text>
         </View>
+
         <ScrollView className="min-h-[365px] overflow-auto">
           <View className="flex flex-col justify-start items-start px-4">
             <View className="relative w-full h-28 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm">

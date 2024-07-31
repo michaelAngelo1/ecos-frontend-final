@@ -1,6 +1,7 @@
 import { driverOrderHeaderInstance } from "@/app/config/axiosConfig";
 import { styles } from "@/app/config/Fonts";
 import CustomModal from "@/components/CustomModal";
+import OverlayLoading from "@/components/OverlayLoading";
 import useGetOrderWave from "@/hooks/useGetOrderWave";
 import useGetToken from "@/hooks/useGetToken";
 import useGetUserData from "@/hooks/useGetUserData";
@@ -21,8 +22,8 @@ export default function DriverOrders() {
   const { userId } = useGetUserData(token);
   const { orderWaveList, loading } = useGetOrderWave(token);
 
-  console.log('USER ID ON CUSTOMER ORDERS: ', userId);
-  
+  console.log("USER ID ON CUSTOMER ORDERS: ", userId);
+
   function convertDateToIso(dateValue: string): Date {
     const formattedDateString = dateValue.replace(/\//g, "-");
     return new Date(formattedDateString);
@@ -55,7 +56,9 @@ export default function DriverOrders() {
     }
   };
 
-  console.log('ORDERWAVE LIST: ', orderWaveList);
+  console.log("ORDERWAVE LIST: ", orderWaveList);
+
+  if (loading) return <OverlayLoading />;
 
   return (
     <>
@@ -82,11 +85,9 @@ export default function DriverOrders() {
               />
             ) : (
               orderWaveList.map((orderWave) => {
-                const orderWaveEndDate: Date = convertDateToIso(
-                  orderWave.end_date
-                );
-                console.log('current date: ', currentDate);
-                console.log('orderwave enddate: ', orderWaveEndDate);
+                const orderWaveStartDate: Date = new Date(orderWave.start_date);
+                const orderWaveEndDate: Date = new Date(orderWave.end_date);
+                console.log(currentDate <= orderWaveEndDate);
                 if (currentDate <= orderWaveEndDate) {
                   return (
                     <View

@@ -33,7 +33,7 @@ export default function useGetOrderWave(token: string | undefined) {
 
   useEffect(() => {
     refetch();
-  }, []);
+  }, [token]);
 
   return { orderWaveList, refetch, loading };
 }

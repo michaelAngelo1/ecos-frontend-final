@@ -1,11 +1,11 @@
-import { driverOrderHeaderInstance } from "@/app/config/axiosConfig";
+import { driverOrderHeaderInstance, getOrderIdByUserId } from "@/app/config/axiosConfig";
 import { styles } from "@/app/config/Fonts";
 import CustomModal from "@/components/CustomModal";
 import OverlayLoading from "@/components/OverlayLoading";
 import useGetOrderWave from "@/hooks/useGetOrderWave";
 import useGetToken from "@/hooks/useGetToken";
 import useGetUserData from "@/hooks/useGetUserData";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   ScrollView,
@@ -13,6 +13,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { Image } from "expo-image";
 
 export default function DriverOrders() {
   const [modalVisible, setModalVisible] = useState(false);
@@ -56,7 +57,50 @@ export default function DriverOrders() {
     }
   };
 
-  console.log("ORDERWAVE LIST: ", orderWaveList);
+  console.log("ORDERWAVE LST: ", orderWaveList);
+
+  // FETCH PASSENGERS OF DRIVER
+  console.log('USER ID ON DRIVERORDERS: ', userId);
+  const [passengers, setPassengers] = useState([{
+    customer_order_id: '',
+    order_id: '',
+    user_id: '',
+    is_ongoing: false,
+    user: {
+      user_id: '',
+      email: '',
+      user_detail: {
+        user_id: '',
+        profile_image: '',
+        phone: '',
+        name: '',
+        street: '',
+        grade: 0,
+        is_admin_approved: false,
+      },
+      customer_detail: {
+        user_id: '',
+        binusian_id: '',
+        parent_phone: ''
+      }
+    }
+  }])
+
+  const fetchPassengers = async () => {
+    try {
+      const response = await getOrderIdByUserId(token!, userId).get('');
+      console.log('response fetch passengers: ', response.data.response.driver_order_header[0].customer_order_header[0]);
+      setPassengers(response.data.response.driver_order_header[0].customer_order_header);
+    } catch (e) {
+      console.log('error fetch passengers: ', e.response);
+    }
+  }
+
+  console.log('LIST OF PASSENGERS: ', passengers);
+
+  useEffect(() => {
+    fetchPassengers();
+  }, [token, userId])
 
   if (loading) return <OverlayLoading />;
 
@@ -155,73 +199,45 @@ export default function DriverOrders() {
           </Text>
         </View>
 
-        <ScrollView className="min-h-[365px] overflow-auto">
+        <ScrollView className="min-h-[325px] overflow-auto">
           <View className="flex flex-col justify-start items-start px-4">
-            <View className="relative w-full h-28 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm">
-              <View className="absolute top-4 left-4 w-14 h-14 bg-green rounded-full"></View>
-              <Text
-                className="absolute top-0 left-[70px] text-black text-lg p-4"
-                style={styles.montserratSemiBold}
-              >
-                Max Quok
-              </Text>
-              <Text
-                className="absolute top-7 left-[70px] text-black text-sm p-4"
-                style={styles.montserratRegular}
-              >
-                +62 818 0313 3100
-              </Text>
-              <Text
-                className="absolute top-12 left-[70px] text-black text-sm p-4"
-                style={styles.montserratRegular}
-              >
-                Jl. Kendangsari 1 No. 5
-              </Text>
-            </View>
 
-            <View className="relative w-full h-28 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm mt-3">
-              <View className="absolute top-4 left-4 w-14 h-14 bg-green rounded-full"></View>
-              <Text
-                className="absolute top-0 left-[70px] text-black text-lg p-4"
-                style={styles.montserratSemiBold}
-              >
-                Steven Halim
-              </Text>
-              <Text
-                className="absolute top-7 left-[70px] text-black text-sm p-4"
-                style={styles.montserratRegular}
-              >
-                +62 828 0316 2100
-              </Text>
-              <Text
-                className="absolute top-12 left-[70px] text-black text-sm p-4"
-                style={styles.montserratRegular}
-              >
-                Jl. Mulyosari 2 No. 3
-              </Text>
-            </View>
+            {
+              passengers.length > 0 ?
+                passengers.map((passenger) => (
+                <View key={passenger.customer_order_id} className="relative w-full h-28 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm">
+                  <View className="absolute top-4 left-4 w-14 h-14 bg-green rounded-full">
+                    <Image
+                      className="w-full h-full rounded-full mb-4"
+                      source={{
+                        uri: `http://ecos.joheee.com:4050/public/user/${passenger.user.user_detail.profile_image}`,
+                      }} // Replace with actual driver image
+                    />
+                  </View>
+                  <Text
+                    className="absolute top-0 left-[70px] text-black text-lg p-4"
+                    style={styles.montserratSemiBold}
+                  >
+                    {passenger.user.user_detail.name}
+                  </Text>
+                  <Text
+                    className="absolute top-7 left-[70px] text-black text-sm p-4"
+                    style={styles.montserratRegular}
+                  >
+                    {passenger.user.user_detail.phone}
+                  </Text>
+                  <Text
+                    className="absolute top-12 left-[70px] text-black text-sm p-4"
+                    style={styles.montserratRegular}
+                  >
+                    {passenger.user.user_detail.street}
+                  </Text>
+                </View>
+                ))
+              :
+                <Text>No passengers yet</Text>
+            }
 
-            <View className="relative w-full h-28 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm mt-3">
-              <View className="absolute top-4 left-4 w-14 h-14 bg-green rounded-full"></View>
-              <Text
-                className="absolute top-0 left-[70px] text-black text-lg p-4"
-                style={styles.montserratSemiBold}
-              >
-                Mike Angelo
-              </Text>
-              <Text
-                className="absolute top-7 left-[70px] text-black text-sm p-4"
-                style={styles.montserratRegular}
-              >
-                +62 828 0316 2100
-              </Text>
-              <Text
-                className="absolute top-12 left-[70px] text-black text-sm p-4"
-                style={styles.montserratRegular}
-              >
-                Jl. Galaxy Bumi Permai V No. 5
-              </Text>
-            </View>
           </View>
         </ScrollView>
         <View className="flex flex-col justify-start items-start px-4">

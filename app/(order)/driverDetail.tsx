@@ -19,7 +19,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { customerOrderHeaderInstance } from "../config/axiosConfig";
 
 const driverDetail = () => {
-  const { userId, orderId, name, email, phone, street } =
+  const { userId, orderId, profileImage, name, email, phone, street, vehicleCapacity, vehicleCategory, vehicleImage, vehicleModel, vehicleNumberPlate} =
     useLocalSearchParams();
 
   const getToken = async () => {
@@ -81,7 +81,9 @@ const driverDetail = () => {
         <View className="flex flex-col items-center mt-8">
           <Image
             className="w-48 h-48 rounded-full mb-4"
-            source={images.driver_dummy} // Replace with actual driver image
+            source={{
+              uri: `http://ecos.joheee.com:4050/public/user/${profileImage}`,
+            }} // Replace with actual driver image
           />
           <View className="flex-row gap-1 items-center justify-center">
             <Text
@@ -106,7 +108,7 @@ const driverDetail = () => {
                 className="text-base text-black"
                 style={styles.montserratMedium}
               >
-                5 persons
+                {vehicleCapacity}
               </Text>
             </View>
             <View className="flex-row gap-1">
@@ -136,6 +138,15 @@ const driverDetail = () => {
                 Rp1.200.000/month
               </Text>
             </View>
+            <Image
+              className="w-48 h-48 rounded-full mb-4 mt-3"
+              source={{
+                uri: `http://ecos.joheee.com:4050/public/vehicle/${vehicleImage}`,
+              }} // Replace with actual driver image
+            />
+            <Text className="text-base" style={styles.montserratMedium}>{vehicleModel}</Text>
+            <Text className="text-base" style={styles.montserratMedium}>{vehicleCategory}</Text>
+            <Text className="text-base" style={styles.montserratMedium}>{vehicleNumberPlate}</Text>
             <View className="flex-row gap-1">
               <Text
                 className="text-base text-black mt-2"

@@ -154,9 +154,19 @@ export const customerOrderHeaderInstance = (token: string) =>
     },
   });
 
-  export const customerOrderHeaderByUserIdInstance = (token: string, id: string) =>
+export const customerOrderHeaderByUserIdInstance = (token: string, id: string) =>
+  axios.create({
+    baseURL: `http://ecos.joheee.com:4040/customer-order-header/user/${id}`,
+    headers: {
+      accept: "*/*",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  export const getOrderIdByUserId = (token: string, id: string) =>
     axios.create({
-      baseURL: `http://ecos.joheee.com:4040/customer-order-header/user/${id}`,
+      baseURL: `http://ecos.joheee.com:4040/driver-order-header/driver/${id}`,
       headers: {
         accept: "*/*",
         "Content-Type": "application/json",

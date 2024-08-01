@@ -44,6 +44,13 @@ export default function CustomerHome() {
         phone: '',
         street: '',
         profile_image: '',
+      },
+      driver_detail: {
+        vehicle_capacity: 0,
+        vehicle_category: '',
+        vehicle_image: '',
+        vehicle_model: '',
+        vehicle_number_plate: ''
       }
     }
   })
@@ -56,7 +63,7 @@ export default function CustomerHome() {
             console.log('masuk if');
 
             setHasOrdered(true);
-            console.log('RESPONSE ORDER ID: ', res.data.response.customer_order_header[0].driver_order_header);
+            // console.log('RESPONSE ORDER ID: ', res.data.response.customer_order_header[0].driver_order_header);
             const order_id = res.data.response.customer_order_header[0].driver_order_header.order_id;
             const chosenDriver = await driverOrderHeaderByIdInstance(token!, order_id).get('');
             console.log('CHOSEN DRIVER: ', chosenDriver.data.response);
@@ -170,10 +177,16 @@ export default function CustomerHome() {
                     onPress={() => router.push({
                       pathname: '/chosenDriverDetail',
                       params: {
+                        driver_profile_image: chosenDriver.user.user_detail.profile_image,
                         driver_name: chosenDriver.user.user_detail.name,
                         driver_email: chosenDriver.user.email,
                         driver_phone: chosenDriver.user.user_detail.phone,
-                        driver_street: chosenDriver.user.user_detail.street
+                        driver_street: chosenDriver.user.user_detail.street,
+                        vehicle_capacity: chosenDriver.user.driver_detail.vehicle_capacity,
+                        vehicle_category: chosenDriver.user.driver_detail.vehicle_category,
+                        vehicle_image: chosenDriver.user.driver_detail.vehicle_image,
+                        vehicle_model: chosenDriver.user.driver_detail.vehicle_model,
+                        vehicle_number_plate: chosenDriver.user.driver_detail.vehicle_number_plate
                       }
                     })}
                   >
@@ -185,82 +198,94 @@ export default function CustomerHome() {
           </>
 
           :
-          availableDrivers.map((driver) => {
-            const orderWaveEndDate: Date = convertDateToIso(
-              driver.admin_time_block.end_date
-            );
-            if (currentDate < orderWaveEndDate) {
-              return (
-                <View
-                  key={driver.order_id}
-                  className="relative w-full h-32 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm mb-3 p-3"
-                >
-                  <View className="flex flex-row gap-3">
-                    <View className="w-14 h-14 bg-green rounded-full flex items-center justify-center">
-                      <Image
-                        className="w-12 h-12 rounded-full"
-                        source={{
-                          uri: `http://ecos.joheee.com:4050/public/user/${driver.user.user_detail.profile_image}`,
-                        }}
-                      />
-                    </View>
-                    <View className="flex flex-col">
-                      <Text
-                        className="text-black text-lg"
-                        style={styles.montserratSemiBold}
-                      >
-                        {driver.user.user_detail.name}
-                      </Text>
-                      <Text
-                        className=" text-black text-sm"
-                        style={styles.montserratRegular}
-                      >
-                        {driver.user.email}
-                      </Text>
-                      <Text
-                        className=" text-black text-sm"
-                        style={styles.montserratRegular}
-                      >
-                        {driver.user.user_detail.phone}
-                      </Text>
-                      <Text
-                        className=" text-black text-sm"
-                        style={styles.montserratRegular}
-                      >
-                        {driver.user.user_detail.street}
-                      </Text>
-                    </View>
-                  </View>
-                  <TouchableOpacity
-                    className="absolute bottom-3 right-3 bg-green w-[104px] rounded-[20px] mt-3 p-2"
-                    activeOpacity={0.7}
-                    onPress={() =>
-                      router.push({
-                        pathname: "/driverDetail",
-                        params: {
-                          name: driver.user.user_detail.name,
-                          email: driver.user.email,
-                          phone: driver.user.user_detail.phone,
-                          street: driver.user.user_detail.street,
-                          orderId: driver.order_id,
-                          userId: userId,
-                        },
-                      })
-                    }
-                  >
-                    {
-                      <Text
-                        className="text-white text-sm text-center"
-                        style={styles.montserratMedium}
-                      >
-                        Order
-                      </Text>
-                    }
-                  </TouchableOpacity>
-                </View>
+          availableDrivers.length > 0 ?
+            availableDrivers.map((driver) => {
+              const orderWaveEndDate: Date = convertDateToIso(
+                driver.admin_time_block.end_date
               );
-            }
-          })}
+              if (currentDate < orderWaveEndDate) {
+                return (
+                  <View
+                    key={driver.order_id}
+                    className="relative w-full h-32 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm mb-3 p-3"
+                  >
+                    <View className="flex flex-row gap-3">
+                      <View className="w-14 h-14 bg-green rounded-full flex items-center justify-center">
+                        <Image
+                          className="w-12 h-12 rounded-full"
+                          source={{
+                            uri: `http://ecos.joheee.com:4050/public/user/${driver.user.user_detail.profile_image}`,
+                          }}
+                        />
+                      </View>
+                      <View className="flex flex-col">
+                        <Text
+                          className="text-black text-lg"
+                          style={styles.montserratSemiBold}
+                        >
+                          {driver.user.user_detail.name}
+                        </Text>
+                        <Text
+                          className=" text-black text-sm"
+                          style={styles.montserratRegular}
+                        >
+                          {driver.user.email}
+                        </Text>
+                        <Text
+                          className=" text-black text-sm"
+                          style={styles.montserratRegular}
+                        >
+                          {driver.user.user_detail.phone}
+                        </Text>
+                        <Text
+                          className=" text-black text-sm"
+                          style={styles.montserratRegular}
+                        >
+                          {driver.user.user_detail.street}
+                        </Text>
+                      </View>
+                    </View>
+                    <TouchableOpacity
+                      className="absolute bottom-3 right-3 bg-green w-[104px] rounded-[20px] mt-3 p-2"
+                      activeOpacity={0.7}
+                      onPress={() =>
+                        router.push({
+                          pathname: "/driverDetail",
+                          params: {
+                            profileImage: driver.user.user_detail.profile_image,
+                            name: driver.user.user_detail.name,
+                            email: driver.user.email,
+                            phone: driver.user.user_detail.phone,
+                            street: driver.user.user_detail.street,
+                            orderId: driver.order_id,
+                            userId: userId,
+                            vehicleCapacity: driver.user.driver_detail.vehicle_capacity,
+                            vehicleCategory: driver.user.driver_detail.vehicle_category,
+                            vehicleImage: driver.user.driver_detail.vehicle_image,
+                            vehicleModel: driver.user.driver_detail.vehicle_model,
+                            vehicleNumberPlate: driver.user.driver_detail.vehicle_number_plate
+                          },
+                        })
+                      }
+                    >
+                      {
+                        <Text
+                          className="text-white text-sm text-center"
+                          style={styles.montserratMedium}
+                        >
+                          Order
+                        </Text>
+                      }
+                    </TouchableOpacity>
+                  </View>
+                );
+              }
+            })
+          :
+          <View className="w-full h-11 items-center justify-center">
+            <Text className='text-sm' style={styles.montserratRegular}>No drivers yet</Text>
+          </View>
+          }
 
           {/* <View className='relative w-full h-32 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm mt-3'>
                 <View className='absolute top-4 left-4 w-14 h-14 bg-green rounded-full'></View>

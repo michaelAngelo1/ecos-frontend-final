@@ -39,8 +39,10 @@ export default function AdminOrders() {
 
     try {
       const response = await adminTimeBlockInstance(token!).post("", {
-        start_date,
-        end_date,
+        start_date: start_date,
+        end_date: end_date,
+        start_pickup: start_date,
+        end_pickup: end_date
       });
       console.log("response submit date: ", response.data.response);
       console.log("successfully created order wave");

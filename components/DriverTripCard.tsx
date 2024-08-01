@@ -6,14 +6,33 @@ import { Image } from 'expo-image';
 import { styles } from '@/app/config/Fonts';
 import { router } from 'expo-router';
 
-const DriverTripCard = () => {
+interface DriverTripCardProps {
+  order_id: string
+  // driver info
+  driver_image: string
+  driver_name: string
+  driver_phone: string
+  driver_street: string
+
+}
+
+const DriverTripCard = ({order_id, driver_image, driver_name, driver_phone, driver_street} : DriverTripCardProps) => {
 
   const { token, checkAuthToken } = useGetToken();
   const { role, user, loading } = useGetUserData(token);
 
   return (
     <TouchableOpacity
-      onPress={() => router.push('/tripDetail')}
+      onPress={() => router.push({
+        pathname: '/tripDetail',
+        params: {
+          order_id: order_id,
+          driver_image: driver_image,
+          driver_name: driver_name,
+          driver_phone: driver_phone,
+          driver_street: driver_street
+        }
+      })}
       activeOpacity={0.6}
     >
       <View className='w-fit h-40 mx-4 p-4 bg-[#fff] rounded-2xl border border-gray-200 mb-3'>
@@ -25,7 +44,9 @@ const DriverTripCard = () => {
             />
             
             <View className='flex flex-col'>
-              <Text className='text-base' style={styles.montserratSemiBold}>Monthly Trip #ID</Text>
+              <View className=''>
+                <Text className='text-base' style={styles.montserratSemiBold}>Monthly Trip #{order_id.substring(0, 8)}</Text>
+              </View>
               <Text className='text-sm' style={styles.montserratRegular}>July 2024</Text>
               <Text className='text-sm' style={styles.montserratRegular}>Passenger(s): 3 persons</Text>
               <Text className='text-sm' style={styles.montserratRegular}>To: Binus School Bekasi</Text>

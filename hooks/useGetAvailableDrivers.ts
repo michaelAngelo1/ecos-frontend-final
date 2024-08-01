@@ -17,6 +17,13 @@ export default function useGetAvailableDrivers(token: string | undefined) {
           name: "",
           street: "",
         },
+        driver_detail: {
+          vehicle_capacity: 0,
+          vehicle_category: '',
+          vehicle_image: '',
+          vehicle_model: '',
+          vehicle_number_plate: ''
+        }
       },
       admin_time_block: {
         end_date: "",
@@ -33,7 +40,7 @@ export default function useGetAvailableDrivers(token: string | undefined) {
         throw new Error("Token is undefined");
       }
       const response = await driverOrderHeaderInstance(token).get("");
-      console.log("response available drivers: ", response.data.response);
+      console.log("response available drivers: ", response.data.response[0].user.driver_detail);
       setAvailableDrivers(response.data.response);
     } catch (e: any) {
       console.log("error fetch available drivers: ", e.response);

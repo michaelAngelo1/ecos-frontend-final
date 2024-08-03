@@ -91,6 +91,7 @@ export default function CustomerHome() {
   console.log('USER ON USEGETUSERDATA: ', user);
   console.log('AVAILABLE DRIVERS: ', availableDrivers);
 
+
   return (
     <>
       <View className="flex-row gap-1 mt-4 ml-5 mb-4">
@@ -110,26 +111,9 @@ export default function CustomerHome() {
         </Text>
         <View className="flex-row gap-2 mb-2 items-center p-2">
           <Image className="w-6 h-6" source={icons.mylocation_icon} />
-          <TouchableOpacity
-            onPress={() =>
-              router.push({
-                pathname: "/locationDetail",
-                params: {
-                  customer_address: user?.user_detail.street,
-                },
-              })
-            }
-          >
-            {usePrecise ? (
-              <Text className="text-xl" style={styles.montserratBold}>
-                {precise_address}
-              </Text>
-            ) : (
-              <Text className="text-xl" style={styles.montserratBold}>
-                {user?.user_detail.street}
-              </Text>
-            )}
-          </TouchableOpacity>
+          <Text className="text-xl" style={styles.montserratBold}>
+            {user?.user_detail.street}
+          </Text>
         </View>
         <View className="w-96 h-52 bg-white rounded-xl">
           <Maps />

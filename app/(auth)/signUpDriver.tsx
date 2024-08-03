@@ -1,10 +1,10 @@
-import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import { Pressable, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { styles } from "./../config/Fonts";
 import FormField from "@/components/FormField";
 import CustomButton from "@/components/CustomButton";
-import { Link, router } from "expo-router";
+import { Link, router, useLocalSearchParams } from "expo-router";
 import { SignUpDriverProps } from "../config/Interface";
 import { authInstance, userDetailInstance } from "../config/axiosConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -67,7 +67,7 @@ const SignUpDriver = () => {
         email: email,
         name: firstName,
         phone: phoneNumber,
-        street: pickUpAddress,
+        street: preciseAddress,
         password: password,
         binusian_id: binusianId,
         grade: 0,
@@ -100,6 +100,8 @@ const SignUpDriver = () => {
       setLoading(false);
     }
   };
+
+  const { preciseAddress } = useLocalSearchParams();
 
   return (
     <SafeAreaView className="bg-[#fff] h-full">
@@ -152,7 +154,7 @@ const SignUpDriver = () => {
             otherStyles="mt-3"
             keyboardType="numeric"
           />
-          <FormField
+          {/* <FormField
             title="your address"
             value={form.pickUpAddress}
             handleChangeText={(e: string) =>
@@ -160,7 +162,26 @@ const SignUpDriver = () => {
             }
             otherStyles="mt-3"
             keyboardType="pickUpAddress"
-          />
+          /> */}
+          {/* New Address Pinpoint */}
+          <TouchableOpacity 
+            className="w-full p-3 bg-white px-4 rounded-lg mt-3 items-start justify-center"
+            onPress={() => router.replace('/pinpointAddress')}
+            activeOpacity={0.6}
+          >
+            {
+              preciseAddress ?
+                <Text
+                  className=" text-green text-base opacity-80"
+                  style={styles.montserratRegular}
+                >{preciseAddress}</Text>
+              :
+                <Text
+                  className=" text-green text-base opacity-80"
+                  style={styles.montserratRegular}
+                >Press to enter accurate address</Text>
+            }
+          </TouchableOpacity>
           <FormField
             title="your child's Binusian ID"
             value={form.binusianId}

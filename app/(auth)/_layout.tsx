@@ -79,6 +79,12 @@ const AuthLayout = () => {
             headerShown: false,
           }}
         />
+        <Stack.Screen
+          name="pinpointAddress"
+          options={{
+            headerShown: false,
+          }}
+        />
       </Stack>
     </>
   );

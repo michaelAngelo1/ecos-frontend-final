@@ -54,28 +54,29 @@ const Maps = () => {
 
   return (
     <View>
-      <MapView
-        className="w-full h-full"
-        provider={PROVIDER_GOOGLE}
-        initialRegion={{
-          latitude: 37.78825,
-          longitude: -122.4324,
-          longitudeDelta: 0.0922,
-          latitudeDelta: 0.0421,
-        }}
-      >
-        <Marker
-          draggable
-          coordinate={coordinate}
-          onDragEnd={(e) => {
-            setCoordinate(e.nativeEvent.coordinate);
-            console.log('New coordinates:', e.nativeEvent.coordinate);
-          }}
-        />
-      </MapView>
-      {/* <Text>Latitude: {coordinate.latitude}</Text> */}
-      {/* <Text>Longitude: {coordinate.longitude}</Text> */}
-      <Text>Address: {preciseAddress}</Text>
+      {
+        longitude !== null && latitude !== null && (
+          <MapView
+            className="w-full h-full"
+            provider={PROVIDER_GOOGLE}
+            initialRegion={{
+              latitude: latitude,
+              longitude: longitude,
+              longitudeDelta: 0.0922,
+              latitudeDelta: 0.0421,
+            }}
+          >
+            <Marker
+              draggable
+              coordinate={coordinate}
+              onDragEnd={(e) => {
+                setCoordinate(e.nativeEvent.coordinate);
+                console.log('New coordinates:', e.nativeEvent.coordinate);
+              }}
+            />
+          </MapView>
+        )
+      }
     </View>
   );
 };

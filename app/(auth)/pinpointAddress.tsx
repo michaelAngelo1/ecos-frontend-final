@@ -86,7 +86,7 @@ const pinpointAddress = () => {
             </MapView>
           )
         }
-        <View className='flex flex-col w-full h-24 p-3 space-y-3'>
+        <View className='flex flex-col w-full h-28 p-3 space-y-2'>
           <Text className='text-sm' style={styles.montserratMedium}>Use two fingers to zoom. Press and hold the location marker and drag around to correct your location.</Text>
           <Text className='text-sm' style={styles.montserratMedium}>Address: </Text>
           <Text className='text-sm' style={styles.montserratRegular}>{preciseAddress}</Text>

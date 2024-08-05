@@ -194,7 +194,12 @@ const SignUpCustomer = () => {
           {/* New Address Pinpoint */}
           <TouchableOpacity 
             className="w-full p-3 bg-white px-4 rounded-lg mt-3 items-start justify-center"
-            onPress={() => router.replace('/pinpointAddress')}
+            onPress={() => router.replace({
+              pathname: '/pinpointAddress',
+              params: {
+                chosen_role: role
+              }
+            })}
             activeOpacity={0.6}
           >
             {

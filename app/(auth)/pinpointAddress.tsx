@@ -7,14 +7,14 @@ import axios from 'axios';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { styles } from '../config/Fonts';
 import CustomButton from '@/components/CustomButton';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import useGetToken from '@/hooks/useGetToken';
 import useGetUserData from '@/hooks/useGetUserData';
 
 const pinpointAddress = () => {
 
-  const { token } = useGetToken();
-  const { role } = useGetUserData(token);
+  const { chosen_role } = useLocalSearchParams();
+
 
   const [longitude, setLongitude] = useState<number | null>(null);
   const [latitude, setLatitude] = useState<number | null>(null);
@@ -95,7 +95,7 @@ const pinpointAddress = () => {
             textColor='text-white'
             handlePress={() => 
               router.replace({
-                pathname: '/signUpCustomer',
+                pathname: chosen_role == 'CUSTOMER' ? '/signUpCustomer' : '/signUpDriver',
                 params:{
                   preciseAddress: preciseAddress
                 }

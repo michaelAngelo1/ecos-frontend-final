@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 export default function useGetUserData(token: string | undefined) {
   const [role, setRole] = useState<string>("");
   const [email, setEmail] = useState<string>("");
+  const [street, setStreet] = useState<string>("");
   const [userId, setUserId] = useState<string>("");
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -21,6 +22,7 @@ export default function useGetUserData(token: string | undefined) {
       setRole(userData.role);
       setEmail(userData.email);
       setUserId(userData.user_id);
+      setStreet(userData.user_detail.street);
 
       const user = new User(
         userData.user_id,
@@ -40,5 +42,5 @@ export default function useGetUserData(token: string | undefined) {
     refetch();
   }, [token]);
 
-  return { role, email, userId, user, loading, refetch };
+  return { role, email, userId, user, street, loading, refetch };
 }

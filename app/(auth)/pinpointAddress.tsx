@@ -95,7 +95,7 @@ const pinpointAddress = () => {
             textColor='text-white'
             handlePress={() => 
               router.replace({
-                pathname: role == 'CUSTOMER' ? '/signUpCustomer' : '/signUpDriver',
+                pathname: '/signUpCustomer',
                 params:{
                   preciseAddress: preciseAddress
                 }

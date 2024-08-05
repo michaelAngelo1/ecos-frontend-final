@@ -1,4 +1,4 @@
-import { customerOrderHeaderByUserIdInstance, driverOrderHeaderByIdInstance } from "@/app/config/axiosConfig";
+import { customerOrderHeaderByUserIdInstance, driverOrderHeaderByIdInstance, getDistanceByDestinationAndOrigin } from "@/app/config/axiosConfig";
 import { styles } from "@/app/config/Fonts";
 import CustomButton from "@/components/CustomButton";
 import Maps from "@/components/Maps";
@@ -6,6 +6,7 @@ import icons from "@/constants/icons";
 import useGetAvailableDrivers from "@/hooks/useGetAvailableDrivers";
 import useGetToken from "@/hooks/useGetToken";
 import useGetUserData from "@/hooks/useGetUserData";
+import axios from "axios";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
@@ -15,9 +16,13 @@ interface CustomerOrderIdProp {
   customerOrderId: string
 }
 
+interface Distances {
+  [key: string]: string;
+}
+
 export default function CustomerHome() {
   const { token } = useGetToken();
-  const { user, userId } = useGetUserData(token);
+  const { user, userId, street } = useGetUserData(token);
   const { availableDrivers } = useGetAvailableDrivers(token);
   const [currentDate, setCurrentDate] = useState(new Date());
 
@@ -31,6 +36,8 @@ export default function CustomerHome() {
     // console.log("Date: ", date);
     setCurrentDate(date);
   };
+
+  console.log('STREET ON CUST HOME: ', street);
 
   const [driverOrderId, setDriverOrderId] = useState<string>();
   const [hasOrdered, setHasOrdered] = useState<boolean>(false);
@@ -87,6 +94,43 @@ export default function CustomerHome() {
     getCurrentDate();
   }, [token, userId]);
 
+  function encodeAlamat(alamat: string): string {
+    // Ganti spasi dengan tanda plus (+)
+    return alamat.replace(/ /g, '+');
+  }
+
+  const [distances, setDistances] = useState<Distances>({});
+  useEffect(() => {
+    availableDrivers.forEach((driver) => {
+      const calculateDistance = async () => {
+        const userAddressEncoded = encodeAlamat(street);
+        const driverAddressEncoded = encodeAlamat(driver.user.user_detail.street);
+        try {
+          const distance = await axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json?origins=${userAddressEncoded}&destinations=${driverAddressEncoded}&units=metric&avoid=tolls&key=AIzaSyA7LQ6RG8Nc1D3Hkrs0bNMROKUhSpbvPfI`);
+          console.log('distance response: ', distance);
+          console.log('distance in km: ', distance.data.rows[0].elements[0].distance.text);
+          const distanceText = distance.data.rows[0].elements[0].distance.text
+
+          setDistances((prevDistances) => ({
+            ...prevDistances,
+            [driver.order_id]: distanceText,
+          }));
+        } catch (e) {
+          console.log('failed calculate distance: ', e.response);
+        }
+      }
+      calculateDistance();
+    });
+  }, [availableDrivers, street])
+  
+  const extractAndConvert = (input: string | null | undefined): number | null => {
+    if (typeof input !== 'string') {
+      return null;
+    }
+    const numericPart = input.match(/\d+/);
+    return numericPart ? parseInt(numericPart[0], 10) : null;
+  };
+
   console.log('USER ID ON CUST HOME: ', userId);
   console.log('USER ON USEGETUSERDATA: ', user);
   console.log('AVAILABLE DRIVERS: ', availableDrivers);
@@ -111,7 +155,7 @@ export default function CustomerHome() {
         </Text>
         <View className="flex-row gap-2 mb-2 items-center p-2">
           <Image className="w-6 h-6" source={icons.mylocation_icon} />
-          <Text className="text-xl" style={styles.montserratBold}>
+          <Text className="text-sm" style={styles.montserratBold}>
             {user?.user_detail.street}
           </Text>
         </View>
@@ -186,12 +230,14 @@ export default function CustomerHome() {
             availableDrivers.map((driver) => {
               const orderWaveEndDate: Date = convertDateToIso(
                 driver.admin_time_block.end_date
-              );
-              if (currentDate < orderWaveEndDate) {
+              );           
+              const distanceInteger = extractAndConvert(distances[driver.order_id]);
+              // added check for driver 5 km radius
+              if (currentDate < orderWaveEndDate && distanceInteger! <= 5) {
                 return (
                   <View
                     key={driver.order_id}
-                    className="relative w-full h-32 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm mb-3 p-3"
+                    className="relative w-full h-36 bg-[#fff] rounded-2xl border border-gray-200 shadow-sm mb-3 p-3"
                   >
                     <View className="flex flex-row gap-3">
                       <View className="w-14 h-14 bg-green rounded-full flex items-center justify-center">
@@ -226,6 +272,12 @@ export default function CustomerHome() {
                           style={styles.montserratRegular}
                         >
                           {driver.user.user_detail.street}
+                        </Text>
+                        <Text
+                          className=" text-black text-sm"
+                          style={styles.montserratRegular}
+                        >
+                           {distances[driver.order_id]|| 'Calculating distance...'} away
                         </Text>
                       </View>
                     </View>

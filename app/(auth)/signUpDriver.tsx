@@ -131,6 +131,24 @@ const SignUpDriver = () => {
             as a Partner
           </Text>
 
+          <TouchableOpacity 
+            className="w-full p-3 bg-white px-4 rounded-lg mt-3 items-start justify-center border-2 border-green"
+            onPress={() => router.replace('/pinpointAddress')}
+            activeOpacity={0.6}
+          >
+            {
+              preciseAddress ?
+                <Text
+                  className=" text-green text-base opacity-80"
+                  style={styles.montserratSemiBold}
+                >{preciseAddress}</Text>
+              :
+                <Text
+                  className=" text-green text-base opacity-80"
+                  style={styles.montserratSemiBold}
+                >Do this first. Press to enter accurate address.</Text>
+            }
+          </TouchableOpacity>
           <FormField
             title="Fullname"
             value={form.firstName}
@@ -164,24 +182,6 @@ const SignUpDriver = () => {
             keyboardType="pickUpAddress"
           /> */}
           {/* New Address Pinpoint */}
-          <TouchableOpacity 
-            className="w-full p-3 bg-white px-4 rounded-lg mt-3 items-start justify-center"
-            onPress={() => router.replace('/pinpointAddress')}
-            activeOpacity={0.6}
-          >
-            {
-              preciseAddress ?
-                <Text
-                  className=" text-green text-base opacity-80"
-                  style={styles.montserratRegular}
-                >{preciseAddress}</Text>
-              :
-                <Text
-                  className=" text-green text-base opacity-80"
-                  style={styles.montserratRegular}
-                >Press to enter accurate address</Text>
-            }
-          </TouchableOpacity>
           <FormField
             title="your child's Binusian ID"
             value={form.binusianId}

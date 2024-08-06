@@ -8,8 +8,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { styles } from '../config/Fonts';
 import CustomButton from '@/components/CustomButton';
 import { router, useLocalSearchParams } from 'expo-router';
-import useGetToken from '@/hooks/useGetToken';
-import useGetUserData from '@/hooks/useGetUserData';
 
 const pinpointAddress = () => {
 

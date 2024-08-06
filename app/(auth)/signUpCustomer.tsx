@@ -148,6 +148,29 @@ const SignUpCustomer = () => {
             as a User
           </Text>
 
+          <TouchableOpacity 
+            className="w-full p-3 bg-white px-4 rounded-lg mt-3 items-start justify-center border-2 border-green"
+            onPress={() => router.push({
+              pathname: '/pinpointAddress',
+              params: {
+                chosen_role: role
+              }
+            })}
+            activeOpacity={0.6}
+          >
+            {
+              preciseAddress ?
+                <Text
+                  className=" text-green text-base opacity-80"
+                  style={styles.montserratRegular}
+                >{preciseAddress}</Text>
+              :
+                <Text
+                  className=" text-green text-base opacity-80"
+                  style={styles.montserratSemiBold}
+                >Do this first. Press to enter accurate address.</Text>
+            }
+          </TouchableOpacity>
           <FormField
             title="Full Name"
             value={form.firstName}
@@ -192,29 +215,6 @@ const SignUpCustomer = () => {
           /> */}
 
           {/* New Address Pinpoint */}
-          <TouchableOpacity 
-            className="w-full p-3 bg-white px-4 rounded-lg mt-3 items-start justify-center"
-            onPress={() => router.replace({
-              pathname: '/pinpointAddress',
-              params: {
-                chosen_role: role
-              }
-            })}
-            activeOpacity={0.6}
-          >
-            {
-              preciseAddress ?
-                <Text
-                  className=" text-green text-base opacity-80"
-                  style={styles.montserratRegular}
-                >{preciseAddress}</Text>
-              :
-                <Text
-                  className=" text-green text-base opacity-80"
-                  style={styles.montserratRegular}
-                >Press to enter accurate address</Text>
-            }
-          </TouchableOpacity>
           <PasswordField
             title="Enter your password"
             value={form.password}

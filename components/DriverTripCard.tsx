@@ -35,7 +35,7 @@ const DriverTripCard = ({order_id, driver_image, driver_name, driver_phone, driv
       })}
       activeOpacity={0.6}
     >
-      <View className='w-fit h-40 mx-4 p-4 bg-[#fff] rounded-2xl border border-gray-200 mb-3'>
+      <View className='w-fit h-44 mx-4 p-4 bg-[#fff] rounded-2xl border border-gray-200 mb-3'>
         <View className='flex flex-col space-y-3'>
           <View className='flex flex-row space-x-3'>
             <Image
@@ -51,7 +51,15 @@ const DriverTripCard = ({order_id, driver_image, driver_name, driver_phone, driv
               <Text className='text-sm' style={styles.montserratRegular}>Passenger(s): 3 persons</Text>
               <Text className='text-sm' style={styles.montserratRegular}>To: Binus School Bekasi</Text>
               <Text className='text-sm' style={styles.montserratRegular}>Scheduled for: 06:00 - 07:00</Text>
+              <TouchableOpacity 
+                className='bg-green p-1 items-center justify-center'
+                activeOpacity={0.7}
+                onPress={() => router.push('/testLiveTrack')}
+              >
+                <Text className='text-white' style={styles.montserratRegular}>Open Maps</Text>
+              </TouchableOpacity>
             </View>
+
 
           </View>
         </View>

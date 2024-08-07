@@ -90,7 +90,7 @@ const tripDetail = () => {
             {
               passengers.length > 0 &&
                 passengers.map((passenger) => (
-                  <View>
+                  <View key={passenger.customer_order_id}>
                     <Text style={styles.montserratMedium}>{passenger.user.user_detail.name}</Text>
                     <Text style={styles.montserratRegular}>{passenger.user.user_detail.street}</Text>
                   </View>

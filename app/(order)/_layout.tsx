@@ -55,6 +55,12 @@ const OrderLayout = () => {
             headerShown: false
           }}
         />
+         <Stack.Screen
+          name="testLiveTrack"
+          options={{
+            headerShown: false
+          }}
+        />
       </Stack>
     </>
   )

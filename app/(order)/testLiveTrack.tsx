@@ -87,13 +87,8 @@ const testLiveTrack = () => {
     }
   }
 
-  useEffect(() => {
-    (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        console.log('Permission for location denied');
-        return;
-      }
+  const updateCurrentLocation = async () => {
+    try {
       let location = await Location.getCurrentPositionAsync({});
       setLongitude(location.coords.longitude);
       setLatitude(location.coords.latitude);
@@ -102,6 +97,25 @@ const testLiveTrack = () => {
         longitude: location.coords.longitude,
       });
       getGeocodedAddress();
+    } catch (e) {
+      console.log('error get current location: ', e);
+    }
+  }
+
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        console.log('Permission for location denied');
+        return;
+      }
+      
+      updateCurrentLocation();
+
+
+      const intervalId = setInterval(updateCurrentLocation, 30000);
+      return () => clearInterval(intervalId);
+
     })();
   }, []);
 

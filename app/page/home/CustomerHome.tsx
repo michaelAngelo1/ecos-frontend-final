@@ -133,7 +133,7 @@ export default function CustomerHome() {
 
   console.log('USER ID ON CUST HOME: ', userId);
   console.log('USER ON USEGETUSERDATA: ', user);
-  console.log('AVAILABLE DRIVERS: ', availableDrivers);
+  console.log('AVAILABLE DRIVERS: ', availableDrivers[0].customer_order_header);
 
 
   return (
@@ -198,7 +198,12 @@ export default function CustomerHome() {
                 </View>
                 <View className="flex-row space-x-3">
                   <View className="w-1/3"></View>
-                  <View className="w-1/3"></View>
+                  <TouchableOpacity
+                    activeOpacity={0.6}
+                    className="px-3 py-2 bg-blue rounded-2xl items-center justify-center"
+                  >
+                    <Text style={styles.montserratSemiBold} className="text-white">Open Maps</Text>
+                  </TouchableOpacity>
                   <TouchableOpacity
                     activeOpacity={0.6}
                     className="px-3 py-2 bg-green rounded-2xl items-center justify-center"
@@ -233,7 +238,15 @@ export default function CustomerHome() {
               );           
               const distanceInteger = extractAndConvert(distances[driver.order_id]);
               // added check for driver 5 km radius
-              if (currentDate < orderWaveEndDate && distanceInteger! <= 5) {
+              // added check for driver's capacity
+              if (currentDate < orderWaveEndDate && (
+                driver.customer_order_header.length == 0 ||
+                (
+                  driver.customer_order_header.length < driver.user.driver_detail.vehicle_capacity
+                )
+              )
+                && distanceInteger! < 5
+              ) {
                 return (
                   <View
                     key={driver.order_id}
@@ -271,7 +284,7 @@ export default function CustomerHome() {
                           className=" text-black text-sm"
                           style={styles.montserratRegular}
                         >
-                          {driver.user.user_detail.street}
+                          {driver.user.user_detail.street.substring(0, 20)}
                         </Text>
                         <Text
                           className=" text-black text-sm"

@@ -30,6 +30,12 @@ export default function useGetAvailableDrivers(token: string | undefined) {
         start_date: "",
         time_block_id: "",
       },
+      customer_order_header: [
+        {
+          created_at: '',
+          customer_order_id: ''
+        }
+      ]
     },
   ]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -40,7 +46,7 @@ export default function useGetAvailableDrivers(token: string | undefined) {
         throw new Error("Token is undefined");
       }
       const response = await driverOrderHeaderInstance(token).get("");
-      console.log("response available drivers: ", response.data.response[0].user.driver_detail);
+      console.log("response available drivers: ", response.data.response[0].customer_order_header);
       setAvailableDrivers(response.data.response);
     } catch (e: any) {
       console.log("error fetch available drivers: ", e.response);

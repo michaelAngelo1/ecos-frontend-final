@@ -89,7 +89,7 @@ export default function DriverOrders() {
   const fetchPassengers = async () => {
     try {
       const response = await getOrderIdByUserId(token!, userId).get('');
-      console.log('response fetch passengers: ', response.data.response.driver_order_header[0].customer_order_header[0]);
+      console.log('response fetch passengers: ', response.data.response.driver_detail.vehicle_capacity);
       setPassengers(response.data.response.driver_order_header[0].customer_order_header);
     } catch (e) {
       console.log('error fetch passengers: ', e.response);

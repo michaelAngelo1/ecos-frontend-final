@@ -13,10 +13,10 @@ interface DriverTripCardProps {
   driver_name: string
   driver_phone: string
   driver_street: string
-
+  driver_capacity: string
 }
 
-const DriverTripCard = ({order_id, driver_image, driver_name, driver_phone, driver_street} : DriverTripCardProps) => {
+const DriverTripCard = ({order_id, driver_image, driver_name, driver_phone, driver_street, driver_capacity} : DriverTripCardProps) => {
 
   const { token, checkAuthToken } = useGetToken();
   const { role, user, loading } = useGetUserData(token);
@@ -48,7 +48,7 @@ const DriverTripCard = ({order_id, driver_image, driver_name, driver_phone, driv
                 <Text className='text-base' style={styles.montserratSemiBold}>Monthly Trip #{order_id.substring(0, 8)}</Text>
               </View>
               <Text className='text-sm' style={styles.montserratRegular}>July 2024</Text>
-              <Text className='text-sm' style={styles.montserratRegular}>Passenger(s): 3 persons</Text>
+              <Text className='text-sm' style={styles.montserratRegular}>Passenger(s): {driver_capacity}</Text>
               <Text className='text-sm' style={styles.montserratRegular}>To: Binus School Bekasi</Text>
               <Text className='text-sm' style={styles.montserratRegular}>Scheduled for: 06:00 - 07:00</Text>
               <TouchableOpacity 

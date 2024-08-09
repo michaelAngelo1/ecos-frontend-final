@@ -45,6 +45,7 @@ export default function DriverHome() {
     street: '',
     user_id: ''
   });
+  const [driverCapacity, setDriverCapacity] = useState(0);
   const fetchOrder = async () => {
     try {
       const response = await getOrderIdByUserId(token!, userId).get('');
@@ -53,10 +54,12 @@ export default function DriverHome() {
       setOrderId(response.data.response.driver_order_header[0].order_id);
       setDriverDetail(response.data.response.user_detail);
       setPassengers(response.data.response.driver_order_header[0].customer_order_header);
+      setDriverCapacity(response.data.response.driver_detail.vehicle_capacity);
     } catch (e) {
       console.log('error fetch orders: ', e.response);
     }
   }
+
 
   useEffect(() => {
     fetchOrder();
@@ -81,12 +84,21 @@ export default function DriverHome() {
           </Text>
         </View>
 
-        <DriverTripCard 
-          order_id={orderId}
-          driver_image={driverDetail.profile_image}
-          driver_name={driverDetail.name}
-          driver_phone={driverDetail.phone}
-          driver_street={driverDetail.street}        />
+        {
+          passengers.length > 0 ?
+            <DriverTripCard 
+              order_id={orderId}
+              driver_image={driverDetail.profile_image}
+              driver_name={driverDetail.name}
+              driver_phone={driverDetail.phone}
+              driver_street={driverDetail.street} 
+              driver_capacity={passengers.length.toString()}       
+            />
+          :
+            <View className="w-full h-44 items-center justify-center">
+              <Text style={styles.montserratRegular}>You have no trip yet.</Text>
+            </View>
+        }
 
         <View className="flex flex-col justify-start items-start px-4">
           <Text className="text-xl ml-2 mb-1" style={styles.montserratSemiBold}>
@@ -150,7 +162,7 @@ export default function DriverHome() {
 
 
         
-        <View className="flex flex-col justify-start items-start px-4">
+        <View className="flex flex-col justify-start px-4">
           <Text className="text-xl ml-2 mb-1" style={styles.montserratSemiBold}>
             Choose who to pick up first
           </Text>
@@ -163,19 +175,27 @@ export default function DriverHome() {
               6. 'Clear config' and 'Save config' options
               7. 'Clear config' clears all state and returns the bgcolor of all list to white
               8. 'Save config' saves all state and THIS CAN be seen by EACH PASSENGER */}
-          <TouchableOpacity
-            className="bg-[#fff] border-2 border-green w-full h-12 mt-3 p-2 items-center justify-center"
-            activeOpacity={0.7}
-            onPress={() => router.replace("/paymentProcess")}
-            disabled={true}
-          >
-            <Text
-              className="text-green text-sm text-center"
-              style={styles.montserratBold}
-            >
-              Click to prioritize{" "}
-            </Text>
-          </TouchableOpacity>
+          {
+            // FULL PASSENGER TRIGGERS PRIORITIZATION OPTION
+            driverCapacity == passengers.length ?
+              <TouchableOpacity
+                className="bg-[#fff] border-2 border-green w-full h-12 mt-3 p-2 items-center justify-center"
+                activeOpacity={0.7}
+                onPress={() => router.replace("/paymentProcess")}
+                disabled={true}
+              >
+                <Text
+                  className="text-green text-sm text-center"
+                  style={styles.montserratBold}
+                >
+                  Click to prioritize{" "}
+                </Text>
+              </TouchableOpacity>
+            :
+              <View className="w-fit h-44 items-center justify-center">
+                <Text style={styles.montserratRegular}>You have no passengers yet.</Text>
+              </View>
+          }
         </View>
       </ScrollView>
     </>
